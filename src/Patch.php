@@ -19,9 +19,14 @@ class Patch
         $this->setProvider($old, $new);
     }
 
+    public function getProvider(): PatchTypeInterface
+    {
+        return $this->provider;
+    }
+
     public function getType(): string
     {
-        return $this->provider->getType();
+        return $this->getProvider()->getType();
     }
 
     public function setProvider($old, $new)
