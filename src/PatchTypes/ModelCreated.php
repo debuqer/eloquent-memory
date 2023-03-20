@@ -6,7 +6,7 @@ namespace Debuqer\EloquentMemory\PatchTypes;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ModelCreated implements PatchTypeInterface
+class ModelCreated implements ChangeTypeInterface
 {
     const TYPE = 'create';
 

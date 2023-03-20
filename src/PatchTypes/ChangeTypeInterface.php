@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\PatchTypes;
 
 
-interface PatchTypeInterface
+interface ChangeTypeInterface
 {
     public function getType(): string;
 }

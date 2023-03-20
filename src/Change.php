@@ -5,12 +5,13 @@ namespace Debuqer\EloquentMemory;
 
 
 use Debuqer\EloquentMemory\PatchTypes\ModelCreated;
-use Debuqer\EloquentMemory\PatchTypes\PatchTypeInterface;
+use Debuqer\EloquentMemory\PatchTypes\ChangeTypeInterface;
+use Illuminate\Support\Facades\DB;
 
-class Patch
+class Change
 {
     /**
-     * @var PatchTypeInterface
+     * @var ChangeTypeInterface
      */
     protected $provider;
 
@@ -19,7 +20,7 @@ class Patch
         $this->setProvider($old, $new);
     }
 
-    public function getProvider(): PatchTypeInterface
+    public function getProvider(): ChangeTypeInterface
     {
         return $this->provider;
     }
