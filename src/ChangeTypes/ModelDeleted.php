@@ -6,7 +6,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ModelDeleted implements ChangeTypeInterface
+class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
     const TYPE = 'delete';
 
@@ -21,20 +21,9 @@ class ModelDeleted implements ChangeTypeInterface
         $this->model = $deletedModel;
     }
 
-    public function getType(): string
-    {
-        return self::TYPE;
-    }
-
     public function apply()
     {
         $this->model->delete();
-    }
-
-
-    public function rollback()
-    {
-        return $this->getRollbackChange()->apply();
     }
 
     public function getRollbackChange(): ChangeTypeInterface

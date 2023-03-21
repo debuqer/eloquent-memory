@@ -6,7 +6,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ModelCreated implements ChangeTypeInterface
+class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 {
     const TYPE = 'create';
 
@@ -21,19 +21,9 @@ class ModelCreated implements ChangeTypeInterface
         $this->model = $createdModel;
     }
 
-    public function getType(): string
-    {
-        return self::TYPE;
-    }
-
     public function apply()
     {
         $this->model->save();
-    }
-
-    public function rollback()
-    {
-        return $this->getRollbackChange()->apply();
     }
 
     public function getRollbackChange(): ChangeTypeInterface
