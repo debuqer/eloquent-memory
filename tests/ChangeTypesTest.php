@@ -1,9 +1,10 @@
 <?php
 use \Debuqer\EloquentMemory\Tests\Example\ExampleModel;
 use \Debuqer\EloquentMemory\Change;
+use \Illuminate\Database\Eloquent\Factories\Factory;
 
 it('creates a model and check change detected as create', function () {
-    $new = \Illuminate\Database\Eloquent\Factories\Factory::factoryForModel(ExampleModel::class)->createOne();
+    $new = Factory::factoryForModel(ExampleModel::class)->createOne();
     $old = null;
     $change = new Change($old, $new);
 
@@ -11,7 +12,7 @@ it('creates a model and check change detected as create', function () {
 });
 
 it('creates a model and check apply will create the model', function () {
-    $new = \Illuminate\Database\Eloquent\Factories\Factory::factoryForModel(ExampleModel::class)->createOne();
+    $new = Factory::factoryForModel(ExampleModel::class)->createOne();
     $old = null;
     $change = new Change($old, $new);
 
@@ -26,7 +27,7 @@ it('creates a model and check apply will create the model', function () {
 });
 
 it('creates a model and check if rollback can remove the model', function () {
-    $new = \Illuminate\Database\Eloquent\Factories\Factory::factoryForModel(ExampleModel::class)->createOne();
+    $new = Factory::factoryForModel(ExampleModel::class)->createOne();
     $old = null;
     $change = new Change($old, $new);
 
