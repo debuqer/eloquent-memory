@@ -36,3 +36,15 @@ it('creates a model and check if rollback can remove the model', function () {
     $newModelAfterRemove = Post::find($new->getKey());
     \PHPUnit\Framework\assertNull($newModelAfterRemove);
 });
+
+it('can restore model relations after delete', function () {
+    $new = Factory::factoryForModel(Post::class)->createOne();
+    $old = null;
+    $change = new Change($old, $new);
+
+    $change->rollback(); // remove the new model
+    $change->apply(); // create the new model
+
+    $newModelAfterCreation = Post::find($new->id);
+    \PHPUnit\Framework\assertEquals($new->owner->id, $newModelAfterCreation->owner->id);
+});

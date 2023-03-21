@@ -33,5 +33,7 @@ class TestCase extends Orchestra
 
         $migration = include __DIR__ . '/../database/migrations/create-post.php';
         $migration->up();
+        $migration = include __DIR__ . '/../database/migrations/create-user.php';
+        $migration->up();
     }
 }

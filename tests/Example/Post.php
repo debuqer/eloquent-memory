@@ -11,4 +11,9 @@ class Post extends \Illuminate\Database\Eloquent\Model
     protected $casts = [
         'meta' => 'json',
     ];
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 }

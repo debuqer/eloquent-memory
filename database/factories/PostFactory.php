@@ -2,6 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Database\Factories;
 
+use Debuqer\EloquentMemory\Tests\Example\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
@@ -11,9 +12,11 @@ class PostFactory extends Factory
 
     public function definition()
     {
+        $user = self::factoryForModel(User::class)->createOne();
+
         return [
             'title' => $this->faker->name(),
-            'owner_id' => $this->faker->numberBetween(1, 10),
+            'owner_id' => $user->getKey(),
             'content' => $this->faker->realText,
             'meta' => [
                 'name' => $this->faker->name,
