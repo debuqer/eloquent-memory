@@ -19,7 +19,7 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
             ->name('eloquent-memory')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_eloquent-memory_table')
+          //  ->hasMigration('create_eloquent-memory_table')
             ->hasCommand(EloquentMemoryCommand::class);
     }
 }

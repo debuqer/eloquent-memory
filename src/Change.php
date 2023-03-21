@@ -4,9 +4,9 @@
 namespace Debuqer\EloquentMemory;
 
 
-use Debuqer\EloquentMemory\PatchTypes\ModelCreated;
-use Debuqer\EloquentMemory\PatchTypes\ChangeTypeInterface;
-use Illuminate\Support\Facades\DB;
+use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
+use Debuqer\EloquentMemory\ChangeTypes\ChangeTypeInterface;
+use Debuqer\EloquentMemory\Tests\Example\ExampleModel;
 
 class Change
 {
@@ -35,5 +35,10 @@ class Change
         if ( ! $old and $new ) {
             $this->provider = new ModelCreated($new);
         }
+    }
+
+    public function apply()
+    {
+        $this->provider->apply();
     }
 }

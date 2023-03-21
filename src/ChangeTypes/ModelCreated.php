@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\PatchTypes;
+namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Illuminate\Database\Eloquent\Model;
@@ -24,5 +24,10 @@ class ModelCreated implements ChangeTypeInterface
     public function getType(): string
     {
         return self::TYPE;
+    }
+
+    public function apply()
+    {
+        $this->model->save();
     }
 }

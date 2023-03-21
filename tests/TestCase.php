@@ -2,7 +2,10 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
+use Debuqer\EloquentMemory\Database\Factories\ExampleModelFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 
@@ -28,9 +31,7 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_eloquent-memory_table.php.stub';
+        $migration = include __DIR__ . '/../database/migrations/example-model.php';
         $migration->up();
-        */
     }
 }

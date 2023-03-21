@@ -8,8 +8,10 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('eloquent_memory_table', function (Blueprint $table) {
+        Schema::create('example_models', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->json('meta');
 
             // add fields
 
