@@ -6,19 +6,19 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ModelCreated implements ChangeTypeInterface
+class ModelDeleted implements ChangeTypeInterface
 {
-    const TYPE = 'create';
+    const TYPE = 'delete';
 
     /** @var Model */
     protected $model;
     /**
      * ModelCreated constructor.
-     * @param Model $createdModel
+     * @param Model $deletedModel
      */
-    public function __construct(Model $createdModel)
+    public function __construct(Model $deletedModel)
     {
-        $this->model = $createdModel;
+        $this->model = $deletedModel;
     }
 
     public function getType(): string
@@ -28,8 +28,9 @@ class ModelCreated implements ChangeTypeInterface
 
     public function apply()
     {
-        $this->model->save();
+        $this->model->delete();
     }
+
 
     public function rollback()
     {
@@ -38,6 +39,6 @@ class ModelCreated implements ChangeTypeInterface
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelDeleted($this->model);
+        return new ModelCreated($this->model);
     }
 }

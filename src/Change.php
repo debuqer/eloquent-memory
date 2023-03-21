@@ -41,4 +41,9 @@ class Change
     {
         $this->provider->apply();
     }
+
+    public function rollback()
+    {
+        $this->provider->rollback();
+    }
 }
