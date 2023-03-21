@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\Tests\Example;
 
 
-class ExampleModel extends \Illuminate\Database\Eloquent\Model
+class Post extends \Illuminate\Database\Eloquent\Model
 {
     protected $guarded = ['id'];
 

@@ -2,7 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
-use Debuqer\EloquentMemory\Database\Factories\ExampleModelFactory;
+use Debuqer\EloquentMemory\Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,7 +31,7 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $migration = include __DIR__ . '/../database/migrations/example-model.php';
+        $migration = include __DIR__ . '/../database/migrations/create-post.php';
         $migration->up();
     }
 }

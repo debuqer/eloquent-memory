@@ -8,13 +8,15 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('example_models', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('title');
+            $table->unsignedBigInteger('owner_id');
+            $table->text('content');
             $table->json('meta');
 
             // add fields
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }
