@@ -33,7 +33,10 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public function apply()
     {
-        (clone $this->model)->forceDelete();
+        /** @var Model $model */
+        $model = app(get_class($this->model));
+
+        $model->getConnection()->table($model->getTable())->delete($this->model->getKey());
     }
 
     public function getRollbackChange(): ChangeTypeInterface

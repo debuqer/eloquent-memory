@@ -53,7 +53,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         /** @var Model $model */
         $model = app(get_class($this->before));
 
-        DB::table($model->getTable())->where($model->getKeyName(), $this->before->getKey())->update($this->after->getAttributes());
+        $model->getConnection()->table($model->getTable())->where($model->getKeyName(), $this->before->getKey())->update($this->after->getAttributes());
     }
 
     public function getRollbackChange(): ChangeTypeInterface

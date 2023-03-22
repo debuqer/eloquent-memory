@@ -37,7 +37,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         /** @var Model $model */
         $model = app(get_class($this->model));
 
-        DB::table($model->getTable())->insert($this->model->getAttributes());
+        $model->getConnection()->table($model->getTable())->insert($this->model->getAttributes());
     }
 
     public function getRollbackChange(): ChangeTypeInterface
