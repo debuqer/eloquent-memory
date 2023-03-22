@@ -23,7 +23,7 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public function apply()
     {
-        $this->model->delete();
+        $this->model->forceDelete();
     }
 
     public function getRollbackChange(): ChangeTypeInterface

@@ -37,7 +37,7 @@ it('creates a model and check if rollback can remove the model', function () {
     \PHPUnit\Framework\assertNull($newModelAfterRemove);
 });
 
-it('create a model and check multiple of rollback and apply works', function () {
+it('creates a model and check multiple of rollback and apply works', function () {
     $new = Factory::factoryForModel(Post::class)->createOne();
     $old = null;
     $change = new Change($old, $new);
@@ -51,3 +51,38 @@ it('create a model and check multiple of rollback and apply works', function () 
     $change->apply(); // create the new model
     \PHPUnit\Framework\assertNotNull(Post::find($new->getKey()));
 });
+
+it('removes the model and check it can be recognized as delete', function () {
+    $old = Factory::factoryForModel(Post::class)->createOne();
+    $new = null;
+    $change = new Change($old, $new);
+
+    \PHPUnit\Framework\assertEquals('delete', $change->getType());
+});
+
+it('removes the model and check if apply can remove the model', function () {
+    $old = Factory::factoryForModel(Post::class)->createOne();
+    $new = null;
+    $change = new Change($old, $new);
+
+
+    $change->apply(); // should remove the model
+    $modelAfterRemove = Post::find($old->getKey());
+    \PHPUnit\Framework\assertNull($modelAfterRemove);
+});
+
+it('remove the model and check if rollback will create the model', function () {
+    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old->refresh();
+    $new = null;
+    $change = new Change($old, $new);
+
+    $change->apply(); // remove the model
+    $change->rollback(); // should create the model
+
+    $modelAfterDeleteRollback = Post::find($old->getKey());
+    \PHPUnit\Framework\assertNotNull($modelAfterDeleteRollback);
+    \PHPUnit\Framework\assertEquals($modelAfterDeleteRollback->getKey(), $old->getKey());
+    \PHPUnit\Framework\assertEquals($old->getAttributes(), $modelAfterDeleteRollback->getAttributes());
+});
+
