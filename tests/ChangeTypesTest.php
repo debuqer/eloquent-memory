@@ -86,3 +86,13 @@ it('remove the model and check if rollback will create the model', function () {
     \PHPUnit\Framework\assertEquals($old->getAttributes(), $modelAfterDeleteRollback->getAttributes());
 });
 
+it('update a model and check if update can be detected', function () {
+    $old = Factory::factoryForModel(Post::class)->createOne();
+    $new = clone $old;
+    $new->update([
+        'title' => \Faker\Factory::create('en')->name,
+    ]);
+
+    $change = new Change($old, $new);
+    \PHPUnit\Framework\assertEquals('update', $change->getType());
+});
