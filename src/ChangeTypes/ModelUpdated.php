@@ -5,6 +5,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
@@ -49,9 +50,10 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public function apply()
     {
-        $this->model->update([
+        /** @var Model $model */
+        $model = app(get_class($this->before));
 
-        ]);
+        DB::table($model->getTable())->where($model->getKeyName(), $this->before->getKey())->update($this->after->getAttributes());
     }
 
     public function getRollbackChange(): ChangeTypeInterface

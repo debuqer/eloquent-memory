@@ -96,3 +96,15 @@ it('update a model and check if update can be detected', function () {
     $change = new Change($old, $new);
     \PHPUnit\Framework\assertEquals('update', $change->getType());
 });
+
+it('update a model and check if updated properly', function() {
+    $old = Factory::factoryForModel(Post::class)->createOne();
+    $new = clone $old;
+    $new->title = \Faker\Factory::create('en')->name;
+
+    $change = new Change($old, $new);
+
+    $change->apply();
+    $modelAfterUpdate = Post::find($new->getKey());
+    \PHPUnit\Framework\assertEquals($new->title, $modelAfterUpdate->title);
+});
