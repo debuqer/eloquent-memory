@@ -21,6 +21,16 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
         $this->model = $deletedModel;
     }
 
+    public static function create($old, $new): ChangeTypeInterface
+    {
+        return new self($old);
+    }
+
+    public static function satisfyConditions($old, $new): bool
+    {
+        return (! $new and $old);
+    }
+
     public function apply()
     {
         $this->model->forceDelete();

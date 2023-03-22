@@ -24,6 +24,29 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         $this->after = $after;
     }
 
+    public static function create($old, $new): ChangeTypeInterface
+    {
+        return new self($old, $new);
+    }
+
+    public static function satisfyConditions($old, $new): bool
+    {
+        if ( ! $old ) {
+            return false;
+        }
+        if ( ! $new ) {
+            return false;
+        }
+        if ( ! $old instanceof Model ) {
+            return false;
+        }
+        if ( get_class($old) !== get_class($new) ) {
+            return false;
+        }
+
+        return count(array_merge(array_diff($old->getAttributes(), $new->getAttributes()), array_diff($new->getAttributes(), $old->getAttributes()))) > 0;
+    }
+
     public function apply()
     {
         $this->model->update([

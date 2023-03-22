@@ -35,17 +35,25 @@ class Change
 
     public function setProvider($old, $new)
     {
-        if ( ! $old and $new ) {
-            $this->provider = new ModelCreated($new);
-        } else if ( $old and ! $new ) {
-            $this->provider = new ModelDeleted($old);
-        } else if ( count(array_merge(array_diff($old->getAttributes(), $new->getAttributes()), array_diff($new->getAttributes(), $old->getAttributes()))) > 0) {
-            $this->provider = new ModelUpdated($old, $new);
+        /** @var ChangeTypeInterface $changeType */
+        foreach ($this->getChangeTypes() as $changeType) {
+            if ( $changeType::satisfyConditions($old, $new) ) {
+                $this->provider = $changeType::create($old, $new);
+            }
         }
 
-        else {
+        if ( ! $this->provider ) {
             throw new UnknownChangeException;
         }
+    }
+
+    protected function getChangeTypes(): array
+    {
+        return [
+            ModelUpdated::class,
+            ModelCreated::class,
+            ModelDeleted::class,
+        ];
     }
 
     public function apply()
