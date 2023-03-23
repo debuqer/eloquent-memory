@@ -3,8 +3,13 @@ use \Debuqer\EloquentMemory\Tests\Example\Post;
 use \Debuqer\EloquentMemory\Change;
 use \Illuminate\Database\Eloquent\Factories\Factory;
 
+function createOnePost()
+{
+    return Factory::factoryForModel(Post::class)->createOne();
+}
+
 it('creates a model and check change detected as create', function () {
-    $new = Factory::factoryForModel(Post::class)->createOne();
+    $new = createOnePost();
     $old = null;
     $change = new Change($old, $new);
 
@@ -12,12 +17,12 @@ it('creates a model and check change detected as create', function () {
 });
 
 it('creates a model and check apply will create the model', function () {
-    $new = Factory::factoryForModel(Post::class)->createOne();
+    $new = createOnePost();
     $old = null;
     $change = new Change($old, $new);
 
     // remove the model to check if the change can create it again or not
-    $new->delete();
+    $new->forceDelete();
 
     $change->apply();
     $newModelAfterCreation = Post::find($new->id);
@@ -27,7 +32,7 @@ it('creates a model and check apply will create the model', function () {
 });
 
 it('creates a model and check if rollback can remove the model', function () {
-    $new = Factory::factoryForModel(Post::class)->createOne();
+    $new = createOnePost();
     $old = null;
     $change = new Change($old, $new);
 
@@ -38,7 +43,7 @@ it('creates a model and check if rollback can remove the model', function () {
 });
 
 it('creates a model and check multiple of rollback and apply works', function () {
-    $new = Factory::factoryForModel(Post::class)->createOne();
+    $new = createOnePost();
     $old = null;
     $change = new Change($old, $new);
 
@@ -53,7 +58,7 @@ it('creates a model and check multiple of rollback and apply works', function ()
 });
 
 it('removes the model and check it can be recognized as delete', function () {
-    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old = createOnePost();
     $new = null;
     $change = new Change($old, $new);
 
@@ -61,7 +66,7 @@ it('removes the model and check it can be recognized as delete', function () {
 });
 
 it('removes the model and check if apply can remove the model', function () {
-    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old = createOnePost();
     $new = null;
     $change = new Change($old, $new);
 
@@ -72,7 +77,7 @@ it('removes the model and check if apply can remove the model', function () {
 });
 
 it('remove the model and check if rollback will create the model', function () {
-    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old = createOnePost();
     $old->refresh();
     $new = null;
     $change = new Change($old, $new);
@@ -87,7 +92,7 @@ it('remove the model and check if rollback will create the model', function () {
 });
 
 it('update a model and check if update can be detected', function () {
-    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old = createOnePost();
     $new = clone $old;
     $new->update([
         'title' => \Faker\Factory::create('en')->name,
@@ -98,7 +103,7 @@ it('update a model and check if update can be detected', function () {
 });
 
 it('update a model and check if updated properly', function() {
-    $old = Factory::factoryForModel(Post::class)->createOne();
+    $old = createOnePost();
     $new = clone $old;
     $new->title = \Faker\Factory::create('en')->name;
 
@@ -107,4 +112,29 @@ it('update a model and check if updated properly', function() {
     $change->apply();
     $modelAfterUpdate = Post::find($new->getKey());
     \PHPUnit\Framework\assertEquals($new->title, $modelAfterUpdate->title);
+});
+
+it('soft delete can recognized properly', function () {
+    $old = createOnePost();
+    $new = (clone $old);
+    $new->delete();
+
+    $change = new Change($old, $new);
+
+    \PHPUnit\Framework\assertEquals('softDelete', $change->getType());
+});
+
+it('soft delete can apply with right deleted_at column', function () {
+    $now = \Carbon\Carbon::now()->toDateTimeString();
+
+    $old = createOnePost();
+    $new = (clone $old);
+    $new->setAttribute($new->getDeletedAtColumn(), $now);
+
+    $change = new Change($old, $new);
+
+    $change->apply();
+    $modelAfterSoftDeleted = Post::withTrashed()->find($new->getKey());
+
+    \PHPUnit\Framework\assertEquals($modelAfterSoftDeleted->getAttribute($modelAfterSoftDeleted->getDeletedAtColumn()), $now);
 });

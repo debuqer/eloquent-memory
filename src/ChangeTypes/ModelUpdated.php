@@ -45,7 +45,15 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
             return false;
         }
 
-        return count(array_merge(array_diff($old->getAttributes(), $new->getAttributes()), array_diff($new->getAttributes(), $old->getAttributes()))) > 0;
+        $allAttributes = array_merge(array_keys($old->getAttributes()), array_keys($new->getAttributes()));
+        $diff = [];
+        foreach ($allAttributes as $attribute ) {
+            if ( $old->getAttribute($attribute) !== $new->getAttribute($attribute) ) {
+                $diff[] = $attribute;
+            }
+        }
+
+        return count($diff) > 0;
     }
 
     public function apply()
