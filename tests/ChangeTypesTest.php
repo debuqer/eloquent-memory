@@ -151,7 +151,23 @@ it('soft delete and rollback and check if model exists', function () {
 
     $change->apply(); // remove the model(soft delete)
     $change->rollback();
-    $modelAfterSoftDeleted = Post::find($new->getKey());
+    $modelAfterRestored = Post::find($new->getKey());
 
-    \PHPUnit\Framework\assertNull($modelAfterSoftDeleted->getAttribute($modelAfterSoftDeleted->getDeletedAtColumn()), $now);
+    \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()), $now);
+});
+
+it('update model with dynamic attribute assignment and check if works', function () {
+    $now = \Carbon\Carbon::now()->toDateTimeString();
+    $old = createOnePost(); // this not includes deleted_at column
+
+    $new = (clone $old);
+    $new->{$new->getDeletedAtColumn()} = $now; // adds deleted_at column
+
+    $change = new Change($old, $new);
+
+    $change->apply(); // deleted_at will added to model
+    $change->rollback(); // deleted_at must be null
+
+    $modelAfterRestored = Post::find($new->getKey());
+    \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()));
 });
