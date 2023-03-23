@@ -138,3 +138,20 @@ it('soft delete can apply with right deleted_at column', function () {
 
     \PHPUnit\Framework\assertEquals($modelAfterSoftDeleted->getAttribute($modelAfterSoftDeleted->getDeletedAtColumn()), $now);
 });
+
+
+it('soft delete and rollback and check if model exists', function () {
+    $now = \Carbon\Carbon::now()->toDateTimeString();
+
+    $old = createOnePost();
+    $new = (clone $old);
+    $new->setAttribute($new->getDeletedAtColumn(), $now);
+
+    $change = new Change($old, $new);
+
+    $change->apply(); // remove the model(soft delete)
+    $change->rollback();
+    $modelAfterSoftDeleted = Post::find($new->getKey());
+
+    \PHPUnit\Framework\assertNull($modelAfterSoftDeleted->getAttribute($modelAfterSoftDeleted->getDeletedAtColumn()), $now);
+});

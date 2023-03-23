@@ -5,12 +5,14 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
-class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
+class ModelRestored extends BaseChangeType implements ChangeTypeInterface
 {
     use UpdatesModel;
 
-    const TYPE = 'softDelete';
+    const TYPE = 'restore';
 
     /** @var Model */
     protected $before;
@@ -45,12 +47,13 @@ class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public function apply()
     {
-        // since the softDelete is only a simple update the model may change to its final state
-        $this->update($this->before, $this->after);
+        // since restore is a simple update the model may be back to its last state
+        $this->update($this->after, $this->before);
     }
+
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelRestored($this->before, $this->after);
+        return new ModelSoftDeleted($this->before, $this->after);
     }
 }
