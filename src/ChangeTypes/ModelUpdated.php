@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
-    use UpdatesModel;
+    use UpdatesModelTrait;
 
     const TYPE = 'update';
 

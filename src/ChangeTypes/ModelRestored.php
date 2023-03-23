@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ModelRestored extends BaseChangeType implements ChangeTypeInterface
 {
-    use UpdatesModel;
+    use UpdatesModelTrait;
 
     const TYPE = 'restore';
 

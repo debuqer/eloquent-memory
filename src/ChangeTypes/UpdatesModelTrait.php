@@ -6,7 +6,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 use Illuminate\Database\Eloquent\Model;
 
-trait UpdatesModel
+trait UpdatesModelTrait
 {
     public function update(Model $source, Model $destination)
     {
