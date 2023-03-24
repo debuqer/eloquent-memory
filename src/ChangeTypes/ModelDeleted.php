@@ -10,20 +10,26 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
     const TYPE = 'delete';
 
-    /** @var Model */
-    protected $model;
+    /** @var array */
+    protected $attributes;
+
+    /** @var string */
+    protected $modelClass;
+
     /**
      * ModelCreated constructor.
-     * @param Model $deletedModel
+     * @param string $modelClass
+     * @param array $attributes
      */
-    public function __construct(Model $deletedModel)
+    public function __construct(string $modelClass, array $attributes)
     {
-        $this->model = $deletedModel;
+        $this->modelClass = $modelClass;
+        $this->attributes = $attributes;
     }
 
     public static function create($old, $new): ChangeTypeInterface
     {
-        return new self($old);
+        return new self(get_class($old), $old->getAttributes());
     }
 
     public static function satisfyConditions($old, $new): bool
@@ -34,13 +40,13 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
     public function apply()
     {
         /** @var Model $model */
-        $model = app(get_class($this->model));
+        $model = app($this->modelClass);
 
-        $model->getConnection()->table($model->getTable())->delete($this->model->getKey());
+        $model->getConnection()->table($model->getTable())->delete($this->attributes[$model->getKeyName()]);
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelCreated($this->model);
+        return new ModelCreated($this->modelClass, $this->attributes);
     }
 }
