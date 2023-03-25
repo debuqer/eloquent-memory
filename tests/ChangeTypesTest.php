@@ -198,3 +198,5 @@ it('restore a model and check apply will restore the model', function () {
     $modelAfterRestored = Post::find($new->getKey());
     \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()));
 });
+
+// test if model has get mutator
