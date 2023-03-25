@@ -35,7 +35,7 @@ class Change
         return $this->getProvider()->getType();
     }
 
-    public function setProvider($old, $new)
+    protected function setProvider($old, $new)
     {
         /** @var ChangeTypeInterface $changeType */
         foreach ($this->getChangeTypes() as $changeType) {
