@@ -11,7 +11,6 @@ use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
 use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
 use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
 use Debuqer\EloquentMemory\Exceptions\UnknownChangeException;
-use Debuqer\EloquentMemory\Tests\Example\ExampleModel;
 
 class Change
 {
