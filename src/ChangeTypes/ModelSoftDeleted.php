@@ -51,6 +51,6 @@ class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelRestored($this->before, $this->after);
+        return new ModelRestored($this->after, $this->before);
     }
 }

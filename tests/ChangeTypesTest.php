@@ -171,3 +171,30 @@ it('update model with dynamic attribute assignment and check if works', function
     $modelAfterRestored = Post::find($new->getKey());
     \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()));
 });
+
+it('restore a model and check the change type is ok', function () {
+    $now = \Carbon\Carbon::now()->toDateTimeString();
+    $new = createOnePost(); // this not includes deleted_at column
+
+    $old = (clone $new);
+    $old->{$old->getDeletedAtColumn()} = $now; // adds deleted_at column
+
+    $change = new Change($old, $new);
+
+    \PHPUnit\Framework\assertEquals('restore', $change->getType());
+});
+
+
+it('restore a model and check apply will restore the model', function () {
+    $now = \Carbon\Carbon::now()->toDateTimeString();
+    $new = createOnePost(); // this not includes deleted_at column
+
+    $old = (clone $new);
+    $old->{$old->getDeletedAtColumn()} = $now; // adds deleted_at column
+
+    $change = new Change($old, $new);
+    $change->apply();
+
+    $modelAfterRestored = Post::find($new->getKey());
+    \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()));
+});

@@ -7,6 +7,7 @@ namespace Debuqer\EloquentMemory;
 use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use Debuqer\EloquentMemory\ChangeTypes\ChangeTypeInterface;
 use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
+use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
 use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
 use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
 use Debuqer\EloquentMemory\Exceptions\UnknownChangeException;
@@ -55,6 +56,7 @@ class Change
             ModelCreated::class,
             ModelDeleted::class,
             ModelSoftDeleted::class,
+            ModelRestored::class,
         ];
     }
 

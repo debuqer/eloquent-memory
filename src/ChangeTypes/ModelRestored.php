@@ -39,7 +39,7 @@ class ModelRestored extends BaseChangeType implements ChangeTypeInterface
     {
         if ( $new and method_exists($new, 'getDeletedAtColumn') ) {
             /** @var Model $new */
-            return (ModelUpdated::satisfyConditions($old, $new) and ! $old->getAttribute($old->getDeletedAtColumn()) and $new->getAttribute($new->getDeletedAtColumn()));
+            return (ModelUpdated::satisfyConditions($old, $new) and ! $new->getAttribute($new->getDeletedAtColumn()) and $old->getAttribute($old->getDeletedAtColumn()));
         }
 
         return false;
@@ -48,7 +48,7 @@ class ModelRestored extends BaseChangeType implements ChangeTypeInterface
     public function apply()
     {
         // since restore is a simple update the model may be back to its last state
-        $this->update($this->after, $this->before);
+        $this->update($this->before, $this->after);
     }
 
 
