@@ -200,3 +200,4 @@ it('restore a model and check apply will restore the model', function () {
 });
 
 // test if model has get mutator
+// test if setProvider works properly
