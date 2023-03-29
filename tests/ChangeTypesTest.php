@@ -2,10 +2,16 @@
 use \Debuqer\EloquentMemory\Tests\Example\Post;
 use \Debuqer\EloquentMemory\Change;
 use \Illuminate\Database\Eloquent\Factories\Factory;
+use \Debuqer\EloquentMemory\Tests\Example\PostWithMutator;
 
 function createOnePost()
 {
     return Factory::factoryForModel(Post::class)->createOne();
+}
+
+function createOnePostMutated()
+{
+    return Factory::factoryForModel(PostWithMutator::class)->createOne();
 }
 
 it('creates a model and check change detected as create', function () {
@@ -199,5 +205,21 @@ it('restore a model and check apply will restore the model', function () {
     \PHPUnit\Framework\assertNull($modelAfterRestored->getAttribute($modelAfterRestored->getDeletedAtColumn()));
 });
 
+
+it('test if in model with mutator update change type can store right data', function () {
+   $old = createOnePostMutated();
+
+   $new = (clone $old);
+   $new->update([
+       'title' => \Faker\Factory::create('fa')->title,
+   ]);
+
+   dd(PostWithMutator::find($new->getKey()));
+
+   $change = new Change($old, $new);
+
+
+   \PHPUnit\Framework\assertEquals('update', $change->getType());
+});
 // test if model has get mutator
 // test if setProvider works properly
