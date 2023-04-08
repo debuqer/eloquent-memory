@@ -9,26 +9,26 @@ function createOnePost()
 }
 
 it('creates a model and check change detected as create', function () {
-    $new = createOnePost();
     $old = null;
+    $new = createOnePost();
     $change = new Change($old, $new);
 
-    \PHPUnit\Framework\assertEquals('create', $change->getType());
+    expect($change->getType())->toBe('create');
 });
 
 it('creates a model and check apply will create the model', function () {
-    $new = createOnePost();
     $old = null;
+    $new = createOnePost();
     $change = new Change($old, $new);
 
-    // remove the model to check if the change can create it again or not
+    // because we actually created a new model removes the model to check if the change can create it again or not
     $new->forceDelete();
 
     $change->apply();
     $newModelAfterCreation = Post::find($new->id);
 
-    \PHPUnit\Framework\assertNotNull($newModelAfterCreation);
-    \PHPUnit\Framework\assertEquals($newModelAfterCreation->getKey(), $new->getKey());
+    expect($newModelAfterCreation)->not()->toBeNull();
+    expect($newModelAfterCreation->getKey())->toBe($new->getKey());
 });
 
 it('creates a model and check if rollback can remove the model', function () {
