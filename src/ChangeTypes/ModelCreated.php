@@ -4,6 +4,14 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSame;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
@@ -34,12 +42,20 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 
     public static function isApplicable($old, $new): bool
     {
-        return (
-            is_a($new, Model::class)
-            and $new->exists
-            and $new
-            and (!$old or (is_a($old, Model::class) and ! $old->exists and get_class($old) === get_class($new)) )
-        );
+        if ( ItemIsNotModel::define($new)->evaluate() or ItemNotExists::define($new)->evaluate() ) {
+            return false;
+        }
+        if ( ItemIsNotNull::define($old)->evaluate() and ItemIsNotModel::define($old)->evaluate() ) {
+            return false;
+        }
+        if ( ItemIsModel::define($old)->evaluate() and ItemExists::define($old)->evaluate() ) {
+            return false;
+        }
+        if ( ItemIsModel::define($old)->evaluate() and ItemsAreNotTheSame::define($old)->setExpect($new)->evaluate() ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function apply()
