@@ -12,6 +12,6 @@ test('throws an exception if change could not be detected', function() {
     Change::detect('unknown type', 'another unknown type');
 })->throws(\Debuqer\EloquentMemory\Exceptions\NotRecognizedChangeException::class);
 
-test('only ChangeTypeInterface can be registered as change', function () {
-    // @TODO
-});
+//test('only ChangeTypeInterface can be registered as change', function () {
+//    // @TODO
+//});

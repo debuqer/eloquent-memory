@@ -34,7 +34,12 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 
     public static function isApplicable($old, $new): bool
     {
-        return ($new and ! $old);
+        return (
+            is_a($new, Model::class)
+            and $new->exists
+            and $new
+            and (!$old or (is_a($old, Model::class) and ! $old->exists and get_class($old) === get_class($new)) )
+        );
     }
 
     public function apply()
