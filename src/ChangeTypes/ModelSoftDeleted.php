@@ -33,11 +33,11 @@ class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
         return new self($old, $new);
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
         if ( $new and method_exists($new, 'getDeletedAtColumn') ) {
             /** @var Model $new */
-            return (ModelUpdated::satisfyConditions($old, $new) and ! $old->getAttribute($old->getDeletedAtColumn()) and $new->getAttribute($new->getDeletedAtColumn()));
+            return (ModelUpdated::isApplicable($old, $new) and ! $old->getAttribute($old->getDeletedAtColumn()) and $new->getAttribute($new->getDeletedAtColumn()));
         }
 
         return false;

@@ -32,7 +32,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         return new self(get_class($new), $new->getAttributes());
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
         return ($new and ! $old);
     }

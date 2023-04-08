@@ -31,7 +31,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         return new self($old, $new);
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
         if ( ! $old ) {
             return false;
