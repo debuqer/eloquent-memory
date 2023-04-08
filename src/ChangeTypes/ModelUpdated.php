@@ -45,6 +45,9 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         if ( get_class($old) !== get_class($new) ) {
             return false;
         }
+        if ( ! $old->exists or ! $new->exists ) {
+            return false;
+        }
 
         $allAttributes = array_merge(array_keys($old->getAttributes()), array_keys($new->getAttributes()));
         $diff = [];
