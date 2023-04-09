@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
 {
-    protected $model = \Debuqer\EloquentMemory\Tests\Example\User::class;
+    protected $model = \Debuqer\EloquentMemory\Tests\Fixtures\User::class;
 
     public function definition()
     {

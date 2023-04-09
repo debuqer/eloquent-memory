@@ -1,6 +1,6 @@
 <?php
-use \Debuqer\EloquentMemory\Tests\Example\Post;
-use \Debuqer\EloquentMemory\Tests\Example\User;
+use \Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use \Debuqer\EloquentMemory\Tests\Fixtures\User;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
 

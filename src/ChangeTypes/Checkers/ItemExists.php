@@ -4,10 +4,10 @@
 namespace Debuqer\EloquentMemory\ChangeTypes\Checkers;
 
 
-class ItemExists extends AbstractChecker
+class ItemExists extends ItemIsModel
 {
     public function condition(): bool
     {
-        return ($this->item->exists);
+        return (parent::condition() and $this->item->exists);
     }
 }
