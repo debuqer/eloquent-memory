@@ -4,7 +4,7 @@ use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsTrash;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
-use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
+use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemUseSoftDelete;
 use Debuqer\EloquentMemory\Tests\Fixtures\AlwaysTrueChecker;
 
 /**
@@ -102,6 +102,22 @@ test('ItemsAreTheSameType:: items are not the same type when model -> stdClass',
 test('ItemsAreTheSameType:: items are not the same type when model1 -> model2', function () {
     expect(ItemsAreTheSameType::setItem(createAPost())->setExpect(createAUser())->evaluate())->toBeFalse();
 });
+
+/**
+ * ItemsAreTheSameType
+ */
+test('ItemUseSoftDelete:: item uses soft delete when the trait is present(model Post)', function () {
+    expect(ItemUseSoftDelete::setItem(createAPost())->evaluate())->toBeTrue();
+});
+
+test('ItemUseSoftDelete:: item doesnt uses soft delete when the trait is not present(model User)', function () {
+    expect(ItemUseSoftDelete::setItem(createAUser())->evaluate())->toBeFalse();
+});
+
+test('ItemUseSoftDelete:: item doesnt uses soft delete when null given', function () {
+    expect(ItemUseSoftDelete::setItem(null)->evaluate())->toBeFalse();
+});
+
 
 /**
  * Check not operator

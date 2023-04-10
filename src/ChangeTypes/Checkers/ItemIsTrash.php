@@ -6,10 +6,10 @@ namespace Debuqer\EloquentMemory\ChangeTypes\Checkers;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ItemIsTrash extends ItemIsModel
+class ItemIsTrash extends ItemUseSoftDelete
 {
     public function condition(): bool
     {
-        return (parent::condition() and class_uses($this->item, SoftDeletes::class) and $this->item->trashed());
+        return (parent::condition() and $this->item->trashed());
     }
 }
