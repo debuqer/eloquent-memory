@@ -1,6 +1,12 @@
 <?php
 use \Illuminate\Database\Eloquent\Factories\Factory;
+use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+
+function createAUser()
+{
+    return Factory::factoryForModel(User::class)->createOne();
+}
 
 function createEmptyPost()
 {

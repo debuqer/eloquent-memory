@@ -4,6 +4,7 @@ use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsTrash;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
 use Debuqer\EloquentMemory\Tests\Fixtures\AlwaysTrueChecker;
 
 /**
@@ -86,10 +87,21 @@ test('ItemIsTrash:: item is not trashed when model deleted', function () {
     expect(ItemIsTrash::define(createAPostAndForceDelete())->evaluate())->toBeFalse();
 });
 
+
 /**
- * @TODO ItemsAreNotTheSame
- * @TODO ItemsAreTheSame
+ * ItemsAreTheSameType
  */
+test('ItemsAreTheSameType:: item are the same type when model -> model', function () {
+    expect(ItemsAreTheSameType::define(createAPost())->setExpect(createAPost())->evaluate())->toBeTrue();
+});
+
+test('ItemsAreTheSameType:: items are not the same type when model -> stdClass', function () {
+    expect(ItemsAreTheSameType::define(createAPost())->setExpect(new stdClass())->evaluate())->toBeFalse();
+});
+
+test('ItemsAreTheSameType:: items are not the same type when model1 -> model2', function () {
+    expect(ItemsAreTheSameType::define(createAPost())->setExpect(createAUser())->evaluate())->toBeFalse();
+});
 
 /**
  * Check not operator
@@ -98,3 +110,6 @@ test('not will reverse the answer of condition', function () {
     expect(AlwaysTrueChecker::define(null)->not()->evaluate())->toBeFalse();
 });
 
+test('double not will return origin', function () {
+    expect(AlwaysTrueChecker::define(null)->not()->not()->evaluate())->toBeTrue();
+});

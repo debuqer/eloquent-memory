@@ -22,7 +22,7 @@ abstract class AbstractChecker implements CheckerInterface
 
     public function not()
     {
-        $this->notFlag = true;
+        $this->notFlag = ! $this->notFlag;
 
         return $this;
     }
