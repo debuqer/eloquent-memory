@@ -8,35 +8,42 @@ test('ModelCreated is applicable when: null -> model', function() {
     $old = null;
     $new = createAPost();
 
-    expect(ModelCreated::isApplicable($old, $new))->toBe(true);
+    expect(ModelCreated::isApplicable($old, $new))->toBeTrue();
 });
 
-test('ModelCreated is applicable when: not existed model -> existed model', function() {
-    $old = new Post;
+test('ModelCreated is not applicable when: notExistedModel[1] -> ExistedModel[1]', function() {
+    $old = createAPostAndDelete();
     $new = createAPost();
 
-    expect(ModelCreated::isApplicable($old, $new))->toBe(true);
+    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
 });
 
-test('ModelCreated is not applicable when: not existed model1 -> existed model2', function() {
+test('ModelCreated is not applicable when: notExistedModel[1] -> notExistedModel[2]', function() {
     $old = new User;
     $new = createAPost();
 
-    expect(ModelCreated::isApplicable($old, $new))->toBe(false);
+    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
 });
 
 test('ModelCreated is not applicable when: null -> string', function() {
     $old = null;
     $new = 'a string';
 
-    expect(ModelCreated::isApplicable($old, $new))->toBe(false);
+    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
 });
 
-test('ModelCreated is not applicable when: null -> instance of model', function() {
+test('ModelCreated is not applicable when: null -> trashedModel', function() {
+    $old = null;
+    $new = createAPostAndDelete();
+
+    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelCreated is not applicable when: null -> emptyModel', function() {
     $old = null;
     $new = new Post;
 
-    expect(ModelCreated::isApplicable($old, $new))->toBe(false);
+    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
 });
 
 
