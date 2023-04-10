@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Tests\Example;
+namespace Debuqer\EloquentMemory\Tests\Fixtures;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;

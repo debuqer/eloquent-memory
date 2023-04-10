@@ -3,13 +3,10 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
-
-use Illuminate\Database\Eloquent\Model;
-
 abstract class BaseChangeType
 {
-    /** @var Model */
-    protected $model;
+    abstract function apply();
+    abstract function getRollbackChange();
 
     public function getType(): string
     {

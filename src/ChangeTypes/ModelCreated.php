@@ -4,6 +4,15 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotTrash;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
@@ -32,9 +41,13 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         return new self(get_class($new), $new->getAttributes());
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
-        return ($new and ! $old);
+        return (
+            ItemIsNull::setItem($old)->evaluate() and
+            ItemExists::setItem($new)->evaluate() and
+            ItemIsNotTrash::setItem($new)->evaluate()
+        );
     }
 
     public function apply()

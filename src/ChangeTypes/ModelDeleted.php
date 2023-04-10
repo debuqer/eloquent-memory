@@ -32,7 +32,7 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
         return new self(get_class($old), $old->getAttributes());
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
         return (! $new and $old);
     }
