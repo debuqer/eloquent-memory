@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\ChangeTypes\Checkers;
 
 
-class ItemsAreNotTheSame extends ItemsAreTheSame
+class ItemsAreNotTheSameType extends ItemsAreTheSameType
 {
     protected $notFlag = true;
 }

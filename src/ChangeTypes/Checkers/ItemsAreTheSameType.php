@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\ChangeTypes\Checkers;
 
 
-class ItemsAreTheSame extends AbstractChecker
+class ItemsAreTheSameType extends AbstractChecker
 {
     protected $expect;
 

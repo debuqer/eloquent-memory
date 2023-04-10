@@ -10,8 +10,8 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotModel;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSame;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
@@ -51,7 +51,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         if ( ItemIsModel::define($old)->evaluate() and ItemExists::define($old)->evaluate() ) {
             return false;
         }
-        if ( ItemIsModel::define($old)->evaluate() and ItemsAreNotTheSame::define($old)->setExpect($new)->evaluate() ) {
+        if ( ItemIsModel::define($old)->evaluate() and ItemsAreNotTheSameType::define($old)->setExpect($new)->evaluate() ) {
             return false;
         }
 

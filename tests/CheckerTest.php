@@ -3,7 +3,7 @@ use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsTrash;
-use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
+use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
 use Debuqer\EloquentMemory\Tests\Fixtures\AlwaysTrueChecker;
 
 /**
