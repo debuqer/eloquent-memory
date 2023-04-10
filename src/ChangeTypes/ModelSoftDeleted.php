@@ -4,6 +4,7 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
@@ -35,7 +36,7 @@ class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public static function isApplicable($old, $new): bool
     {
-        if ( $new and method_exists($new, 'getDeletedAtColumn') ) {
+        if ( ItemExists::setItem($new)->evaluate() and method_exists($new, 'getDeletedAtColumn') ) {
             /** @var Model $new */
             return (ModelUpdated::isApplicable($old, $new) and ! $old->getAttribute($old->getDeletedAtColumn()) and $new->getAttribute($new->getDeletedAtColumn()));
         }
