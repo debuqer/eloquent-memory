@@ -10,7 +10,7 @@ abstract class AbstractChecker implements CheckerInterface
 
     protected $item;
 
-    public static function define($item)
+    public static function setItem($item)
     {
         return new static($item);
     }

@@ -44,9 +44,9 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
     public static function isApplicable($old, $new): bool
     {
         return (
-            ItemIsNull::define($old)->evaluate() and
-            ItemExists::define($new)->evaluate() and
-            ItemIsNotTrash::define($new)->evaluate()
+            ItemIsNull::setItem($old)->evaluate() and
+            ItemExists::setItem($new)->evaluate() and
+            ItemIsNotTrash::setItem($new)->evaluate()
         );
     }
 
