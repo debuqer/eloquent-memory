@@ -52,12 +52,35 @@ test('ModelUpdated is applicable when: model -> model', function() {
     $new = (clone $old);
     $new->update(['title' => 'New title']);
 
-    expect(ModelUpdated::isApplicable($old, $new))->toBe(true);
+    expect(ModelUpdated::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelUpdated is not applicable when: model -> model and no attribute changed', function() {
+    $old = createAPost();
+    $new = (clone $old);
+
+    expect(ModelUpdated::isApplicable($old, $new))->toBeFalse();
 });
 
 test('ModelUpdated is not applicable when: not existed model -> existed model', function() {
     $old = new Post();
     $new = createAPost();
 
-    expect(ModelUpdated::isApplicable($old, $new))->toBe(false);
+    expect(ModelUpdated::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelUpdated is applicable when: original value changes but mutated value shows fixed value', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $new->update(['image' => 'new-image.jpg']); // there is a mutation function in models/Post
+
+    expect(ModelUpdated::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelUpdated is applicable when original value changes but mutated value shows fixed value', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $new->update(['image' => 'new-image.jpg']); // there is a mutation function in models/Post
+
+    expect(ModelUpdated::isApplicable($old, $new))->toBeTrue();
 });

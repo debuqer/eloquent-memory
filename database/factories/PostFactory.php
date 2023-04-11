@@ -23,6 +23,7 @@ class PostFactory extends Factory
                 'city' => $this->faker->city,
                 'country' => $this->faker->country,
             ],
+            'image' => 'default.jpg'
         ];
     }
 }

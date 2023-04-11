@@ -20,4 +20,9 @@ class Post extends \Illuminate\Database\Eloquent\Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public function getImageAttribute()
+    {
+        return 'always-fixed-image.jpg';
+    }
 }
