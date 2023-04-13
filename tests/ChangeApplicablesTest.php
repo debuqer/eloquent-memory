@@ -3,6 +3,7 @@ use \Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use \Debuqer\EloquentMemory\Tests\Fixtures\User;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use \Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 
 test('ModelCreated is applicable when: null -> model', function() {
     $old = null;
@@ -32,11 +33,11 @@ test('ModelCreated is not applicable when: null -> string', function() {
     expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
 });
 
-test('ModelCreated is not applicable when: null -> trashedModel', function() {
+test('ModelCreated is applicable when: null -> trashedModel', function() {
     $old = null;
     $new = createAPostAndDelete();
 
-    expect(ModelCreated::isApplicable($old, $new))->toBeFalse();
+    expect(ModelCreated::isApplicable($old, $new))->toBeTrue();
 });
 
 test('ModelCreated is not applicable when: null -> emptyModel', function() {
@@ -84,3 +85,69 @@ test('ModelUpdated is applicable when original value changes but mutated value s
 
     expect(ModelUpdated::isApplicable($old, $new))->toBeTrue();
 });
+
+test('ModelDeleted is applicable when model -> null', function () {
+    $old = createAPost();
+    $new = null;
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelDeleted is applicable when model -> deletedModel', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $new->forceDelete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelDeleted is not applicable when deletedModel -> deletedModel', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $old->forceDelete();
+    $new->forceDelete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelDeleted is not applicable when null -> deletedModel', function () {
+    $old = null;
+    $new = createAPost();
+    $new->forceDelete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelDeleted is applicable when softDeletedModel -> deletedModel', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $old->delete();
+    $new->forceDelete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelDeleted is applicable when using model without soft delete', function () {
+    $old = createAUser();
+    $new = (clone $old);
+    $new->delete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelDeleted is not applicable when model -> softDeletedModel', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $new->delete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelDeleted is not applicable when trashedModel -> not exists model', function () {
+    $old = createAPostAndDelete();
+    $new = (clone $old);
+    $new->delete();
+
+    expect(ModelDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
