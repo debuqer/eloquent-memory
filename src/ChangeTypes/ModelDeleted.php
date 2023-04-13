@@ -45,10 +45,15 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 
     public function up()
     {
+        app($this->modelClass)->findOrFail($this->getKeyForDeleting())->forceDelete();
+    }
+
+    protected function getKeyForDeleting()
+    {
         /** @var Model $model */
         $model = app($this->modelClass);
 
-        $model->getConnection()->table($model->getTable())->delete($this->attributes[$model->getKeyName()]);
+        return $this->attributes[$model->getKeyName()] ?? $model->getKey();
     }
 
     public function getRollbackChange(): ChangeTypeInterface
