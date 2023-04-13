@@ -4,6 +4,7 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
@@ -44,7 +45,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
             ItemExists::setItem($new)->evaluate() and
             ItemIsNotTrash::setItem($old)->evaluate() and
             ItemIsNotTrash::setItem($new)->evaluate() and
-            ItemsAreTheSameType::setItem($old)->setExpect($new)->evaluate() and
+            ItemsAreTheSame::setItem($old)->setExpect($new)->evaluate() and
             static::attributeChanged($old, $new)
         );
     }

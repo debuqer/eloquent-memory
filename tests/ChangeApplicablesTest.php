@@ -4,6 +4,7 @@ use \Debuqer\EloquentMemory\Tests\Fixtures\User;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
+use \Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
 
 test('ModelCreated is applicable when: null -> model', function() {
     $old = null;
@@ -86,6 +87,13 @@ test('ModelUpdated is applicable when original value changes but mutated value s
     expect(ModelUpdated::isApplicable($old, $new))->toBeTrue();
 });
 
+test('ModelUpdated is not applicable when two different model presents', function () {
+    $old = createAPost();
+    $new = createAPost();
+
+    expect(ModelUpdated::isApplicable($old, $new))->toBeFalse();
+});
+
 test('ModelDeleted is applicable when model -> null', function () {
     $old = createAPost();
     $new = null;
@@ -151,3 +159,43 @@ test('ModelDeleted is not applicable when trashedModel -> not exists model', fun
     expect(ModelDeleted::isApplicable($old, $new))->toBeFalse();
 });
 
+test('ModelRestored is applicable when trashedModel -> existed model', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $old->delete();
+
+    expect(ModelRestored::isApplicable($old, $new))->toBeTrue();
+});
+
+
+test('ModelRestored is not applicable when null -> existed model', function () {
+    $old = null;
+    $new = createAPost();
+
+    expect(ModelRestored::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelRestored is not applicable when trashedModel -> trashedModel', function () {
+    $old = createAPost();
+    $old->delete();
+    $new = (clone $old);
+
+    expect(ModelRestored::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelRestored is not applicable when two different type of model given', function () {
+    $old = createAPost();
+    $new = createAUser();
+    $old->delete();
+
+    expect(ModelRestored::isApplicable($old, $new))->toBeFalse();
+});
+
+
+test('ModelRestored is not applicable when two different model given', function () {
+    $old = createAPost();
+    $new = createAPost();
+    $old->delete();
+
+    expect(ModelRestored::isApplicable($old, $new))->toBeFalse();
+});
