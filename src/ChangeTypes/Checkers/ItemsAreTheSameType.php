@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\ChangeTypes\Checkers;
 
 
-class ItemsAreTheSameType extends AbstractChecker
+class ItemsAreTheSameType extends ItemIsModel
 {
     protected $expect;
 
@@ -17,6 +17,6 @@ class ItemsAreTheSameType extends AbstractChecker
 
     public function condition(): bool
     {
-        return (get_class($this->item) === get_class($this->expect));
+        return (parent::condition() and get_class($this->item) === get_class($this->expect));
     }
 }

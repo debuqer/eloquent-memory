@@ -45,8 +45,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
     {
         return (
             ItemIsNull::setItem($old)->evaluate() and
-            ItemExists::setItem($new)->evaluate() and
-            ItemIsNotTrash::setItem($new)->evaluate()
+            ItemExists::setItem($new)->evaluate()
         );
     }
 

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('owner_id');
             $table->text('content');
             $table->json('meta');
+            $table->string('image');
 
             // add fields
             $table->softDeletes();

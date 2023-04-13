@@ -4,6 +4,13 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotTrash;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
@@ -33,31 +40,26 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public static function isApplicable($old, $new): bool
     {
-        if ( ! $old ) {
-            return false;
-        }
-        if ( ! $new ) {
-            return false;
-        }
-        if ( ! $old instanceof Model ) {
-            return false;
-        }
-        if ( get_class($old) !== get_class($new) ) {
-            return false;
-        }
-        if ( ! $old->exists or ! $new->exists ) {
-            return false;
-        }
+        return (
+            ItemExists::setItem($old)->evaluate() and
+            ItemExists::setItem($new)->evaluate() and
+            ItemIsNotTrash::setItem($old)->evaluate() and
+            ItemIsNotTrash::setItem($new)->evaluate() and
+            ItemsAreTheSame::setItem($old)->setExpect($new)->evaluate() and
+            static::attributeChanged($old, $new)
+        );
+    }
 
-        $allAttributes = array_merge(array_keys($old->getAttributes()), array_keys($new->getAttributes()));
-        $diff = [];
+    public static function attributeChanged($old, $new)
+    {
+        $allAttributes = array_merge(array_keys($old->getRawOriginal()), array_keys($new->getRawOriginal()));
         foreach ($allAttributes as $attribute ) {
-            if ( $old->getAttribute($attribute) !== $new->getAttribute($attribute) ) {
-                $diff[] = $attribute;
+            if ( $old->getRawOriginal($attribute) !== $new->getRawOriginal($attribute) ) {
+                return true;
             }
         }
 
-        return count($diff) > 0;
+        return false;
     }
 
     public function apply()
