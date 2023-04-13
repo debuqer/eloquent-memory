@@ -5,6 +5,7 @@ use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
+use \Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
 
 test('ModelCreated is applicable when: null -> model', function() {
     $old = null;
@@ -198,4 +199,42 @@ test('ModelRestored is not applicable when two different model given', function 
     $old->delete();
 
     expect(ModelRestored::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelSoftDeleted is applicable when model -> trashedModel', function () {
+    $old = createAPost();
+    $new = (clone $old);
+    $new->delete();
+
+    expect(ModelSoftDeleted::isApplicable($old, $new))->toBeTrue();
+});
+
+test('ModelSoftDeleted is not applicable when trashedModel -> trashedModel', function () {
+    $old = createAPostAndDelete();
+    $new = (clone $old);
+
+    expect(ModelSoftDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelSoftDeleted is not applicable when model -> null', function () {
+    $old = createAPost();
+    $new = null;
+
+    expect(ModelSoftDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelSoftDeleted is not applicable when two different model given', function () {
+    $old = createAPost();
+    $new = createAPost();
+    $new->delete();
+
+    expect(ModelSoftDeleted::isApplicable($old, $new))->toBeFalse();
+});
+
+test('ModelSoftDeleted is not applicable when two different type of model given', function () {
+    $old = createAPost();
+    $new = createAUser();
+    $new->delete();
+
+    expect(ModelSoftDeleted::isApplicable($old, $new))->toBeFalse();
 });
