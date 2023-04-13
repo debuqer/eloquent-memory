@@ -4,13 +4,14 @@ use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsTrash;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
 use \Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemUseSoftDelete;
 use Debuqer\EloquentMemory\Tests\Fixtures\AlwaysTrueChecker;
 
 /**
  * ItemExists
  */
-test('ItemExists:: item exists: model given', function () {
+test('ItemExists:: item exists when model given', function () {
     expect(ItemExists::setItem(createAPost())->evaluate())->toBeTrue();
 });
 
@@ -18,7 +19,7 @@ test('ItemExists:: item not exists when force delete', function () {
     expect(ItemExists::setItem(createAPostAndForceDelete())->evaluate())->toBeFalse();
 });
 
-test('ItemExists:: item exists when soft delete', function () {
+test('ItemExists:: item exists when soft delete model given', function () {
     expect(ItemExists::setItem(createAPostAndDelete())->evaluate())->toBeTrue();
 });
 
@@ -38,10 +39,7 @@ test('ItemIsModel:: item is model when empty model given', function () {
     expect(ItemNotExists::setItem(createEmptyPost())->evaluate())->toBeTrue();
 });
 
-/**
- * ItemNotExists
- */
-test('ItemIsModel:: item is not model when random object given', function () {
+test('ItemIsModel:: item is not model when stdClass given', function () {
     expect(ItemNotExists::setItem(new stdClass())->evaluate())->toBeTrue();
 });
 
@@ -60,10 +58,6 @@ test('ItemIsNull:: item is null when zero string given', function () {
     expect(ItemIsNull::setItem(0)->evaluate())->toBeTrue();
 });
 
-test('ItemIsNull:: item is not null when model given', function () {
-    expect(ItemIsNull::setItem(0)->evaluate())->toBeTrue();
-});
-
 test('ItemIsNull:: item is not null when random object given', function () {
     expect(ItemIsNull::setItem(new stdClass())->evaluate())->toBeFalse();
 });
@@ -71,7 +65,7 @@ test('ItemIsNull:: item is not null when random object given', function () {
 /**
  * ItemTrashed
  */
-test('ItemIsTrash:: item is trashed when soft delete', function () {
+test('ItemIsTrash:: item is trashed when soft deleted', function () {
     expect(ItemIsTrash::setItem(createAPostAndDelete())->evaluate())->toBeTrue();
 });
 
@@ -85,6 +79,12 @@ test('ItemIsTrash:: item is not trashed when model exists', function () {
 
 test('ItemIsTrash:: item is not trashed when model deleted', function () {
     expect(ItemIsTrash::setItem(createAPostAndForceDelete())->evaluate())->toBeFalse();
+});
+
+test('ItemIsTrash:: item is not trashed when model not uses soft delete but has key deleted_at', function () {
+    $item = createAUser();
+    $item->deleted_at = '2023-02-13 10:32:00';
+    expect(ItemIsTrash::setItem($item)->evaluate())->toBeFalse();
 });
 
 
@@ -118,6 +118,20 @@ test('ItemUseSoftDelete:: item doesnt uses soft delete when null given', functio
     expect(ItemUseSoftDelete::setItem(null)->evaluate())->toBeFalse();
 });
 
+
+/**
+ * ItemsAreTheSame
+ */
+test('ItemsAreTheSame:: items are not the same when both their keys are not the same ', function () {
+    expect(ItemsAreTheSame::setItem(createAPost())->setExpect(createAPost())->evaluate())->toBeFalse();
+});
+
+test('ItemsAreTheSame:: items are the same when both their keys are the same ', function () {
+    $item = createAPost();
+    $expect = (clone $item);
+
+    expect(ItemsAreTheSame::setItem($item)->setExpect($expect)->evaluate())->toBeTrue();
+});
 
 /**
  * Check not operator
