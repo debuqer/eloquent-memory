@@ -2,6 +2,7 @@
 use \Illuminate\Database\Eloquent\Factories\Factory;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use \Illuminate\Support\Facades\DB;
 
 function createAUser()
 {
@@ -11,6 +12,15 @@ function createAUser()
 function createEmptyPost()
 {
     return new Post();
+}
+
+function createAFakePost()
+{
+    DB::beginTransaction();
+    $model = createAPost();
+    DB::rollBack();
+
+    return $model;
 }
 
 function createAPost()

@@ -13,6 +13,7 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
@@ -51,10 +52,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 
     public function up()
     {
-        /** @var Model $model */
-        $model = app($this->modelClass);
-
-        $model->getConnection()->table($model->getTable())->insert($this->attributes);
+        app()->make($this->modelClass)->create($this->attributes);
     }
 
     public function getRollbackChange(): ChangeTypeInterface
