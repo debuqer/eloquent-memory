@@ -49,7 +49,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         );
     }
 
-    public function apply()
+    public function up()
     {
         /** @var Model $model */
         $model = app($this->modelClass);

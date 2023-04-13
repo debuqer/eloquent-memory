@@ -5,7 +5,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 abstract class BaseChangeType
 {
-    abstract function apply();
+    abstract function up();
     abstract function getRollbackChange();
 
     public function getType(): string
@@ -13,7 +13,7 @@ abstract class BaseChangeType
         return static::TYPE;
     }
 
-    public function rollback()
+    public function down()
     {
         return $this->getRollbackChange()->apply();
     }

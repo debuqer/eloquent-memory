@@ -62,7 +62,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         return false;
     }
 
-    public function apply()
+    public function up()
     {
         $this->update($this->before, $this->after);
     }

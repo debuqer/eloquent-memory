@@ -46,7 +46,7 @@ class ModelSoftDeleted extends BaseChangeType implements ChangeTypeInterface
         );
     }
 
-    public function apply()
+    public function up()
     {
         // since the softDelete is only a simple update the model may change to its final state
         $this->update($this->before, $this->after);

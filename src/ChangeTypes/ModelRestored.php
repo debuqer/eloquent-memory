@@ -48,7 +48,7 @@ class ModelRestored extends BaseChangeType implements ChangeTypeInterface
         );
     }
 
-    public function apply()
+    public function up()
     {
         // since restore is a simple update the model may be back to its last state
         $this->update($this->before, $this->after);
