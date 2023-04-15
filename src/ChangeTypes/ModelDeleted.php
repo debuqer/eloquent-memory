@@ -5,19 +5,17 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
+    use HasModelClass;
+    use HasAttributes;
+
     const TYPE = 'delete';
-
-    /** @var array */
-    protected $attributes;
-
-    /** @var string */
-    protected $modelClass;
 
     /**
      * ModelCreated constructor.

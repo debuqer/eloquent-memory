@@ -11,18 +11,18 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotTrash;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAfterAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasBeforeAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
-    const TYPE = 'update';
+    use HasModelClass;
+    use HasBeforeAttributes;
+    use HasAfterAttributes;
 
-    /** @var string */
-    protected $modelClass;
-    /** @var array  */
-    protected $before;
-    /** @var array  */
-    protected $after;
+    const TYPE = 'update';
 
     /**
      * ModelUpdated constructor.
@@ -112,6 +112,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->modelClass, $this->before, $this->after);
+        return new ModelUpdated($this->modelClass, $this->after, $this->before);
     }
 }

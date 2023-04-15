@@ -13,18 +13,17 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 {
+    use HasModelClass;
+    use HasAttributes;
+
     const TYPE = 'create';
-
-    /** @var array */
-    protected $attributes;
-
-    /** @var string */
-    protected $modelClass;
 
     /**
      * ModelCreated constructor.
