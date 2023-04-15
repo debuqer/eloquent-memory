@@ -15,8 +15,6 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
     use HasModelClass;
     use HasAttributes;
 
-    const TYPE = 'delete';
-
     /**
      * ModelCreated constructor.
      * @param string $modelClass

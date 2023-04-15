@@ -12,6 +12,4 @@ test('11', function () {
     ]);
 
     $c = new ModelUpdated(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
-
-    dd($c);
 });

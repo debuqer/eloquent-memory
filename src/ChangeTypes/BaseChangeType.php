@@ -3,6 +3,8 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
+use Illuminate\Support\Str;
+
 abstract class BaseChangeType
 {
     abstract function up();
@@ -10,7 +12,12 @@ abstract class BaseChangeType
 
     public function getType(): string
     {
-        return static::TYPE;
+        return Str::kebab($this->getClassName());
+    }
+
+    protected function getClassName()
+    {
+        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
     }
 
     /**

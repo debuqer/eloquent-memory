@@ -10,8 +10,6 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
 
 class ModelRestored extends ModelUpdated implements ChangeTypeInterface
 {
-    const TYPE = 'restore';
-
     public static function isApplicable($old, $new): bool
     {
         return (

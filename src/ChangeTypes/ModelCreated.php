@@ -23,8 +23,6 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
     use HasModelClass;
     use HasAttributes;
 
-    const TYPE = 'create';
-
     /**
      * ModelCreated constructor.
      * @param string $modelClass

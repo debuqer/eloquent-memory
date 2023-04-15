@@ -22,8 +22,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
     use HasBeforeAttributes;
     use HasAfterAttributes;
 
-    const TYPE = 'update';
-
     /**
      * ModelUpdated constructor.
      * @param string $modelClass

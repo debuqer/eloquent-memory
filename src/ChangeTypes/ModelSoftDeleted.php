@@ -9,7 +9,6 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
 
 class ModelSoftDeleted extends ModelUpdated implements ChangeTypeInterface
 {
-    const TYPE = 'softDelete';
 
     public static function isApplicable($old, $new): bool
     {

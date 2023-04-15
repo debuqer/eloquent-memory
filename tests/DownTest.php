@@ -13,7 +13,7 @@ test('ModelCreated rollback returns a ModelDeleted', function () {
     $item = createAFakePost();
     $c = new ModelCreated(get_class($item), $item->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe(ModelDeleted::TYPE);
+    expect($c->getRollbackChange()->getType())->toBe('model-deleted');
     expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($item));
 });
@@ -26,7 +26,7 @@ test('ModelDeleted rollback returns ModelCreated', function () {
     $item = createAPost();
     $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe(ModelCreated::TYPE);
+    expect($c->getRollbackChange()->getType())->toBe('model-created');
     expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($item));
 });
@@ -43,7 +43,7 @@ test('ModelUpdated rollback returns ModelUpdated', function () {
 
     $c = new ModelUpdated(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe(ModelUpdated::TYPE);
+    expect($c->getRollbackChange()->getType())->toBe('model-updated');
     expect($c->getRollbackChange()->getBeforeAttributes())->toBe($after->getRawOriginal());
     expect($c->getRollbackChange()->getAfterAttributes())->toBe($before->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($after));
@@ -58,7 +58,7 @@ test('ModelSoftDeleted rollback will return ModelRestored', function () {
     $after->delete();
 
     $c = new ModelSoftDeleted(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
-    expect($c->getRollbackChange()->getType())->toBe(ModelRestored::TYPE);
+    expect($c->getRollbackChange()->getType())->toBe('model-restored');
     expect($c->getRollbackChange()->getBeforeAttributes())->toBe($after->getRawOriginal());
     expect($c->getRollbackChange()->getAfterAttributes())->toBe($before->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($after));
@@ -75,7 +75,7 @@ test('ModelRestored will return ModelSoftDelete', function () {
     $before->delete();
 
     $c = new ModelRestored(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
-    expect($c->getRollbackChange()->getType())->toBe(ModelSoftDeleted::TYPE);
+    expect($c->getRollbackChange()->getType())->toBe('model-soft-deleted');
     expect($c->getRollbackChange()->getBeforeAttributes())->toBe($after->getRawOriginal());
     expect($c->getRollbackChange()->getAfterAttributes())->toBe($before->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($after));
