@@ -6,10 +6,15 @@ namespace Debuqer\EloquentMemory\ChangeTypes\Concerns;
 
 trait HasBeforeAttributes
 {
-    protected $before;
+    use HasParameters;
 
     public function getBeforeAttributes()
     {
-        return $this->before;
+        return isset($this->parameters['before']) ? $this->parameters['before'] : null;
+    }
+
+    public function setBeforeAttributes(array $beforeAttributes)
+    {
+        $this->parameters['before'] = $beforeAttributes;
     }
 }

@@ -6,10 +6,15 @@ namespace Debuqer\EloquentMemory\ChangeTypes\Concerns;
 
 trait HasAfterAttributes
 {
-    protected $after;
+    use HasParameters;
 
     public function getAfterAttributes()
     {
-        return $this->after;
+        return isset($this->parameters['after']) ? $this->parameters['after'] : null;
+    }
+
+    public function setAfterAttributes(array $afterAttributes)
+    {
+        $this->parameters['after'] = $afterAttributes;
     }
 }

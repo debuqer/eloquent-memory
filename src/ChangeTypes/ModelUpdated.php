@@ -32,9 +32,9 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
      */
     public function __construct(string $modelClass, array $before, array $after)
     {
-        $this->modelClass = $modelClass;
-        $this->before = $before;
-        $this->after = $after;
+        $this->setModelClass($modelClass);
+        $this->setBeforeAttributes($before);
+        $this->setAfterAttributes($after);
     }
 
     public static function create($old, $new): ChangeTypeInterface
@@ -75,12 +75,12 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->after))->update($update);
+        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->getBeforeAttributes()))->update($update);
     }
 
     protected function getAllAttributes()
     {
-        return array_keys(array_merge($this->before, $this->after));
+        return array_keys(array_merge($this->getBeforeAttributes(), $this->getAfterAttributes()));
     }
 
     protected function getChangedValues()
@@ -89,8 +89,8 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
         $update = [];
         array_map(function ($attribute) use(&$update) {
-            $valueBeforeChange = isset($this->before[$attribute]) ? $this->before[$attribute] : null;
-            $valueAfterChange = isset($this->after[$attribute]) ? $this->after[$attribute] : null;
+            $valueBeforeChange = isset($this->getBeforeAttributes()[$attribute]) ? $this->getBeforeAttributes()[$attribute] : null;
+            $valueAfterChange = isset($this->getAfterAttributes()[$attribute]) ? $this->getAfterAttributes()[$attribute] : null;
 
             if ( $valueAfterChange !== $valueBeforeChange ) {
                 $update[$attribute] = $valueAfterChange;
@@ -100,11 +100,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         return $update;
     }
 
-    protected function getModelInstance()
-    {
-        return app($this->modelClass);
-    }
-
     protected function getModelKey($attributes)
     {
         return isset($attributes[$this->getModelInstance()->getKeyName()]) ? $attributes[$this->getModelInstance()->getKeyName()] : null;
@@ -112,6 +107,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->modelClass, $this->after, $this->before);
+        return new ModelUpdated($this->getModelClass(), $this->getAfterAttributes(), $this->getBeforeAttributes());
     }
 }

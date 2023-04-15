@@ -32,8 +32,8 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
      */
     public function __construct(string $modelClass, array $attributes)
     {
-        $this->modelClass = $modelClass;
-        $this->attributes = $attributes;
+        $this->setModelClass($modelClass);
+        $this->setAttributes($attributes);
     }
 
     public static function create($old, $new): ChangeTypeInterface
@@ -51,11 +51,11 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 
     public function up()
     {
-        app()->make($this->modelClass)->create($this->attributes);
+        $this->getModelInstance()->create($this->getAttributes());
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelDeleted($this->modelClass, $this->attributes);
+        return new ModelDeleted($this->getModelClass(), $this->getAttributes());
     }
 }
