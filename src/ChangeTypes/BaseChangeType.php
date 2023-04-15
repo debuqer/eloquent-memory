@@ -13,6 +13,10 @@ abstract class BaseChangeType
         return static::TYPE;
     }
 
+    /**
+     * @codeCoverageIgnore
+     * @return mixed
+     */
     public function down()
     {
         return $this->getRollbackChange()->apply();
