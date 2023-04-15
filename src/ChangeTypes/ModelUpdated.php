@@ -75,7 +75,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->findOrFail($this->getModelKey($this->after))->update($update);
+        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->after))->update($update);
     }
 
     protected function getAllAttributes()
