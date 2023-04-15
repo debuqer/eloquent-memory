@@ -15,27 +15,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
-    use UpdatesModelTrait;
-
     const TYPE = 'update';
 
-    /** @var Model */
+    /** @var string */
+    protected $modelClass;
+    /** @var array  */
     protected $before;
-    /** @var Model */
+    /** @var array  */
     protected $after;
+
     /**
-     * ModelCreated constructor.
-     * @param Model $updatedModel
+     * ModelUpdated constructor.
+     * @param string $modelClass
+     * @param array $before
+     * @param array $after
      */
-    public function __construct(Model $before, Model $after)
+    public function __construct(string $modelClass, array $before, array $after)
     {
+        $this->modelClass = $modelClass;
         $this->before = $before;
         $this->after = $after;
     }
 
     public static function create($old, $new): ChangeTypeInterface
     {
-        return new self($old, $new);
+        return new self(get_class($new), $old->getRawOriginal(), $new->getRawOriginal());
     }
 
     public static function isApplicable($old, $new): bool
@@ -64,11 +68,50 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public function up()
     {
-        $this->update($this->before, $this->after);
+        $update = $this->getChangedValues();
+
+        $this->update($update);
+    }
+
+    protected function update(array $update)
+    {
+        $this->getModelInstance()->findOrFail($this->getModelKey($this->after))->update($update);
+    }
+
+    protected function getAllAttributes()
+    {
+        return array_keys(array_merge($this->before, $this->after));
+    }
+
+    protected function getChangedValues()
+    {
+        $allAttributes = $this->getAllAttributes();
+
+        $update = [];
+        array_map(function ($attribute) use(&$update) {
+            $valueBeforeChange = isset($this->before[$attribute]) ? $this->before[$attribute] : null;
+            $valueAfterChange = isset($this->after[$attribute]) ? $this->after[$attribute] : null;
+
+            if ( $valueAfterChange !== $valueBeforeChange ) {
+                $update[$attribute] = $valueAfterChange;
+            }
+        }, $allAttributes);
+
+        return $update;
+    }
+
+    protected function getModelInstance()
+    {
+        return app($this->modelClass);
+    }
+
+    protected function getModelKey($attributes)
+    {
+        return isset($attributes[$this->getModelInstance()->getKeyName()]) ? $attributes[$this->getModelInstance()->getKeyName()] : null;
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->before, $this->after);
+        return new ModelUpdated($this->modelClass, $this->before, $this->after);
     }
 }
