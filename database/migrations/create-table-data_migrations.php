@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('data_changes', function (Blueprint $table) {
             $table->id();
             $table->uuid('name')->unique();
+            $table->string('type');
             $table->text('change');
             $table->timestamp('created_at')->nullable();
         });
