@@ -3,7 +3,9 @@
 
 namespace Debuqer\EloquentMemory;
 
-class Change
-{
+use Illuminate\Database\Eloquent\Model;
 
+class Change extends Model
+{
+    protected $table = 'data_changes';
 }
