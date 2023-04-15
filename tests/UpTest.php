@@ -11,7 +11,7 @@ use Debuqer\EloquentMemory\Tests\Fixtures\Post;
  */
 test('ModelCreated up will add a model with same properties', function () {
     $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getAttributes());
+    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
     $c->up();
 
     $item->refresh();
@@ -24,7 +24,7 @@ test('ModelCreated up will add a model with same properties', function () {
  */
 test('ModelDeleted up will remove a model from database', function () {
     $item = createAPost();
-    $c = new ModelDeleted(get_class($item), $item->getAttributes());
+    $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
     $c->up();
 
     expect(Post::find($item->getKey()))->toBeNull();
