@@ -13,17 +13,15 @@ use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreNotTheSameType;
 use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 {
-    const TYPE = 'create';
-
-    /** @var array */
-    protected $attributes;
-
-    /** @var string */
-    protected $modelClass;
+    use HasModelClass;
+    use HasAttributes;
 
     /**
      * ModelCreated constructor.
@@ -32,8 +30,8 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
      */
     public function __construct(string $modelClass, array $attributes)
     {
-        $this->modelClass = $modelClass;
-        $this->attributes = $attributes;
+        $this->setModelClass($modelClass);
+        $this->setAttributes($attributes);
     }
 
     public static function create($old, $new): ChangeTypeInterface
@@ -49,16 +47,13 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         );
     }
 
-    public function apply()
+    public function up()
     {
-        /** @var Model $model */
-        $model = app($this->modelClass);
-
-        $model->getConnection()->table($model->getTable())->insert($this->attributes);
+        $this->getModelInstance()->create($this->getAttributes());
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelDeleted($this->modelClass, $this->attributes);
+        return new ModelDeleted($this->getModelClass(), $this->getAttributes());
     }
 }

@@ -3,22 +3,9 @@
 
 namespace Debuqer\EloquentMemory;
 
+use Illuminate\Database\Eloquent\Model;
 
-use Debuqer\EloquentMemory\ChangeTypes\ChangeTypeInterface;
-use Debuqer\EloquentMemory\Exceptions\NotRecognizedChangeException;
-use Debuqer\EloquentMemory\Exceptions\UnknownChangeException;
-
-class Change
+class Change extends Model
 {
-    public static function detect($old, $new)
-    {
-        /** @var ChangeTypeInterface $changeType */
-        foreach (config('eloquent-memory.changes', []) as $changeType) {
-            if ( $changeType::isApplicable($old, $new) ) {
-                return $changeType::create($old, $new);
-            }
-        }
-
-        throw new NotRecognizedChangeException();
-    }
+    protected $table = 'data_changes';
 }

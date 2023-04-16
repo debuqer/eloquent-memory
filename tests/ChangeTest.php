@@ -1,25 +1,74 @@
 <?php
-use \Debuqer\EloquentMemory\Change;
-use \Illuminate\Support\Facades\Config;
-use \Debuqer\EloquentMemory\Exceptions\NotRecognizedChangeException;
+use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
+use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
+use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
 
-test('change detect returns instance of change', function() {
-    $change = Change::detect(null, createAPost());
 
-    expect($change)->toBeInstanceOf(\Debuqer\EloquentMemory\ChangeTypes\ChangeTypeInterface::class);
+/**
+ * ModelUpdated Rollback
+ */
+test('ModelUpdated Rollback ', function () {
+    $after = createAPost();
+    $before = (clone $after);
+    $before->update([
+        'title' => 'Title changed!'
+    ]);
+
+    $c = new ModelUpdated(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    expect($c->getRollbackChange()->getType())->toBe('model-updated');
+    expect($c->getRollbackChange()->getAfterAttributes())->toBe( $before->getRawOriginal());
+    expect($c->getRollbackChange()->getBeforeAttributes())->toBe( $after->getRawOriginal());
 });
 
-test('throws an exception if change could not be detected', function() {
-    Change::detect('unknown type', 'another unknown type');
 
-})->throws(NotRecognizedChangeException::class);
+/**
+ * ModelCreated Rollback
+ */
+test('ModelCreated Rollback ', function () {
+    $item = createAFakePost();
+    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
 
-test('only ChangeTypeInterface can be registered as change', function () {
-    Config::set('eloquent-memory.eloquent-memory.changes', [new stdClass()]);
-    Change::detect('test', 'test');
+    expect($c->getRollbackChange()->getType())->toBe('model-deleted');
+    expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
+});
 
-})->throws(NotRecognizedChangeException::class);
+/**
+ * ModelDeleted Rollback
+ */
+test('ModelDeleted Rollback ', function () {
+    $item = createAPost();
+    $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
 
-test('throws error when none of changes are applicable', function () {
-    Change::detect(true, true);
-})->throws(NotRecognizedChangeException::class);
+    expect($c->getRollbackChange()->getType())->toBe('model-created');
+    expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
+});
+
+/**
+ * ModelSoftDeleted Rollback
+ */
+test('ModelSoftDeleted Rollback ', function () {
+    $before = createAPost();
+    $after = (clone $before);
+    $after->delete();
+
+    $c = new ModelSoftDeleted(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    expect($c->getRollbackChange()->getType())->toBe('model-restored');
+    expect($c->getRollbackChange()->getAfterAttributes())->toBe( $before->getRawOriginal());
+    expect($c->getRollbackChange()->getBeforeAttributes())->toBe( $after->getRawOriginal());
+});
+
+
+/**
+ * ModelRestored Rollback
+ */
+test('ModelRestored Rollback ', function () {
+    $before = createAPost();
+    $after = (clone $before);
+    $after->delete();
+
+    $c = new ModelSoftDeleted(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    expect($c->getRollbackChange()->getType())->toBe('model-restored');
+    expect($c->getRollbackChange()->getAfterAttributes())->toBe( $before->getRawOriginal());
+    expect($c->getRollbackChange()->getBeforeAttributes())->toBe( $after->getRawOriginal());
+});
