@@ -11,11 +11,16 @@ use Debuqer\EloquentMemory\Tests\Fixtures\Post;
  */
 test('ModelCreated up will add a model with same properties', function () {
     $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
+    $attributes = $item->getRawOriginal();
+    $c = new ModelCreated(get_class($item), $attributes);
     $c->up();
 
     $item->refresh();
     expect($item->exists)->toBeTrue();
+
+    foreach ($item->getRawOriginal() as $attr => $value) {
+        expect($value)->toBe((isset($attributes[$attr]) ? $attributes[$attr] : null));
+    }
 });
 
 

@@ -49,7 +49,7 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 
     public function up()
     {
-        $this->getModelInstance()->create($this->getAttributes());
+        $this->getModelInstance()->setRawAttributes($this->getAttributes())->save();
     }
 
     public function getRollbackChange(): ChangeTypeInterface
