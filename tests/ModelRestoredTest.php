@@ -19,12 +19,9 @@ test('ModelRestored::getRollbackChange will return instance of ModelSoftDeleted 
     $before->delete();
 
     $c = new ModelRestored(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
-    $c->up();
 
-    expect($after->refresh()->trashed())->toBeFalse();
+    expect($c->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
+    expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
+    testAttributes($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
+    testAttributes($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
 });
-
-test('ModelRestored::down will softDelete a model with same properties', function () {
-    // test not created
-});
-

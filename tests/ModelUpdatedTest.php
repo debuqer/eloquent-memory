@@ -24,12 +24,8 @@ test('ModelUpdated::getRollbackChange returns instanceof ModelUpdated with rever
 
     $c = new ModelUpdated(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe('model-updated');
-    expect($c->getRollbackChange()->getOldAttributes())->toBe($after->getRawOriginal());
-    expect($c->getRollbackChange()->getAttributes())->toBe($before->getRawOriginal());
-    expect($c->getRollbackChange()->getModelClass())->toBe(get_class($after));
-});
-
-test('ModelUpdated::down will change properties to old state', function () {
-    // test not created
+    expect($c->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
+    expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
+    testAttributes($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
+    testAttributes($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
 });

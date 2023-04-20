@@ -1,5 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 
 
@@ -15,10 +16,6 @@ test('ModelDeleted::getRollbackChange returns instance of ModelCreated with same
     $item = createAPost();
     $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe('model-created');
+    expect($c->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
     expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
-});
-
-test('ModelDeleted::down will create a model with same properties', function () {
-    // test not created
 });

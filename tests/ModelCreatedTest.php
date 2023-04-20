@@ -1,7 +1,6 @@
 <?php
 use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
-use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use \Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 
 test('ModelCreate::up will create a model with same properties', function () {
     $item = createAFakePost();
@@ -17,29 +16,11 @@ test('ModelCreate::up will create a model with same properties', function () {
     }
 });
 
-test('ModelCreated::down will forceDelete the model', function () {
-    $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
-
-    $c->up();
-    $c->down();
-
-    expect(Post::withTrashed()->find($item->getKey()))->toBeNull();
-});
-
-test('ModelCreated down throws exception when before deleting model already not exists', function () {
-    $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
-
-    $c->down();
-})->expectException(ModelNotFoundException::class);
-
-
 test('ModelCreated::getRollbackChange will return an instanceof ModelDeleted with same properties ', function () {
     $item = createAFakePost();
     $c = new ModelCreated(get_class($item), $item->getRawOriginal());
 
-    expect($c->getRollbackChange()->getType())->toBe('model-deleted');
+    expect($c->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
     expect($c->getRollbackChange()->getOldAttributes())->toBe($item->getRawOriginal());
 });
 

@@ -1,5 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
+use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
 
 /**
  * ModelSoftDeleted
@@ -25,11 +26,10 @@ test('ModelSoftDeleted::getRollbackChange will return instance of ModelRestored 
     $after->delete();
 
     $c = new ModelSoftDeleted(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
-    expect($c->getRollbackChange()->getType())->toBe('model-restored');
-    expect($c->getRollbackChange()->getAttributes())->toBe( $before->getRawOriginal());
-    expect($c->getRollbackChange()->getOldAttributes())->toBe( $after->getRawOriginal());
+
+    expect($c->getRollbackChange())->toBeInstanceOf(ModelRestored::class);
+    expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
+    testAttributes($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
+    testAttributes($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
 });
 
-test('ModelSoftDeleted::down will restore a model with same properties', function () {
-    // test not created
-});
