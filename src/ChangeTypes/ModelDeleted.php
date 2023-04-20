@@ -6,10 +6,12 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
 
 class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
+    use HasModelKey;
     use HasAttributes;
 
     /**

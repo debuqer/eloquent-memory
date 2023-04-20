@@ -45,7 +45,7 @@ test('ModelUpdated up will update a model in database', function () {
         'title' => 'Title changed!'
     ]);
 
-    $c = new ModelUpdated(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    $c = new ModelUpdated(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
     $c->up();
 
     expect(Post::find($after->getKey())->title)->toBe($after->title);
@@ -59,7 +59,7 @@ test('ModelSoftDeleted up will soft delete a model in database', function () {
     $after = (clone $before);
     $after->delete();
 
-    $c = new ModelSoftDeleted(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    $c = new ModelSoftDeleted(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
     $c->up();
 
     expect($after->refresh()->trashed())->toBeTrue();
@@ -74,7 +74,7 @@ test('ModelRestored up will restore a model in database', function () {
     $before = (clone $after);
     $before->delete();
 
-    $c = new ModelRestored(get_class($after), $before->getRawOriginal(), $after->getRawOriginal());
+    $c = new ModelRestored(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
     $c->up();
 
     expect($after->refresh()->trashed())->toBeFalse();

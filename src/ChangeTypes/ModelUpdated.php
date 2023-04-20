@@ -5,12 +5,14 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
+    use HasModelKey;
     use HasOldAttributes;
     use HasAttributes;
 
@@ -20,9 +22,10 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
      * @param array $before
      * @param array $after
      */
-    public function __construct(string $modelClass, array $old, array $attributes)
+    public function __construct(string $modelClass, $modelKey, array $old, array $attributes)
     {
         $this->setModelClass($modelClass);
+        $this->setModelKey($modelKey);
         $this->setOldAttributes($old);
         $this->setAttributes($attributes);
     }
@@ -36,7 +39,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->getOldAttributes()))->update($update);
+        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey())->update($update);
     }
 
     protected function getAllAttributes()
@@ -61,13 +64,8 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         return $update;
     }
 
-    protected function getModelKey($attributes)
-    {
-        return isset($attributes[$this->getModelInstance()->getKeyName()]) ? $attributes[$this->getModelInstance()->getKeyName()] : null;
-    }
-
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->getModelClass(), $this->getAttributes(), $this->getOldAttributes());
+        return new ModelUpdated($this->getModelClass(), $this->getModelKey(), $this->getAttributes(), $this->getOldAttributes());
     }
 }
