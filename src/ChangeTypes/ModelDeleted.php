@@ -23,11 +23,6 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
         $this->setAttributes($attributes);
     }
 
-    public static function create($old, $new): ChangeTypeInterface
-    {
-        return new self(get_class($old), $old->getAttributes());
-    }
-
     public function up()
     {
         $this->getModelInstance()->findOrFail($this->getKeyForDeleting())->forceDelete();

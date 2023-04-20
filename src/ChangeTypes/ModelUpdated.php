@@ -27,11 +27,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         $this->setAfterAttributes($after);
     }
 
-    public static function create($old, $new): ChangeTypeInterface
-    {
-        return new self(get_class($new), $old->getRawOriginal(), $new->getRawOriginal());
-    }
-
     public function up()
     {
         $update = $this->getChangedValues();

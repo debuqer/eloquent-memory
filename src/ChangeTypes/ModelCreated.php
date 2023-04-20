@@ -22,11 +22,6 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         $this->setAttributes($attributes);
     }
 
-    public static function create($old, $new): ChangeTypeInterface
-    {
-        return new self(get_class($new), $new->getAttributes());
-    }
-
     public function up()
     {
         $this->getModelInstance()->setRawAttributes($this->getAttributes())->save();
