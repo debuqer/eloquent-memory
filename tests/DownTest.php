@@ -14,7 +14,7 @@ test('ModelCreated rollback returns a ModelDeleted', function () {
     $c = new ModelCreated(get_class($item), $item->getRawOriginal());
 
     expect($c->getRollbackChange()->getType())->toBe('model-deleted');
-    expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
+    expect($c->getRollbackChange()->getOldAttributes())->toBe($item->getRawOriginal());
     expect($c->getRollbackChange()->getModelClass())->toBe(get_class($item));
 });
 

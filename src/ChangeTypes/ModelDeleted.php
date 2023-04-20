@@ -7,12 +7,13 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
 
 class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
     use HasModelKey;
-    use HasAttributes;
+    use HasOldAttributes;
 
     /**
      * ModelCreated constructor.
@@ -22,7 +23,7 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
     public function __construct(string $modelClass, array $attributes)
     {
         $this->setModelClass($modelClass);
-        $this->setAttributes($attributes);
+        $this->setOldAttributes($attributes);
     }
 
     public function up()
@@ -32,11 +33,11 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 
     protected function getKeyForDeleting()
     {
-        return $this->getAttributes()[$this->getModelInstance()->getKeyName()];
+        return $this->getOldAttributes()[$this->getModelInstance()->getKeyName()];
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelCreated($this->getModelClass(), $this->getAttributes());
+        return new ModelCreated($this->getModelClass(), $this->getOldAttributes());
     }
 }
