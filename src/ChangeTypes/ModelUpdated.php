@@ -4,17 +4,9 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotTrash;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAfterAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasBeforeAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
-use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
@@ -38,30 +30,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
     public static function create($old, $new): ChangeTypeInterface
     {
         return new self(get_class($new), $old->getRawOriginal(), $new->getRawOriginal());
-    }
-
-    public static function isApplicable($old, $new): bool
-    {
-        return (
-            ItemExists::setItem($old)->evaluate() and
-            ItemExists::setItem($new)->evaluate() and
-            ItemIsNotTrash::setItem($old)->evaluate() and
-            ItemIsNotTrash::setItem($new)->evaluate() and
-            ItemsAreTheSame::setItem($old)->setExpect($new)->evaluate() and
-            static::attributeChanged($old, $new)
-        );
-    }
-
-    public static function attributeChanged($old, $new)
-    {
-        $allAttributes = array_merge(array_keys($old->getRawOriginal()), array_keys($new->getRawOriginal()));
-        foreach ($allAttributes as $attribute ) {
-            if ( $old->getRawOriginal($attribute) !== $new->getRawOriginal($attribute) ) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function up()

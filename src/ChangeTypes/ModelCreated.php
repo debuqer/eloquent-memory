@@ -3,9 +3,6 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
-
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 
@@ -28,14 +25,6 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
     public static function create($old, $new): ChangeTypeInterface
     {
         return new self(get_class($new), $new->getAttributes());
-    }
-
-    public static function isApplicable($old, $new): bool
-    {
-        return (
-            ItemIsNull::setItem($old)->evaluate() and
-            ItemExists::setItem($new)->evaluate()
-        );
     }
 
     public function up()

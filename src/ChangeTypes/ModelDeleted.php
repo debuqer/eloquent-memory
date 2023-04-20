@@ -4,11 +4,8 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
-use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
-use Illuminate\Database\Eloquent\Model;
 
 class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
@@ -29,14 +26,6 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
     public static function create($old, $new): ChangeTypeInterface
     {
         return new self(get_class($old), $old->getAttributes());
-    }
-
-    public static function isApplicable($old, $new): bool
-    {
-        return (
-            ItemExists::setItem($old)->evaluate() and
-            ItemNotExists::setItem($new)->evaluate()
-        );
     }
 
     public function up()
