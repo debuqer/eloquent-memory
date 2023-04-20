@@ -5,13 +5,13 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasBeforeAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
-    use HasBeforeAttributes;
+    use HasOldAttributes;
     use HasAttributes;
 
     /**
@@ -36,12 +36,12 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->getBeforeAttributes()))->update($update);
+        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->getOldAttributes()))->update($update);
     }
 
     protected function getAllAttributes()
     {
-        return array_keys(array_merge($this->getBeforeAttributes(), $this->getAttributes()));
+        return array_keys(array_merge($this->getOldAttributes(), $this->getAttributes()));
     }
 
     protected function getChangedValues()
@@ -50,7 +50,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
         $update = [];
         array_map(function ($attribute) use(&$update) {
-            $valueBeforeChange = isset($this->getBeforeAttributes()[$attribute]) ? $this->getBeforeAttributes()[$attribute] : null;
+            $valueBeforeChange = isset($this->getOldAttributes()[$attribute]) ? $this->getOldAttributes()[$attribute] : null;
             $valueAfterChange = isset($this->getAttributes()[$attribute]) ? $this->getAttributes()[$attribute] : null;
 
             if ( $valueAfterChange !== $valueBeforeChange ) {
@@ -68,6 +68,6 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->getModelClass(), $this->getAttributes(), $this->getBeforeAttributes());
+        return new ModelUpdated($this->getModelClass(), $this->getAttributes(), $this->getOldAttributes());
     }
 }
