@@ -4,7 +4,6 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
