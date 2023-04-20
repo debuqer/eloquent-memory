@@ -20,11 +20,11 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
      * @param array $before
      * @param array $after
      */
-    public function __construct(string $modelClass, array $before, array $after)
+    public function __construct(string $modelClass, array $old, array $attributes)
     {
         $this->setModelClass($modelClass);
-        $this->setBeforeAttributes($before);
-        $this->setAttributes($after);
+        $this->setOldAttributes($old);
+        $this->setAttributes($attributes);
     }
 
     public function up()

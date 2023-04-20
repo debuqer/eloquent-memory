@@ -13,7 +13,7 @@ trait HasOldAttributes
         return isset($this->parameters['old']) ? $this->parameters['old'] : null;
     }
 
-    public function setBeforeAttributes(array $beforeAttributes)
+    public function setOldAttributes(array $beforeAttributes)
     {
         $this->parameters['old'] = $beforeAttributes;
     }
