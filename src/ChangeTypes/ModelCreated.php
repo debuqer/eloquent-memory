@@ -4,17 +4,15 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
-use Illuminate\Database\Eloquent\Model;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNull;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 {
-    const TYPE = 'create';
-
-    /** @var array */
-    protected $attributes;
-
-    /** @var string */
-    protected $modelClass;
+    use HasModelClass;
+    use HasAttributes;
 
     /**
      * ModelCreated constructor.
@@ -23,8 +21,8 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
      */
     public function __construct(string $modelClass, array $attributes)
     {
-        $this->modelClass = $modelClass;
-        $this->attributes = $attributes;
+        $this->setModelClass($modelClass);
+        $this->setAttributes($attributes);
     }
 
     public static function create($old, $new): ChangeTypeInterface
@@ -32,21 +30,21 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         return new self(get_class($new), $new->getAttributes());
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
-        return ($new and ! $old);
+        return (
+            ItemIsNull::setItem($old)->evaluate() and
+            ItemExists::setItem($new)->evaluate()
+        );
     }
 
-    public function apply()
+    public function up()
     {
-        /** @var Model $model */
-        $model = app($this->modelClass);
-
-        $model->getConnection()->table($model->getTable())->insert($this->attributes);
+        $this->getModelInstance()->setRawAttributes($this->getAttributes())->save();
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelDeleted($this->modelClass, $this->attributes);
+        return new ModelDeleted($this->getModelClass(), $this->getAttributes());
     }
 }

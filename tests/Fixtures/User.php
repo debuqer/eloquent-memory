@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Tests\Example;
+namespace Debuqer\EloquentMemory\Tests\Fixtures;
 
 
 class User extends \Illuminate\Database\Eloquent\Model

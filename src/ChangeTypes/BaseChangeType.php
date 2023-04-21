@@ -3,20 +3,28 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
-
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 abstract class BaseChangeType
 {
-    /** @var Model */
-    protected $model;
+    abstract function up();
+    abstract function getRollbackChange();
 
     public function getType(): string
     {
-        return static::TYPE;
+        return Str::kebab($this->getClassName());
     }
 
-    public function rollback()
+    protected function getClassName()
+    {
+        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return mixed
+     */
+    public function down()
     {
         return $this->getRollbackChange()->apply();
     }

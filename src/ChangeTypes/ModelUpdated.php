@@ -4,66 +4,107 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSame;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsModel;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotNull;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemIsNotTrash;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemNotExists;
+use Debuqer\EloquentMemory\ChangeTypes\Checkers\ItemsAreTheSameType;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAfterAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasBeforeAttributes;
+use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
-    use UpdatesModelTrait;
+    use HasModelClass;
+    use HasBeforeAttributes;
+    use HasAfterAttributes;
 
-    const TYPE = 'update';
-
-    /** @var Model */
-    protected $before;
-    /** @var Model */
-    protected $after;
     /**
-     * ModelCreated constructor.
-     * @param Model $updatedModel
+     * ModelUpdated constructor.
+     * @param string $modelClass
+     * @param array $before
+     * @param array $after
      */
-    public function __construct(Model $before, Model $after)
+    public function __construct(string $modelClass, array $before, array $after)
     {
-        $this->before = $before;
-        $this->after = $after;
+        $this->setModelClass($modelClass);
+        $this->setBeforeAttributes($before);
+        $this->setAfterAttributes($after);
     }
 
     public static function create($old, $new): ChangeTypeInterface
     {
-        return new self($old, $new);
+        return new self(get_class($new), $old->getRawOriginal(), $new->getRawOriginal());
     }
 
-    public static function satisfyConditions($old, $new): bool
+    public static function isApplicable($old, $new): bool
     {
-        if ( ! $old ) {
-            return false;
-        }
-        if ( ! $new ) {
-            return false;
-        }
-        if ( ! $old instanceof Model ) {
-            return false;
-        }
-        if ( get_class($old) !== get_class($new) ) {
-            return false;
-        }
+        return (
+            ItemExists::setItem($old)->evaluate() and
+            ItemExists::setItem($new)->evaluate() and
+            ItemIsNotTrash::setItem($old)->evaluate() and
+            ItemIsNotTrash::setItem($new)->evaluate() and
+            ItemsAreTheSame::setItem($old)->setExpect($new)->evaluate() and
+            static::attributeChanged($old, $new)
+        );
+    }
 
-        $allAttributes = array_merge(array_keys($old->getAttributes()), array_keys($new->getAttributes()));
-        $diff = [];
+    public static function attributeChanged($old, $new)
+    {
+        $allAttributes = array_merge(array_keys($old->getRawOriginal()), array_keys($new->getRawOriginal()));
         foreach ($allAttributes as $attribute ) {
-            if ( $old->getAttribute($attribute) !== $new->getAttribute($attribute) ) {
-                $diff[] = $attribute;
+            if ( $old->getRawOriginal($attribute) !== $new->getRawOriginal($attribute) ) {
+                return true;
             }
         }
 
-        return count($diff) > 0;
+        return false;
     }
 
-    public function apply()
+    public function up()
     {
-        $this->update($this->before, $this->after);
+        $update = $this->getChangedValues();
+
+        $this->update($update);
+    }
+
+    protected function update(array $update)
+    {
+        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey($this->getBeforeAttributes()))->update($update);
+    }
+
+    protected function getAllAttributes()
+    {
+        return array_keys(array_merge($this->getBeforeAttributes(), $this->getAfterAttributes()));
+    }
+
+    protected function getChangedValues()
+    {
+        $allAttributes = $this->getAllAttributes();
+
+        $update = [];
+        array_map(function ($attribute) use(&$update) {
+            $valueBeforeChange = isset($this->getBeforeAttributes()[$attribute]) ? $this->getBeforeAttributes()[$attribute] : null;
+            $valueAfterChange = isset($this->getAfterAttributes()[$attribute]) ? $this->getAfterAttributes()[$attribute] : null;
+
+            if ( $valueAfterChange !== $valueBeforeChange ) {
+                $update[$attribute] = $valueAfterChange;
+            }
+        }, $allAttributes);
+
+        return $update;
+    }
+
+    protected function getModelKey($attributes)
+    {
+        return isset($attributes[$this->getModelInstance()->getKeyName()]) ? $attributes[$this->getModelInstance()->getKeyName()] : null;
     }
 
     public function getRollbackChange(): ChangeTypeInterface
     {
-        return new ModelUpdated($this->before, $this->after);
+        return new ModelUpdated($this->getModelClass(), $this->getAfterAttributes(), $this->getBeforeAttributes());
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Debuqer\EloquentMemory\Database\Factories;
 
-use Debuqer\EloquentMemory\Tests\Example\User;
+use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
 class PostFactory extends Factory
 {
-    protected $model = \Debuqer\EloquentMemory\Tests\Example\Post::class;
+    protected $model = \Debuqer\EloquentMemory\Tests\Fixtures\Post::class;
 
     public function definition()
     {
@@ -23,6 +23,7 @@ class PostFactory extends Factory
                 'city' => $this->faker->city,
                 'country' => $this->faker->country,
             ],
+            'image' => 'default.jpg'
         ];
     }
 }
