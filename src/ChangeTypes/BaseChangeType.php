@@ -26,6 +26,6 @@ abstract class BaseChangeType
      */
     public function down()
     {
-        return $this->getRollbackChange()->apply();
+        return $this->getRollbackChange()->up();
     }
 }
