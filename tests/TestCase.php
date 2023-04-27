@@ -2,10 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
-use Debuqer\EloquentMemory\Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 
