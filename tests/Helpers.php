@@ -43,3 +43,10 @@ function createAPostAndForceDelete()
 
     return $post;
 }
+
+function testAttributes($attrs1, $attrs2)
+{
+    foreach ($attrs1 as $attr => $value) {
+        expect($value)->toBe(  $attrs2[$attr] ?? null);
+    }
+}
