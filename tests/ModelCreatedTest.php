@@ -2,33 +2,46 @@
 use \Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use \Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 
-test('ModelCreate::up will create a model with same properties', function () {
+beforeEach(function () {
     $item = createAFakePost();
     $attributes = $item->getRawOriginal();
     $c = new ModelCreated(get_class($item), $attributes);
-    $c->up();
 
-    $item->refresh();
-    expect($item->exists)->toBeTrue();
+    // change type
+    $this->c = $c;
+    $this->item = $item;
+    $this->attributes = $attributes;
+});
 
-    foreach ($item->getRawOriginal() as $attr => $value) {
-        expect($value)->toBe((isset($attributes[$attr]) ? $attributes[$attr] : null));
+test('ModelCreate::up will create a model with same properties', function () {
+    $this->c->up();
+
+    $this->item->refresh();
+    expect($this->item->exists)->toBeTrue();
+
+    foreach ($this->item->getRawOriginal() as $attr => $value) {
+        expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
     }
 });
 
 test('ModelCreated::getRollbackChange will return an instanceof ModelDeleted with same properties ', function () {
-    $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
-
-    expect($c->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
-    expect($c->getRollbackChange()->getOldAttributes())->toBe($item->getRawOriginal());
+    expect($this->c->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
+    expect($this->c->getRollbackChange()->getOldAttributes())->toBe($this->item->getRawOriginal());
 });
 
 
 test('ModelCreated::persist will save a record in db', function () {
-    $item = createAFakePost();
-    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
-    $c->persist();
+    $this->c->persist();
 
-    expect($c->getModel()->exists)->toBeTrue();
+    expect($this->c->getModel()->exists)->toBeTrue();
+});
+
+
+test('ModelCreate::can be made by a db record', function() {
+    $this->c->persist();
+
+    $newC = ModelCreated::createFromPersistedRecord($this->c->getModel()); // c must be create
+
+    expect(get_class($newC))->toBe(get_class($this->c));
+    expect($newC->getParameters())->toBe($this->c->getParameters());
 });

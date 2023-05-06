@@ -43,4 +43,9 @@ abstract class BaseChangeType implements ChangeTypeInterface
     {
         return $this->model;
     }
+
+    public function setModel($model)
+    {
+        $this->model = $model;
+    }
 }

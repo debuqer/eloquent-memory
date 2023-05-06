@@ -3,13 +3,24 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
+use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Illuminate\Support\Arr;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
     use HasAttributes;
+
+
+    public static function createFromPersistedRecord(Change $change)
+    {
+        $modelClass = Arr::get($change->parameters, 'model_class');
+        $attributes = Arr::get($change->parameters, 'attributes');
+
+        return new self($modelClass, $attributes);
+    }
 
     /**
      * ModelCreated constructor.
