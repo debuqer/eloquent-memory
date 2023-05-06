@@ -44,4 +44,19 @@ test('ModelCreate::can be made by a db record', function() {
 
     expect(get_class($newC))->toBe(get_class($this->c));
     expect($newC->getParameters())->toBe($this->c->getParameters());
+    expect(get_class($newC->getRollbackChange()))->toBe(get_class($this->c->getRollbackChange()));
+    expect($newC->getRollbackChange()->getParameters())->toBe($this->c->getRollbackChange()->getParameters());
+});
+
+test('ModelCreate::created by db record can migrate up', function() {
+    $this->c->persist();
+
+    $newC = ModelCreated::createFromPersistedRecord($this->c->getModel()); // c must be create
+    $newC->up();
+    $this->item->refresh();
+    expect($this->item->exists)->toBeTrue();
+
+    foreach ($this->item->getRawOriginal() as $attr => $value) {
+        expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
+    }
 });
