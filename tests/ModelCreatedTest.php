@@ -24,3 +24,11 @@ test('ModelCreated::getRollbackChange will return an instanceof ModelDeleted wit
     expect($c->getRollbackChange()->getOldAttributes())->toBe($item->getRawOriginal());
 });
 
+
+test('ModelCreated::persist will save a record in db', function () {
+    $item = createAFakePost();
+    $c = new ModelCreated(get_class($item), $item->getRawOriginal());
+    $c->persist();
+
+    expect($c->getModel()->exists)->toBeTrue();
+});

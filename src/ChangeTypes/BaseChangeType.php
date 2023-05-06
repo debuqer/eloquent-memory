@@ -3,12 +3,13 @@
 
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
+use Debuqer\EloquentMemory\Change;
+use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Illuminate\Support\Str;
 
-abstract class BaseChangeType
+abstract class BaseChangeType implements ChangeTypeInterface
 {
-    abstract function up();
-    abstract function getRollbackChange();
+    protected $model;
 
     public function getType(): string
     {
@@ -27,5 +28,19 @@ abstract class BaseChangeType
     public function down()
     {
         return $this->getRollbackChange()->up();
+    }
+
+    public function persist()
+    {
+        $this->model = Change::create([
+            'type' => $this->getType(),
+            'parameters' => $this->getParameters(),
+            'batch' => EloquentMemory::getBatch()
+        ]);
+    }
+
+    public function getModel()
+    {
+        return $this->model;
     }
 }
