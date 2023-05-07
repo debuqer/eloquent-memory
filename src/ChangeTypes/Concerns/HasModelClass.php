@@ -18,8 +18,8 @@ trait HasModelClass
         $this->parameters['model_class'] = $modelClass;
     }
 
-    protected function getModelInstance()
+    protected function getModelInstance($parameters = [])
     {
-        return app($this->getModelClass());
+        return app($this->getModelClass(), $parameters);
     }
 }
