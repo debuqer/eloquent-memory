@@ -6,13 +6,12 @@ use \Illuminate\Database\Eloquent\Factories\Factory;
 
 beforeEach(function () {
     $item = createAFakePost();
-    $attributes = $item->getRawOriginal();
-    $c = new ModelCreated(get_class($item), $attributes);
+    $c = ModelCreated::createFromModel($item);
 
     // change type
     $this->c = $c; // change type
     $this->item = $item; // app/Models/Post
-    $this->attributes = $attributes; // faker attributes
+    $this->attributes = $item->getRawOriginal(); // faker attributes
 });
 
 test('ModelCreate::up will create a model with same properties', function () {

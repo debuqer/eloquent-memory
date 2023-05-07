@@ -4,10 +4,13 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 {
@@ -16,6 +19,21 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
     use HasOldAttributes;
     use HasAttributes;
 
+
+    public static function createFromPersistedRecord(Change $change)
+    {
+        $modelClass = Arr::get($change->parameters, 'model_class');
+        $modelKey   = Arr::get($change->parameters, 'model_key');
+        $old         = Arr::get($change->parameters, 'old');
+        $attributes = Arr::get($change->parameters, 'attributes');
+
+        return new self($modelClass, $modelKey, $old, $attributes);
+    }
+
+    public static function createFromModel(Model $model)
+    {
+        return new self(get_class($model), $model->getKey(), $model->getRawOriginal(), $model->getAttributes());
+    }
     /**
      * ModelUpdated constructor.
      * @param string $modelClass

@@ -4,6 +4,9 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\Change;
+use Illuminate\Database\Eloquent\Model;
+
 interface ChangeTypeInterface
 {
     public function getParameters();
@@ -14,4 +17,7 @@ interface ChangeTypeInterface
 
     public function persist();
     public function getModel();
+
+    public static function createFromPersistedRecord(Change $change);
+    public static function createFromModel(Model $model);
 }

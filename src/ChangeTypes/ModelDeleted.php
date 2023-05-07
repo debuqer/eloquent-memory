@@ -4,15 +4,31 @@
 namespace Debuqer\EloquentMemory\ChangeTypes;
 
 
+use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
 {
     use HasModelClass;
     use HasModelKey;
     use HasOldAttributes;
+
+    public static function createFromPersistedRecord(Change $change)
+    {
+        $modelClass = Arr::get($change->parameters, 'model_class');
+        $attributes = Arr::get($change->parameters, 'attributes');
+
+        return new self($modelClass, $attributes);
+    }
+
+    public static function createFromModel(Model $model)
+    {
+        return new self(get_class($model), $model->getRawOriginal());
+    }
 
     /**
      * ModelCreated constructor.

@@ -6,6 +6,7 @@ namespace Debuqer\EloquentMemory\ChangeTypes;
 use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 class ModelCreated extends BaseChangeType implements ChangeTypeInterface
@@ -20,6 +21,11 @@ class ModelCreated extends BaseChangeType implements ChangeTypeInterface
         $attributes = Arr::get($change->parameters, 'attributes');
 
         return new self($modelClass, $attributes);
+    }
+
+    public static function createFromModel(Model $model)
+    {
+        return new self(get_class($model), $model->getRawOriginal());
     }
 
     /**
