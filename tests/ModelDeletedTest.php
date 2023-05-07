@@ -3,19 +3,30 @@ use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
 use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
 
+beforeEach(function () {
+    $item = createAPost();
+    $c = ModelDeleted::createFromModel($item);
+
+    // change type
+    $this->c = $c; // change type
+    $this->item = $item; // app/Models/Post
+    $this->attributes = $item->getRawOriginal(); // faker attributes
+});
+
 
 test('ModelDeleted::up will forceDelete a model from database', function () {
-    $item = createAPost();
-    $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
-    $c->up();
+    $this->c->up();
 
-    expect(Post::find($item->getKey()))->toBeNull();
+    expect(Post::find($this->item->getKey()))->toBeNull();
 });
 
 test('ModelDeleted::getRollbackChange returns instance of ModelCreated with same properties ', function () {
-    $item = createAPost();
-    $c = new ModelDeleted(get_class($item), $item->getRawOriginal());
+    expect($this->c->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
+    expect($this->c->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());
+});
 
-    expect($c->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
-    expect($c->getRollbackChange()->getAttributes())->toBe($item->getRawOriginal());
+test('ModelDeleted::migrate up should not care about soft delete', function() {
+    $this->c->up();
+
+    expect(Post::find($this->item->getKey()))->toBeNull();
 });
