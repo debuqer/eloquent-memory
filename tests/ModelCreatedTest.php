@@ -88,3 +88,21 @@ test('ModelCreate::created by db record can migrate up and rollback and up again
         expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
     }
 });
+
+test('ModelCreate::mutation doesnt affect on change persist', function() {
+    $modelClassWithMutation = new Class extends Post {
+        protected $table = 'posts';
+
+        public function getTitleAttribute($value)
+        {
+            return $value .'::mutated';
+        }
+    };
+
+    $modelClassWithMutation->setRawAttributes($this->item->getRawOriginal())->save();
+    $modelWithMutation = $modelClassWithMutation::first();
+    $change = ModelCreated::createFromModel($modelClassWithMutation);
+
+    expect($change->getAttributes()['title'])->not->toBe($modelWithMutation->title);
+});
+
