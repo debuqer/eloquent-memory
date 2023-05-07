@@ -19,5 +19,4 @@ interface ChangeTypeInterface
     public function getModel();
 
     public static function createFromPersistedRecord(Change $change);
-    public static function createFromModel(Model $model);
 }

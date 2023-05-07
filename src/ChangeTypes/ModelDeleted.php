@@ -22,12 +22,12 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
         $modelClass = Arr::get($change->parameters, 'model_class');
         $attributes = Arr::get($change->parameters, 'attributes');
 
-        return new self($modelClass, $attributes);
+        return new static($modelClass, $attributes);
     }
 
     public static function createFromModel(Model $model)
     {
-        return new self(get_class($model), $model->getRawOriginal());
+        return new static(get_class($model), $model->getRawOriginal());
     }
 
     /**

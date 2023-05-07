@@ -27,13 +27,14 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         $old         = Arr::get($change->parameters, 'old');
         $attributes = Arr::get($change->parameters, 'attributes');
 
-        return new self($modelClass, $modelKey, $old, $attributes);
+        return new static($modelClass, $modelKey, $old, $attributes);
     }
 
-    public static function createFromModel(Model $model)
+    public static function createFromModel(Model $before, Model $after)
     {
-        return new self(get_class($model), $model->getKey(), $model->getRawOriginal(), $model->getAttributes());
+        return new static(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
     }
+
     /**
      * ModelUpdated constructor.
      * @param string $modelClass
@@ -57,7 +58,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->withTrashed()->findOrFail($this->getModelKey())->update($update);
+        $this->getModelInstance()->findOrFail($this->getModelKey())->update($update);
     }
 
     protected function getAllAttributes()

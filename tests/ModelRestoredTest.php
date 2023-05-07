@@ -2,26 +2,38 @@
 use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
 use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
 
-test('ModelRestored::up will restore a model from database', function () {
-    $after = createAPost();
-    $before = (clone $after);
+beforeEach(function () {
+    $softDeletableModelClass = new class extends \Debuqer\EloquentMemory\Tests\Fixtures\Post {
+        use \Illuminate\Database\Eloquent\SoftDeletes;
+
+        protected $table = 'posts';
+
+        protected $casts = [
+            'meta' => 'json',
+        ];
+    };
+
+    $attributes = createAFakePost()->getRawOriginal();
+    $softDeletableModelClass->setRawAttributes($attributes)->save();
+    $before = $softDeletableModelClass::first();
     $before->delete();
+    $after = (clone $before);
+    $after->restore();
 
-    $c = new ModelRestored(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
-    $c->up();
+    $this->c = ModelRestored::createFromModel($before, $after);
+    $this->before = $before;
+    $this->after = $after;
+});
 
-    expect($after->refresh()->trashed())->toBeFalse();
+test('ModelRestored::up will restore a model from database', function () {
+    $this->c->up();
+
+    expect($this->after->refresh()->trashed())->toBeFalse();
 });
 
 test('ModelRestored::getRollbackChange will return instance of ModelSoftDeleted with same properties', function () {
-    $after = createAPost();
-    $before = (clone $after);
-    $before->delete();
-
-    $c = new ModelRestored(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
-
-    expect($c->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
-    expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
-    testAttributes($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
-    testAttributes($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
+    expect($this->c->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
+    expect($this->c->getRollbackChange()->getModelKey())->toBe($this->c->getModelKey());
+    testAttributes($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes());
+    testAttributes($this->c->getRollbackChange()->getAttributes(), $this->c->getOldAttributes());
 });
