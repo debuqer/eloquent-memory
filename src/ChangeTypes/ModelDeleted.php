@@ -20,14 +20,14 @@ class ModelDeleted extends BaseChangeType implements ChangeTypeInterface
     public static function createFromPersistedRecord(Change $change)
     {
         $modelClass = Arr::get($change->parameters, 'model_class');
-        $attributes = Arr::get($change->parameters, 'attributes');
+        $old = Arr::get($change->parameters, 'old');
 
-        return new self($modelClass, $attributes);
+        return new static($modelClass, $old);
     }
 
     public static function createFromModel(Model $model)
     {
-        return new self(get_class($model), $model->getRawOriginal());
+        return new static(get_class($model), $model->getRawOriginal());
     }
 
     /**
