@@ -23,7 +23,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
     public static function createFromPersistedRecord(Change $change)
     {
         $modelClass = Arr::get($change->parameters, 'model_class');
-        $modelKey   = Arr::get($change->parameters, 'model_key');
+        $modelKey   = Arr::get($change->parameters, 'key');
         $old         = Arr::get($change->parameters, 'old');
         $attributes = Arr::get($change->parameters, 'attributes');
 

@@ -11,8 +11,8 @@ beforeEach(function () {
         'title' => 'Title changed!',
         'json' => ['new json']
     ]);
-    $this->before = $before;
-    $this->after = $after;
+    $this->before = (clone $before);
+    $this->after = (clone $after);
 
     // reset to state before updating
     $after->delete();
@@ -136,3 +136,33 @@ test('migrate up can fill despite casted attributes', function () {
     expect($after->getRawOriginal('title'))->toBe($this->after->getRawOriginal('title'));
 });
 
+test('can persist in db', function () {
+    $this->c->persist();
+
+    expect($this->c->getModel())->not->toBeNull();
+    expect($this->c->getModel()->parameters)->toBe($this->c->getParameters());
+    expect($this->c->getModel()->parameters['old'])->toBe($this->before->getRawOriginal());
+    expect($this->c->getModel()->parameters['attributes'])->toBe($this->after->getRawOriginal());
+    expect($this->c->getModel()->parameters['key'])->toBe($this->after->getKey());
+    expect($this->c->getModel()->parameters['model_class'])->toBe(get_class($this->after));
+    expect($this->c->getModel()->type)->toBe('model-updated');
+});
+
+test('created from persisted record can migrate up and down', function () {
+    $this->c->persist();
+    $persist = $this->c->getModel();
+
+    $c = ModelUpdated::createFromPersistedRecord($persist);
+    $c->up();
+    $post = Post::first();
+    expect($post->getRawOriginal('title'))->toBe($this->after->getRawOriginal('title'));
+    $c->down();
+    $post = Post::first();
+    expect($post->getRawOriginal('title'))->toBe($this->before->getRawOriginal('title'));
+});
+
+test('raise error when model not exists at all', function () {
+    $this->before->forceDelete();
+
+    $this->c->up();
+})->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
