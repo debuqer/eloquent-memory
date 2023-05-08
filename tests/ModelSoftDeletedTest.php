@@ -31,7 +31,7 @@ beforeEach(function () {
 /**
  * ModelSoftDeleted
  */
-test('ModelSoftDeleted::up will soft delete a model from database', function () {
+test('up will soft delete a model from database', function () {
     $this->c->up();
 
     expect($this->after->refresh()->trashed())->toBeTrue();
@@ -41,7 +41,7 @@ test('ModelSoftDeleted::up will soft delete a model from database', function () 
 /**
  * ModelSoftDeleted Rollback
  */
-test('ModelSoftDeleted::getRollbackChange will return instance of ModelRestored with same properties', function () {
+test('getRollbackChange will return instance of ModelRestored with same properties', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelRestored::class);
     expect($this->c->getRollbackChange()->getModelKey())->toBe($this->c->getModelKey());
     testAttributes($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes());

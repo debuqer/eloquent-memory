@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->attributes = $item->getRawOriginal(); // faker attributes
 });
 
-test('ModelCreate::up will create a model with same properties', function () {
+test('up will create a model with same properties', function () {
     $this->c->up();
     expect($this->item->exists)->toBeTrue();
 
@@ -23,12 +23,12 @@ test('ModelCreate::up will create a model with same properties', function () {
     }
 });
 
-test('ModelCreated::getRollbackChange will return an instanceof ModelDeleted with same properties ', function () {
+test('getRollbackChange will return an instanceof ModelDeleted with same properties ', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
     expect($this->c->getRollbackChange()->getOldAttributes())->toBe($this->item->getRawOriginal());
 });
 
-test('ModelCreate::migrate up should not update created_at and updated_at', function() {
+test('migrate up should not update created_at and updated_at', function() {
     \Carbon\Carbon::setTestNow(\Carbon\Carbon::now()->addHour());
     $this->c->up();
     $newPost = Post::first(); // new post created by migration
@@ -37,26 +37,26 @@ test('ModelCreate::migrate up should not update created_at and updated_at', func
     expect($newPost->updated_at->toString())->toBe($this->item->updated_at->toString());
 });
 
-test('ModelCreate::migrate up cant perform creation where model already exists', function() {
+test('migrate up cant perform creation where model already exists', function() {
     $this->c->up(); // now model exists in db
     $this->c->up(); // trying to create model again
 })->expectException(\Illuminate\Database\QueryException::class);
 
-test('ModelCreate::raise exception when that id exists', function() {
+test('raise exception when that id exists', function() {
     createAPost();
 
     $this->c->up();
 })->expectException(\Illuminate\Database\QueryException::class);
 
 
-test('ModelCreated::persist will save a record in db', function () {
+test('persist will save a record in db', function () {
     $this->c->persist();
 
     expect($this->c->getModel()->exists)->toBeTrue();
 });
 
 
-test('ModelCreate::can be made by a db record', function() {
+test('can be made by a db record', function() {
     $this->c->persist();
 
     $newC = ModelCreated::createFromPersistedRecord($this->c->getModel()); // c must be create
@@ -67,7 +67,7 @@ test('ModelCreate::can be made by a db record', function() {
     expect($newC->getRollbackChange()->getParameters())->toBe($this->c->getRollbackChange()->getParameters());
 });
 
-test('ModelCreate::created by db record can migrate up and rollback and up again', function() {
+test('created by db record can migrate up and rollback and up again', function() {
     $this->c->persist();
 
     $newC = ModelCreated::createFromPersistedRecord($this->c->getModel()); // c must be create
@@ -89,7 +89,7 @@ test('ModelCreate::created by db record can migrate up and rollback and up again
     }
 });
 
-test('ModelCreate::mutation doesnt affect on change persist', function() {
+test('mutation doesnt affect on change persist', function() {
     $modelClassWithMutation = new Class extends Post {
         protected $table = 'posts';
 
@@ -104,5 +104,12 @@ test('ModelCreate::mutation doesnt affect on change persist', function() {
     $change = ModelCreated::createFromModel($modelClassWithMutation);
 
     expect($change->getAttributes()['title'])->not->toBe($modelWithMutation->title);
+});
+
+test('migrate will fill guarded attributes', function() {
+    $this->c->up();
+
+    $newModel = Post::first();
+    expect($newModel->getKey())->toBe($this->item->getKey());
 });
 

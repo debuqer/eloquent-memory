@@ -16,13 +16,13 @@ beforeEach(function () {
 });
 
 
-test('ModelDeleted::up will forceDelete a model from database', function () {
+test('up will forceDelete a model from database', function () {
     $this->c->up();
 
     expect(Post::find($this->item->getKey()))->toBeNull();
 });
 
-test('ModelDeleted::up will forceDelete a model from database when model has softDelete', function () {
+test('up will forceDelete a model from database when model has softDelete', function () {
     $softDeletableModelClass = new class extends \Debuqer\EloquentMemory\Tests\Fixtures\Post {
         use \Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -39,12 +39,12 @@ test('ModelDeleted::up will forceDelete a model from database when model has sof
     expect($softDeletableModelClass::withTrashed()->find($this->item->getKey()))->toBeNull();
 });
 
-test('ModelDeleted::getRollbackChange returns instance of ModelCreated with same properties ', function () {
+test('getRollbackChange returns instance of ModelCreated with same properties ', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
     expect($this->c->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());
 });
 
-test('ModelDeleted::migrate down create the model with same properties', function() {
+test('migrate down create the model with same properties', function() {
     $this->item->forceDelete();
     $this->c->down();
 
@@ -54,7 +54,7 @@ test('ModelDeleted::migrate down create the model with same properties', functio
     }
 });
 
-test('ModelDeleted::migrate up and migrate down and migrate up again works', function () {
+test('migrate up and migrate down and migrate up again works', function () {
     $this->c->up();
     expect(Post::find($this->item->getKey()))->toBeNull();
     $this->c->down();
@@ -63,31 +63,31 @@ test('ModelDeleted::migrate up and migrate down and migrate up again works', fun
     expect(Post::find($this->item->getKey()))->toBeNull();
 });
 
-test('ModelDeleted::migrate up and migrate up again doesnt work', function () {
+test('migrate up and migrate up again doesnt work', function () {
     $this->c->up();
     $this->c->up();
 })->expectException(ModelNotFoundException::class);
 
-test('ModelDeleted::migrate down and migrate down again doesnt work', function () {
+test('migrate down and migrate down again doesnt work', function () {
     $this->item->forceDelete();
 
     $this->c->down();
     $this->c->down();
 })->expectException(QueryException::class);
 
-test('ModelDeleted::migrate up doesnt work when model already deleted', function () {
+test('migrate up doesnt work when model already deleted', function () {
     $this->item->forceDelete();
 
     $this->c->up();
 })->expectException(ModelNotFoundException::class);
 
-test('ModelDeleted::persist can store change in db', function () {
+test('persist can store change in db', function () {
     $this->c->persist();
 
     expect($this->c->getModel()->exists)->toBeTrue();
 });
 
-test('ModelDeleted::can be created from persisted model', function () {
+test('can be created from persisted model', function () {
     $this->c->persist();
 
     $newC = ModelDeleted::createFromPersistedRecord($this->c->getModel()); // c must be create
@@ -99,7 +99,7 @@ test('ModelDeleted::can be created from persisted model', function () {
 });
 
 
-test('ModelDeleted::created by persisted record can be migrate up and down', function () {
+test('created by persisted record can be migrate up and down', function () {
     $this->c->persist();
 
     $newC = ModelDeleted::createFromPersistedRecord($this->c->getModel()); // c must be create
@@ -110,7 +110,7 @@ test('ModelDeleted::created by persisted record can be migrate up and down', fun
     expect(Post::first())->not->toBeNull();
 });
 
-test('ModelDeleted::mutation doesnt affect on data', function () {
+test('mutation doesnt affect on data', function () {
     $modelClassWithMutation = new Class extends Post {
         protected $table = 'posts';
 
