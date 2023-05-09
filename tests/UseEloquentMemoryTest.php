@@ -16,3 +16,21 @@ test('it can record model stored', function() {
     expect($change->getChange()->getModelClass())->toBe(Post::class);
     expect($change->getChange()->getAttributes())->toBe($this->post->getRawOriginal());
 });
+
+test('it can record model updated', function() {
+    $oldAttributes = $this->post->getRawOriginal();
+
+    $this->post->update([
+        'title' => 'new Title'
+    ]);
+
+    expect(\Debuqer\EloquentMemory\Change::count())->toBe(2);
+    /** @var Change $change */
+    $change = Change::latest('id')->first();
+
+    expect($change->getChange()->getType())->toBe('model-updated');
+    expect($change->getChange()->getModelClass())->toBe(Post::class);
+    expect($change->getChange()->getModelKey())->toBe($this->post->id);
+    expect($change->getChange()->getOldAttributes())->toBe($oldAttributes);
+    expect($change->getChange()->getAttributes())->toBe($this->post->getRawOriginal());
+});

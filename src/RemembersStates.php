@@ -14,15 +14,12 @@ trait RemembersStates
     {
         parent::boot();
 
-        $beforeState = null;
-        static::retrieved(function (Model $model) use(&$beforeState) {
-            $beforeState = $model;
-        });
         static::created(function(Model $model) {
             ModelCreated::createFromModel($model->refresh())->persist();
         });
-        static::updated(function(Model $model) use($beforeState) {
-            ModelUpdated::createFromModel($beforeState, $model->refresh())->persist();
+        static::updated(function(Model $model)  {
+            $attributesAfterChange = array_merge($model->getRawOriginal(), $model->getChanges());
+            (new ModelUpdated(get_class($model), $model->getKey(), $model->getRawOriginal(), $attributesAfterChange))->persist();
         });
     }
 }
