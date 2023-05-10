@@ -9,9 +9,9 @@ function createAUser()
     return Factory::factoryForModel(User::class)->createOne();
 }
 
-function createEmptyPost()
+function createEmptyPost($class = Post::class)
 {
-    return new Post();
+    return new $class();
 }
 
 function createAFakePost()
@@ -23,22 +23,22 @@ function createAFakePost()
     return $model;
 }
 
-function createAPost()
+function createAPost($class = Post::class)
 {
-    return Factory::factoryForModel(Post::class)->createOne();
+    return Factory::factoryForModel($class)->createOne();
 }
 
-function createAPostAndDelete()
+function createAPostAndDelete($class = Post::class)
 {
-    $post = Factory::factoryForModel(Post::class)->createOne();
+    $post = Factory::factoryForModel($class)->createOne();
     $post->delete();
 
     return $post;
 }
 
-function createAPostAndForceDelete()
+function createAPostAndForceDelete($class = Post::class)
 {
-    $post = Factory::factoryForModel(Post::class)->createOne();
+    $post = Factory::factoryForModel($class)->createOne();
     $post->forceDelete();
 
     return $post;

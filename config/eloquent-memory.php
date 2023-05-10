@@ -9,10 +9,10 @@ use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 
 return [
     'changes' => [
-        ModelUpdated::class,
-        ModelCreated::class,
-        ModelDeleted::class,
-        ModelSoftDeleted::class,
-        ModelRestored::class,
+        'model-updated' => ModelUpdated::class,
+        'model-created' => ModelCreated::class,
+        'model-deleted' => ModelDeleted::class,
+        'model-soft-deleted' => ModelSoftDeleted::class,
+        'model-restored' => ModelRestored::class,
     ]
 ];
