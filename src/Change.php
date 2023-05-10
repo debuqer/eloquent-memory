@@ -16,8 +16,20 @@ class Change extends Model
 
     protected $guarded = ['id'];
     protected $casts = [
-        'parameters' => 'json'
+        'parameters' => 'array'
     ];
 
     public $timestamps = true;
+
+    public function getChange()
+    {
+        $modelClass = $this->getModelClass();
+
+        return $modelClass::createFromPersistedRecord($this);
+    }
+
+    protected function getModelClass()
+    {
+        return config('eloquent-memory.changes.'.$this->type);
+    }
 }
