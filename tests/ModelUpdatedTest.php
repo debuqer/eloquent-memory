@@ -1,6 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon\Carbon;
 

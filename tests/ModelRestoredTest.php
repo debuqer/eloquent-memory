@@ -1,6 +1,6 @@
 <?php
-use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
-use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 
 beforeEach(function () {

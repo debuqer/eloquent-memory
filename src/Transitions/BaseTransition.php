@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\ChangeTypes;
+namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Illuminate\Support\Str;
 
-abstract class BaseChangeType implements ChangeTypeInterface
+abstract class BaseTransition implements TransitionInterface
 {
     protected $model;
 

@@ -1,7 +1,7 @@
 <?php
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
-use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 

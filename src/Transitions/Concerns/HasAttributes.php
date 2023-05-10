@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\ChangeTypes\Concerns;
+namespace Debuqer\EloquentMemory\Transitions\Concerns;
 
 
 trait HasAttributes

@@ -1,18 +1,18 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\ChangeTypes;
+namespace Debuqer\EloquentMemory\Transitions;
 
 
 use Debuqer\EloquentMemory\Change;
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasAttributes;
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelKey;
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasOldAttributes;
-use Debuqer\EloquentMemory\ChangeTypes\Concerns\HasModelClass;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasOldAttributes;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
-class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
+class ModelUpdated extends BaseTransition implements TransitionInterface
 {
     use HasModelClass;
     use HasModelKey;
@@ -83,7 +83,7 @@ class ModelUpdated extends BaseChangeType implements ChangeTypeInterface
         return $update;
     }
 
-    public function getRollbackChange(): ChangeTypeInterface
+    public function getRollbackChange(): TransitionInterface
     {
         return new ModelUpdated($this->getModelClass(), $this->getModelKey(), $this->getAttributes(), $this->getOldAttributes());
     }

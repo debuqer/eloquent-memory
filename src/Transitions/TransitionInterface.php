@@ -1,19 +1,19 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\ChangeTypes;
+namespace Debuqer\EloquentMemory\Transitions;
 
 
 use Debuqer\EloquentMemory\Change;
 use Illuminate\Database\Eloquent\Model;
 
-interface ChangeTypeInterface
+interface TransitionInterface
 {
     public function getParameters();
     public function getType(): string;
     public function up();
     public function down();
-    public function getRollbackChange(): ChangeTypeInterface;
+    public function getRollbackChange(): TransitionInterface;
 
     public function persist();
     public function getModel();
