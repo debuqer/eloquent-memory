@@ -4,7 +4,6 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;

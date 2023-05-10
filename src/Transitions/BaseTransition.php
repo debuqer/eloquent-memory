@@ -3,7 +3,6 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Models\ModelTransition;
 use Illuminate\Support\Str;
