@@ -5,6 +5,7 @@ namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Change;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
+use Debuqer\EloquentMemory\Models\ModelTransition;
 use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
@@ -32,7 +33,7 @@ abstract class BaseTransition implements TransitionInterface
 
     public function persist()
     {
-        $this->model = Change::create([
+        $this->model = ModelTransition::create([
             'type' => $this->getType(),
             'parameters' => $this->getParameters(),
             'batch' => EloquentMemory::getBatch()

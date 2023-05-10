@@ -5,6 +5,7 @@ namespace Debuqer\EloquentMemory\Transitions;
 
 
 use Debuqer\EloquentMemory\Change;
+use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasOldAttributes;
@@ -20,7 +21,7 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
     use HasAttributes;
 
 
-    public static function createFromPersistedRecord(Change $change)
+    public static function createFromPersistedRecord(ModelTransitionInterface $change)
     {
         $modelClass = Arr::get($change->parameters, 'model_class');
         $modelKey   = Arr::get($change->parameters, 'key');

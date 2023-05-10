@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('em_changes', function (Blueprint $table) {
+        Schema::create('model_transitions', function (Blueprint $table) {
             $table->id();
             $table->string('type');
             $table->json('parameters');

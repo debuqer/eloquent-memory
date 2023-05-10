@@ -19,6 +19,6 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
             ->name('eloquent-memory')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create-table-data_migrations');
+            ->hasMigration('create-table-model-transitions-migrations');
     }
 }
