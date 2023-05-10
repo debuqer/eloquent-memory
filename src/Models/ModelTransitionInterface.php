@@ -8,6 +8,6 @@ use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 interface ModelTransitionInterface
 {
-//    public static function store(TransitionInterface $transition);
-//    public static function findUsingBatch($batch);
+    public static function persist(TransitionInterface $transition);
+    public static function findUsingBatch($batch);
 }

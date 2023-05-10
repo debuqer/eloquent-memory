@@ -2,12 +2,20 @@
 
 namespace Debuqer\EloquentMemory;
 
+use Debuqer\EloquentMemory\Models\ModelTransition;
+use Debuqer\EloquentMemory\Models\TransitionRepository;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Debuqer\EloquentMemory\Commands\EloquentMemoryCommand;
 
 class EloquentMemoryServiceProvider extends PackageServiceProvider
 {
+    public function boot()
+    {
+        $this->app->bind(TransitionRepository::class, function ($app) {
+            return new ModelTransition();
+        });
+    }
+
     public function configurePackage(Package $package): void
     {
         /*

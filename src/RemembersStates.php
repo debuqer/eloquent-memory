@@ -4,8 +4,8 @@
 namespace Debuqer\EloquentMemory;
 
 
-use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
-use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 trait RemembersStates
