@@ -15,7 +15,7 @@ trait RemembersStates
         parent::boot();
 
         static::created(function(Model $model) {
-            ModelCreated::createFromModel($model->refresh())->persist();
+            ModelCreated::createFromModel($model->fresh())->persist();
         });
         static::updated(function(Model $model)  {
             $attributesAfterChange = array_merge($model->getRawOriginal(), $model->getChanges());

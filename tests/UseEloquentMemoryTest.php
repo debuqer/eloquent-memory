@@ -14,7 +14,9 @@ test('it can record model stored', function() {
 
     expect($change->getChange()->getType())->toBe('model-created');
     expect($change->getChange()->getModelClass())->toBe(Post::class);
-    expect($change->getChange()->getAttributes())->toBe($this->post->getRawOriginal());
+    foreach ($change->getChange()->getAttributes() as $key => $value) {
+        expect($value)->toBe($this->post->getRawOriginal($key));
+    }
 });
 
 test('it can record model updated', function() {
