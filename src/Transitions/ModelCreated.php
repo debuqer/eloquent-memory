@@ -31,7 +31,7 @@ class ModelCreated extends BaseTransition implements TransitionInterface
      */
     public function __construct(array $parameters)
     {
-        $this->parameters = $parameters;
+        $this->setParameters($parameters);
     }
 
     public function up()

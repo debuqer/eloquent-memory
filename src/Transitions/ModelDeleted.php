@@ -53,6 +53,6 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
 
     public function getRollbackChange(): TransitionInterface
     {
-        return new ModelCreated($this->getModelClass(), $this->getOldAttributes());
+        return new ModelCreated(['model_class' => $this->getModelClass(), 'attributes' => $this->getOldAttributes()]);
     }
 }
