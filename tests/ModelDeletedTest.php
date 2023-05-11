@@ -93,9 +93,9 @@ test('can be created from persisted model', function () {
     $newC = ModelDeleted::createFromPersistedRecord($this->c->getModel()); // c must be create
 
     expect(get_class($newC))->toBe(get_class($this->c));
-    expect($newC->getParameters())->toBe($this->c->getParameters());
+    expect($newC->getProperties())->toBe($this->c->getProperties());
     expect(get_class($newC->getRollbackChange()))->toBe(get_class($this->c->getRollbackChange()));
-    expect($newC->getRollbackChange()->getParameters())->toBe($this->c->getRollbackChange()->getParameters());
+    expect($newC->getRollbackChange()->getProperties())->toBe($this->c->getRollbackChange()->getProperties());
 });
 
 

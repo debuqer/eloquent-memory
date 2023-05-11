@@ -19,7 +19,12 @@ trait RemembersStates
         });
         static::updated(function(Model $model)  {
             $attributesAfterChange = array_merge($model->getRawOriginal(), $model->getChanges());
-            (new ModelUpdated(get_class($model), $model->getKey(), $model->getRawOriginal(), $attributesAfterChange))->persist();
+            (new ModelUpdated([
+                'model_class' => get_class($model),
+                'key' => $model->getKey(),
+                'old' => $model->getRawOriginal(),
+                'attributes' => $attributesAfterChange
+            ]))->persist();
         });
     }
 }

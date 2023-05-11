@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
 {
-    public function getParameters();
+    public function getProperties(): array;
     public function getType(): string;
     public function up();
     public function down();

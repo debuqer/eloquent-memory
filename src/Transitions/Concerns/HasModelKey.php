@@ -6,15 +6,13 @@ namespace Debuqer\EloquentMemory\Transitions\Concerns;
 
 trait HasModelKey
 {
-    use HasParameters;
-
     public function getModelKey()
     {
-        return isset($this->parameters['key']) ? $this->parameters['key'] : null;
+        return isset($this->properties['key']) ? $this->properties['key'] : null;
     }
 
     public function setModelKey($key)
     {
-        $this->parameters['key'] = $key;
+        $this->properties['key'] = $key;
     }
 }

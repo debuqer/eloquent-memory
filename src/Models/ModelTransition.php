@@ -18,7 +18,7 @@ class ModelTransition extends Model implements ModelTransitionInterface
 
     protected $guarded = ['id'];
     protected $casts = [
-        'parameters' => 'json'
+        'properties' => 'json'
     ];
 
     public $timestamps = true;
@@ -27,7 +27,7 @@ class ModelTransition extends Model implements ModelTransitionInterface
     public static function persist(TransitionInterface $transition) {
         return static::create([
             'type' => $transition->getType(),
-            'parameters' => $transition->getParameters(),
+            'properties' => $transition->getProperties(),
             'batch' => app(TransitionRepository::class)->getBatchId()
         ]);
     }

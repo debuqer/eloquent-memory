@@ -17,28 +17,13 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
     use HasModelKey;
     use HasOldAttributes;
 
-    public static function createFromPersistedRecord(ModelTransitionInterface $change)
-    {
-        $modelClass = Arr::get($change->parameters, 'model_class');
-        $old = Arr::get($change->parameters, 'old');
-
-        return new static($modelClass, $old);
-    }
-
     public static function createFromModel(Model $model)
     {
-        return new static(get_class($model), $model->getRawOriginal());
-    }
-
-    /**
-     * ModelCreated constructor.
-     * @param string $modelClass
-     * @param array $attributes
-     */
-    public function __construct(string $modelClass, array $attributes)
-    {
-        $this->setModelClass($modelClass);
-        $this->setOldAttributes($attributes);
+        return new static([
+            'model_class' => get_class($model),
+            'key' => $model->getKey(),
+            'old' => $model->getRawOriginal()
+        ]);
     }
 
     public function up()

@@ -14,24 +14,9 @@ class ModelCreated extends BaseTransition implements TransitionInterface
     use HasModelClass;
     use HasAttributes;
 
-
-    public static function createFromPersistedRecord(ModelTransitionInterface $change)
-    {
-        return app(static::class, ['parameters' => (array) $change->parameters]);
-    }
-
     public static function createFromModel(Model $model)
     {
         return new static(['model_class' => get_class($model), 'attributes' => $model->getRawOriginal()]);
-    }
-
-    /**
-     * ModelCreated constructor.
-     * @param array $parameters
-     */
-    public function __construct(array $parameters)
-    {
-        $this->setParameters($parameters);
     }
 
     public function up()
@@ -41,6 +26,6 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 
     public function getRollbackChange(): TransitionInterface
     {
-        return new ModelDeleted($this->getModelClass(), $this->getAttributes());
+        return new ModelDeleted(['model_class' => $this->getModelClass(), 'old' => $this->getAttributes()]);
     }
 }

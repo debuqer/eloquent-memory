@@ -6,16 +6,13 @@ namespace Debuqer\EloquentMemory\Transitions\Concerns;
 
 trait HasAttributes
 {
-    use HasParameters;
-
-
     public function getAttributes()
     {
-        return isset($this->parameters['attributes']) ? $this->parameters['attributes'] : null;
+        return isset($this->properties['attributes']) ? $this->properties['attributes'] : null;
     }
 
     public function setAttributes(array $attributes)
     {
-        $this->parameters['attributes'] = $attributes;
+        $this->properties['attributes'] = $attributes;
     }
 }

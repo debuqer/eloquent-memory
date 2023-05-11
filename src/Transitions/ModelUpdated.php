@@ -19,34 +19,14 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
     use HasOldAttributes;
     use HasAttributes;
 
-
-    public static function createFromPersistedRecord(ModelTransitionInterface $change)
-    {
-        $modelClass = Arr::get($change->parameters, 'model_class');
-        $modelKey   = Arr::get($change->parameters, 'key');
-        $old         = Arr::get($change->parameters, 'old');
-        $attributes = Arr::get($change->parameters, 'attributes');
-
-        return new static($modelClass, $modelKey, $old, $attributes);
-    }
-
     public static function createFromModel(Model $before, Model $after)
     {
-        return new static(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
-    }
-
-    /**
-     * ModelUpdated constructor.
-     * @param string $modelClass
-     * @param array $before
-     * @param array $after
-     */
-    public function __construct(string $modelClass, $modelKey, array $old, array $attributes)
-    {
-        $this->setModelClass($modelClass);
-        $this->setModelKey($modelKey);
-        $this->setOldAttributes($old);
-        $this->setAttributes($attributes);
+        return new static([
+            'model_class' => get_class($after),
+            'key' => $after->getKey(),
+            'old' => $before->getRawOriginal(),
+            'attributes' => $after->getRawOriginal()
+        ]);
     }
 
     public function up()
@@ -85,6 +65,11 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
 
     public function getRollbackChange(): TransitionInterface
     {
-        return new ModelUpdated($this->getModelClass(), $this->getModelKey(), $this->getAttributes(), $this->getOldAttributes());
+        return new ModelUpdated([
+            'model_class' => $this->getModelClass(),
+            'key' => $this->getModelKey(),
+            'old' => $this->getAttributes(),
+            'attributes' => $this->getOldAttributes()
+        ]);
     }
 }

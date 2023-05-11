@@ -6,20 +6,18 @@ namespace Debuqer\EloquentMemory\Transitions\Concerns;
 
 trait HasModelClass
 {
-    use HasParameters;
-
     public function getModelClass()
     {
-        return isset($this->parameters['model_class']) ? $this->parameters['model_class'] : null;
+        return isset($this->properties['model_class']) ? $this->properties['model_class'] : null;
     }
 
     public function setModelClass(string $modelClass)
     {
-        $this->parameters['model_class'] = $modelClass;
+        $this->properties['model_class'] = $modelClass;
     }
 
-    protected function getModelInstance($parameters = [])
+    protected function getModelInstance($properties = [])
     {
-        return app($this->getModelClass(), $parameters);
+        return app($this->getModelClass(), $properties);
     }
 }
