@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Debuqer\EloquentMemory\EloquentMemory
  *
- * @method getBatch()
- *
  */
 class EloquentMemory extends Facade
 {

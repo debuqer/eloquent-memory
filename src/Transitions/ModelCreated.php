@@ -17,26 +17,21 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 
     public static function createFromPersistedRecord(ModelTransitionInterface $change)
     {
-        $modelClass = Arr::get($change->parameters, 'model_class');
-        $attributes = Arr::get($change->parameters, 'attributes');
-
-        return new static($modelClass, $attributes);
+        return app(static::class, ['parameters' => (array) $change->parameters]);
     }
 
     public static function createFromModel(Model $model)
     {
-        return new static(get_class($model), $model->getRawOriginal());
+        return new static(['model_class' => get_class($model), 'attributes' => $model->getRawOriginal()]);
     }
 
     /**
      * ModelCreated constructor.
-     * @param string $modelClass
-     * @param array $attributes
+     * @param array $parameters
      */
-    public function __construct(string $modelClass, array $attributes)
+    public function __construct(array $parameters)
     {
-        $this->setModelClass($modelClass);
-        $this->setAttributes($attributes);
+        $this->parameters = $parameters;
     }
 
     public function up()

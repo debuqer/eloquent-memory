@@ -1,20 +1,23 @@
 <?php
 
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory as Post;
-use Debuqer\EloquentMemory\Change;
+use Debuqer\EloquentMemory\Models\TransitionRepository;
+use Debuqer\EloquentMemory\Timeline;
 
 beforeEach(function() {
     $this->post = createAPost(Post::class);
+    $this->batchId = app(TransitionRepository::class)->getBatchId();
 });
 
 test('it can record model stored', function() {
-    expect(\Debuqer\EloquentMemory\Change::count())->toBe(1);
-    /** @var Change $change */
-    $change = Change::latest('id')->first();
+    /** @var Timeline $timeline */
+    $this->timeline = app(TransitionRepository::class)->find(['batch' => $this->batchId]);
 
-    expect($change->getChange()->getType())->toBe('model-created');
-    expect($change->getChange()->getModelClass())->toBe(Post::class);
-    foreach ($change->getChange()->getAttributes() as $key => $value) {
+    expect( $this->timeline->count())->toBe(1);
+
+    expect( $this->timeline->current()->getTransition()->getType())->toBe('model-created');
+    expect( $this->timeline->current()->getTransition()->getModelClass())->toBe(Post::class);
+    foreach ( $this->timeline->current()->getTransition()->getAttributes() as $key => $value) {
         expect($value)->toBe($this->post->getRawOriginal($key));
     }
 });
@@ -26,13 +29,15 @@ test('it can record model updated', function() {
         'title' => 'new Title'
     ]);
 
-    expect(\Debuqer\EloquentMemory\Change::count())->toBe(2);
-    /** @var Change $change */
-    $change = Change::latest('id')->first();
+    /** @var Timeline $timeline */
+    $this->timeline = app(TransitionRepository::class)->find(['batch' => $this->batchId]);
 
-    expect($change->getChange()->getType())->toBe('model-updated');
-    expect($change->getChange()->getModelClass())->toBe(Post::class);
-    expect($change->getChange()->getModelKey())->toBe($this->post->id);
-    expect($change->getChange()->getOldAttributes())->toBe($oldAttributes);
-    expect($change->getChange()->getAttributes())->toBe($this->post->getRawOriginal());
+    expect($this->timeline->count())->toBe(2);
+    $change = $this->timeline->current();
+
+    expect($change->getTransition()->getType())->toBe('model-updated');
+    expect($change->getTransition()->getModelClass())->toBe(Post::class);
+    expect($change->getTransition()->getModelKey())->toBe($this->post->id);
+    expect($change->getTransition()->getOldAttributes())->toBe($oldAttributes);
+    expect($change->getTransition()->getAttributes())->toBe($this->post->getRawOriginal());
 });
