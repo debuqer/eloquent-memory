@@ -1,6 +1,7 @@
 <?php
 
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory as Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithEloquentMemory as SoftDeletedPost;
 use Debuqer\EloquentMemory\Models\TransitionRepository;
 use Debuqer\EloquentMemory\Timeline;
 
@@ -41,3 +42,19 @@ test('it can record model updated', function() {
     expect($change->getTransition()->getOldAttributes())->toBe($oldAttributes);
     expect($change->getTransition()->getAttributes())->toBe($this->post->getRawOriginal());
 });
+
+test('it can record model deleted', function() {
+    $oldAttributes = $this->post->getRawOriginal();
+
+    $this->post->delete();
+    /** @var Timeline $timeline */
+    $this->timeline = app(TransitionRepository::class)->find(['batch' => $this->batchId]);
+
+    expect($this->timeline->count())->toBe(2);
+    $change = $this->timeline->current();
+
+    expect($change->getTransition()->getType())->toBe('model-deleted');
+    expect($change->getTransition()->getModelClass())->toBe(Post::class);
+    expect($change->getTransition()->getOldAttributes())->toBe($oldAttributes);
+});
+
