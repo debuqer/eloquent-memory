@@ -2,50 +2,55 @@
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use \Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 
 beforeEach(function () {
+    // we create a fake post
     $item = createAFakePost();
+    // assume that a transition have created due to our action
     $transition = ModelCreated::createFromModel($item);
 
-    // change type
-    $this->transition = $transition; // change type
-    $this->item = $item; // app/Models/Post
-    $this->attributes = $item->getRawOriginal(); // faker attributes
+    // store for further actions
+    $this->transition = $transition;
+    $this->item = $item;
+    $this->attributes = $item->getRawOriginal();
 });
 
-test('up will create a model with same properties', function () {
+test('Transition up will create a model with the same properties', function () {
     $this->transition->up();
-    expect($this->item->exists)->toBeTrue();
+    expect($this->item->exists)->toBeTrue(); // item exists
 
+    // each attribute has proper value
     foreach ($this->item->getRawOriginal() as $attr => $value) {
         expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
     }
 });
 
-test('getRollbackChange will return an instanceof ModelDeleted with same properties ', function () {
+test('getRollbackChange will return an instanceof ModelDeleted with the same properties ', function () {
     expect($this->transition->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
     expect($this->transition->getRollbackChange()->getOldAttributes())->toBe($this->item->getRawOriginal());
 });
 
-test('migrate up should not update created_at and updated_at', function() {
-    \Carbon\Carbon::setTestNow(\Carbon\Carbon::now()->addHour());
+test('migrate up will not update created_at and updated_at', function() {
+    Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
     $this->transition->up();
-    $newPost = Post::first(); // new post created by migration
+    $post = Post::first(); // get the post directly from database
 
-    expect($newPost->created_at->toString())->toBe($this->item->created_at->toString());
-    expect($newPost->updated_at->toString())->toBe($this->item->updated_at->toString());
+    expect($post->created_at->toString())->toBe($this->item->created_at->toString());
+    expect($post->updated_at->toString())->toBe($this->item->updated_at->toString());
 });
 
-test('migrate up cant perform creation where model already exists', function() {
-    $this->transition->up(); // now model exists in db
-    $this->transition->up(); // trying to create model again
-})->expectException(\Illuminate\Database\QueryException::class);
+test('migrate up can not perform creation when model already exists', function() {
+    $this->transition->up(); // now model will create after this transition
+    $this->transition->up(); // trying to create model again should fail
+})->expectException(QueryException::class);
 
-test('raise exception when that id exists', function() {
+test('raise exception when id exists', function() {
     createAPost();
 
     $this->transition->up();
-})->expectException(\Illuminate\Database\QueryException::class);
+})->expectException(QueryException::class);
 
 
 test('persist will save a record in db', function () {
@@ -55,41 +60,41 @@ test('persist will save a record in db', function () {
 });
 
 
-test('can be made by a db record', function() {
-    $this->transition->persist();
+test('transition can be made by a db record', function() {
+    $this->transition->persist(); // let's store the transition for further retrieve
+    $newTransition = ModelCreated::createFromPersistedRecord($this->transition->getModel()); // $newTransition must be create
 
-    $newC = ModelCreated::createFromPersistedRecord($this->transition->getModel()); // c must be create
 
-    expect(get_class($newC))->toBe(get_class($this->transition));
-
-    expect($newC->getProperties())->toBe($this->transition->getProperties());
-    expect(get_class($newC->getRollbackChange()))->toBe(get_class($this->transition->getRollbackChange()));
-    expect($newC->getRollbackChange()->getProperties())->toBe($this->transition->getRollbackChange()->getProperties());
+    expect(get_class($newTransition))->toBe(get_class($this->transition));
+    expect($newTransition->getProperties())->toBe($this->transition->getProperties());
+    expect(get_class($newTransition->getRollbackChange()))->toBe(get_class($this->transition->getRollbackChange()));
+    expect($newTransition->getRollbackChange()->getProperties())->toBe($this->transition->getRollbackChange()->getProperties());
 });
 
 test('created by db record can migrate up and rollback and up again', function() {
-    $this->transition->persist();
+    $this->transition->persist(); // let's store the transition for further retrieve
 
-    $newC = ModelCreated::createFromPersistedRecord($this->transition->getModel()); // c must be create
-    $newC->up();
-    $this->item->refresh();
-    expect($this->item->exists)->toBeTrue();
+    $newTransition = ModelCreated::createFromPersistedRecord($this->transition->getModel());
+    $newTransition->up(); // this will create a model in database
+    $this->item->refresh(); // re-query our model
+    expect($this->item->exists)->toBeTrue(); // our model must exists
+
     foreach ($this->item->getRawOriginal() as $attr => $value) {
         expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
     }
-    $newC->down();
+    $newTransition->down(); // this will destory our model
     expect(Post::find($this->item->id))->toBeNull();
 
-    $newC->up();
+    $newTransition->up(); // this will create our model again
 
-    $newPost = Post::find($this->item->id);
+    $newPost = Post::find($this->item->id); // retrieve our model from db
     expect($newPost)->not->toBeNull();
     foreach ($newPost->getRawOriginal() as $attr => $value) {
         expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
     }
 });
 
-test('mutation doesnt affect on change persist', function() {
+test('mutation doesnt affect on transition properties on persist', function() {
     $modelClassWithMutation = new Class extends Post {
         protected $table = 'posts';
 
@@ -101,15 +106,17 @@ test('mutation doesnt affect on change persist', function() {
 
     $modelClassWithMutation->setRawAttributes($this->item->getRawOriginal())->save();
     $modelWithMutation = $modelClassWithMutation::first();
-    $change = ModelCreated::createFromModel($modelClassWithMutation);
+    $transition = ModelCreated::createFromModel($modelClassWithMutation);
 
-    expect($change->getAttributes()['title'])->not->toBe($modelWithMutation->title);
+    $mutatedTitle = $modelWithMutation->title;
+    expect($transition->getAttributes()['title'])->not->toBe($mutatedTitle);
 });
 
 test('migrate will fill guarded attributes', function() {
-    $this->transition->up();
+    $this->transition->up(); // this will create our model
 
     $newModel = Post::first();
+    // model stored with id=1
     expect($newModel->getKey())->toBe($this->item->getKey());
 });
 
