@@ -1,6 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon\Carbon;
 
@@ -35,7 +35,12 @@ test('getRollbackChange returns instanceof ModelUpdated with reversed properties
         'title' => 'Title changed!'
     ]);
 
-    $c = new ModelUpdated(get_class($after), $after->getKey(), $before->getRawOriginal(), $after->getRawOriginal());
+    $c = new ModelUpdated([
+        'model_class' => get_class($after),
+        'key' => $after->getKey(),
+        'old' => $before->getRawOriginal(),
+        'attributes' => $after->getRawOriginal()
+    ]);
 
     expect($c->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
     expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
@@ -140,11 +145,11 @@ test('can persist in db', function () {
     $this->c->persist();
 
     expect($this->c->getModel())->not->toBeNull();
-    expect($this->c->getModel()->parameters)->toBe($this->c->getParameters());
-    expect($this->c->getModel()->parameters['old'])->toBe($this->before->getRawOriginal());
-    expect($this->c->getModel()->parameters['attributes'])->toBe($this->after->getRawOriginal());
-    expect($this->c->getModel()->parameters['key'])->toBe($this->after->getKey());
-    expect($this->c->getModel()->parameters['model_class'])->toBe(get_class($this->after));
+    expect($this->c->getModel()->properties)->toBe($this->c->getProperties());
+    expect($this->c->getModel()->properties['old'])->toBe($this->before->getRawOriginal());
+    expect($this->c->getModel()->properties['attributes'])->toBe($this->after->getRawOriginal());
+    expect($this->c->getModel()->properties['key'])->toBe($this->after->getKey());
+    expect($this->c->getModel()->properties['model_class'])->toBe(get_class($this->after));
     expect($this->c->getModel()->type)->toBe('model-updated');
 });
 

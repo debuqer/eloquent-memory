@@ -1,6 +1,6 @@
 <?php
-use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
-use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
@@ -64,11 +64,11 @@ test('can persist in db', function () {
     $this->c->persist();
 
     expect($this->c->getModel())->not->toBeNull();
-    expect($this->c->getModel()->parameters)->toBe($this->c->getParameters());
-    expect($this->c->getModel()->parameters['old'])->toBe($this->before->getRawOriginal());
-    expect($this->c->getModel()->parameters['attributes'])->toBe($this->after->getRawOriginal());
-    expect($this->c->getModel()->parameters['key'])->toBe($this->after->getKey());
-    expect($this->c->getModel()->parameters['model_class'])->toBe(get_class($this->after));
+    expect($this->c->getModel()->properties)->toBe($this->c->getProperties());
+    expect($this->c->getModel()->properties['old'])->toBe($this->before->getRawOriginal());
+    expect($this->c->getModel()->properties['attributes'])->toBe($this->after->getRawOriginal());
+    expect($this->c->getModel()->properties['key'])->toBe($this->after->getKey());
+    expect($this->c->getModel()->properties['model_class'])->toBe(get_class($this->after));
     expect($this->c->getModel()->type)->toBe('model-soft-deleted');
 });
 

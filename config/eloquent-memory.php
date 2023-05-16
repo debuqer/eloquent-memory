@@ -1,11 +1,11 @@
 <?php
 
 // config for Debuqer/EloquentMemory
-use Debuqer\EloquentMemory\ChangeTypes\ModelCreated;
-use Debuqer\EloquentMemory\ChangeTypes\ModelDeleted;
-use Debuqer\EloquentMemory\ChangeTypes\ModelRestored;
-use Debuqer\EloquentMemory\ChangeTypes\ModelSoftDeleted;
-use Debuqer\EloquentMemory\ChangeTypes\ModelUpdated;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 
 return [
     'changes' => [
