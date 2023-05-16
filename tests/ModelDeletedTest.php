@@ -4,49 +4,42 @@ use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
 
 beforeEach(function () {
-    $item = createAPost();
-    $c = ModelDeleted::createFromModel($item);
+    $item = createAPost(); // we already have a post
+    $transition = ModelDeleted::createFromModel($item);
 
-    // change type
-    $this->c = $c; // change type
-    $this->item = $item; // app/Models/Post
-    $this->attributes = $item->getRawOriginal(); // faker attributes
+    $this->transition = $transition;
+    $this->item = $item;
+    $this->attributes = $item->getRawOriginal();
 });
 
 
 test('up will forceDelete a model from database', function () {
-    $this->c->up();
+    $this->transition->up();
 
-    expect(Post::find($this->item->getKey()))->toBeNull();
-});
+    Post::findOrFail($this->item->getKey());
+})->expectException(ModelNotFoundException::class);
 
-test('up will forceDelete a model from database when model has softDelete', function () {
-    $softDeletableModelClass = new class extends \Debuqer\EloquentMemory\Tests\Fixtures\Post {
-        use \Illuminate\Database\Eloquent\SoftDeletes;
+test('up will forceDelete a model from database even when model uses softDelete', function () {
+    $softDeletableModel = createAPost(PostWithSoftDelete::class);
 
-        protected $table = 'posts';
-    };
+    $model = $softDeletableModel;
+    $transition = ModelDeleted::createFromModel($model); // must forceDelete the model
+    $transition->up();
 
-    $attributes = createAFakePost()->getRawOriginal();
-    $softDeletableModelClass->setRawAttributes($attributes)->save();
-
-    $model = $softDeletableModelClass::first();
-    $c = ModelDeleted::createFromModel($model);
-    $c->up();
-
-    expect($softDeletableModelClass::withTrashed()->find($this->item->getKey()))->toBeNull();
-});
+    $softDeletableModel::withTrashed()->findOrFail($softDeletableModel->getKey());
+})->expectException(ModelNotFoundException::class);
 
 test('getRollbackChange returns instance of ModelCreated with same properties ', function () {
-    expect($this->c->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
-    expect($this->c->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());
+    expect($this->transition->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
+    expect($this->transition->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());
 });
 
-test('migrate down create the model with same properties', function() {
-    $this->item->forceDelete();
-    $this->c->down();
+test('migrate down creates a model with the same properties', function() {
+    $this->item->forceDelete(); // we assume Post deleted since we need to revert our action
+    $this->transition->down(); // must create deleted model
 
     expect(Post::find($this->item->getKey()))->not->toBeNull();
     foreach ($this->item->getRawOriginal() as $attr => $value) {
@@ -55,62 +48,62 @@ test('migrate down create the model with same properties', function() {
 });
 
 test('migrate up and migrate down and migrate up again works', function () {
-    $this->c->up();
+    $this->transition->up();
     expect(Post::find($this->item->getKey()))->toBeNull();
-    $this->c->down();
+    $this->transition->down();
     expect(Post::find($this->item->getKey()))->not->toBeNull();
-    $this->c->up();
+    $this->transition->up();
     expect(Post::find($this->item->getKey()))->toBeNull();
 });
 
-test('migrate up and migrate up again doesnt work', function () {
-    $this->c->up();
-    $this->c->up();
+test('migrate up and migrate up again does not work', function () {
+    $this->transition->up();
+    $this->transition->up();
 })->expectException(ModelNotFoundException::class);
 
 test('migrate down and migrate down again doesnt work', function () {
     $this->item->forceDelete();
 
-    $this->c->down();
-    $this->c->down();
+    $this->transition->down();
+    $this->transition->down();
 })->expectException(QueryException::class);
 
-test('migrate up doesnt work when model already deleted', function () {
+test('migrate up does not work when model already deleted', function () {
     $this->item->forceDelete();
 
-    $this->c->up();
+    $this->transition->up();
 })->expectException(ModelNotFoundException::class);
 
-test('persist can store change in db', function () {
-    $this->c->persist();
+test('persist can store transition in db', function () {
+    $this->transition->persist();
 
-    expect($this->c->getModel()->exists)->toBeTrue();
+    expect($this->transition->getModel()->exists)->toBeTrue();
 });
 
 test('can be created from persisted model', function () {
-    $this->c->persist();
+    $this->transition->persist();
 
-    $newC = ModelDeleted::createFromPersistedRecord($this->c->getModel()); // c must be create
+    $transition = ModelDeleted::createFromPersistedRecord($this->transition->getModel()); // c must be create
 
-    expect(get_class($newC))->toBe(get_class($this->c));
-    expect($newC->getProperties())->toBe($this->c->getProperties());
-    expect(get_class($newC->getRollbackChange()))->toBe(get_class($this->c->getRollbackChange()));
-    expect($newC->getRollbackChange()->getProperties())->toBe($this->c->getRollbackChange()->getProperties());
+    expect(get_class($transition))->toBe(get_class($this->transition));
+    expect($transition->getProperties())->toBe($this->transition->getProperties());
+    expect(get_class($transition->getRollbackChange()))->toBe(get_class($this->transition->getRollbackChange()));
+    expect($transition->getRollbackChange()->getProperties())->toBe($this->transition->getRollbackChange()->getProperties());
 });
 
 
-test('created by persisted record can be migrate up and down', function () {
-    $this->c->persist();
+test('a transition that created by persisted record can be migrate up and down', function () {
+    $this->transition->persist();
 
-    $newC = ModelDeleted::createFromPersistedRecord($this->c->getModel()); // c must be create
+    $transition = ModelDeleted::createFromPersistedRecord($this->transition->getModel());
 
-    $newC->up();
+    $transition->up();
     expect(Post::first())->toBeNull();
-    $newC->down();
+    $transition->down();
     expect(Post::first())->not->toBeNull();
 });
 
-test('mutation doesnt affect on data', function () {
+test('mutation does not affect on properties on persist', function () {
     $modelClassWithMutation = new Class extends Post {
         protected $table = 'posts';
 
