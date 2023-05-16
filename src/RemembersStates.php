@@ -13,10 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait RemembersStates
 {
-    public static function boot()
+    public static function booted()
     {
-        parent::boot();
-
         static::created(function(Model $model) {
             ModelCreated::createFromModel($model->fresh())->persist();
         });
@@ -34,18 +32,29 @@ trait RemembersStates
             ]))->persist();
         });
 
-        if (method_exists(static::class, 'softDelete')) {
+        if (method_exists(static::class, 'bootSoftDeletes')) {
             static::softDeleted(function ($model) {
+                /** @var Model $model */
+                $attributesBeforeChange = [$model->getDeletedAtColumn() => null];
+                $attributesAfterChange = [$model->getDeletedAtColumn() => $model->{$model->getDeletedAtColumn()}];
+                $newModel = $model->fresh();
 
+                (new ModelSoftDeleted([
+                    'model_class' => get_class($newModel),
+                    'key' => $newModel->getKey(),
+                    'old' => $attributesBeforeChange,
+                    'attributes' => $attributesAfterChange
+                ]))->persist();
             });
 
             static::restored(function ($model) {
-                $model->broadcastRestored();
+                //$model->broadcastRestored();
             });
         }
-
-        static::deleted(function (Model $model) {
-            ModelDeleted::createFromModel($model)->persist();
-        });
+        else {
+            static::deleted(function (Model $model) {
+                ModelDeleted::createFromModel($model)->persist();
+            });
+        }
     }
 }

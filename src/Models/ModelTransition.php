@@ -36,7 +36,7 @@ class ModelTransition extends Model implements ModelTransitionInterface
     {
         $timeline = new Timeline();
         static::query()->where($where)->get()->each(function ($item) use(&$timeline) {
-            $timeline->insert($item, $item->created_at);
+            $timeline->insert($item, $item->id);
         });
 
         return $timeline;
