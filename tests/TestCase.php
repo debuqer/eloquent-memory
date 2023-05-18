@@ -61,6 +61,23 @@ class TestCase extends Orchestra
          return $item;
     }
 
+    function arraysAreTheSame($attrs1, $attrs2)
+    {
+        $allAttributes = array_merge(array_keys($attrs1, $attrs2));
+
+        $diff = [];
+        foreach ($allAttributes as $attr) {
+            $valueOfArray1 = isset($attrs1[$attr]) ? $attrs1[$attr] : null;
+            $valueOfArray2 = isset($attrs2[$attr]) ? $attrs2[$attr] : null;
+
+            if ( $valueOfArray1 !== $valueOfArray2) {
+                $diff[] = $attr;
+            }
+        }
+
+        return count($diff) === 0;
+    }
+
     function createAUser()
     {
         return Factory::factoryForModel(User::class)->createOne();
@@ -101,10 +118,5 @@ class TestCase extends Orchestra
         return $post;
     }
 
-    function expectAttributesAreTheSame($attrs1, $attrs2)
-    {
-        foreach ($attrs1 as $attr => $value) {
-            expect($value)->toBe(  $attrs2[$attr] ?? null);
-        }
-    }
+
 }

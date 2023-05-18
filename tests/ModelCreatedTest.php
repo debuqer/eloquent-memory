@@ -14,6 +14,7 @@ beforeEach(function () {
         }
     };
 
+    // we just need a model not a record in database
     $item = $this->getFilledModelOf($class, Post::class);
 
     // assume that a transition have created due to our action
@@ -29,10 +30,7 @@ test('Transition up will create a model with the same properties', function () {
     $this->transition->up();
     expect($this->item->exists)->toBeTrue(); // item exists
 
-    // each attribute has proper value
-    foreach ($this->item->getRawOriginal() as $attr => $value) {
-        expect($value)->toBe((isset($this->attributes[$attr]) ? $this->attributes[$attr] : null));
-    }
+    expect($this->arraysAreTheSame($this->item->getRawOriginal(), $this->attributes))->toBeTrue();
 });
 
 test('getRollbackChange will return an instanceof ModelDeleted with the same properties ', function () {

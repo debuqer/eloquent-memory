@@ -44,8 +44,8 @@ test('getRollbackChange returns instanceof ModelUpdated with reversed properties
 
     expect($c->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
     expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
-    $this->expectAttributesAreTheSame($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
-    $this->expectAttributesAreTheSame($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
+    expect($this->arraysAreTheSame($c->getRollbackChange()->getOldAttributes(), $c->getAttributes()))->toBeTrue();
+    expect($this->arraysAreTheSame($c->getRollbackChange()->getAttributes(), $c->getOldAttributes()))->toBeTrue();
 });
 
 test('migrate up and down rollback everything to first place', function () {
