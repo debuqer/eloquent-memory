@@ -1,13 +1,21 @@
 <?php
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use \Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 
 beforeEach(function () {
-    // we create a fake post
-    $item = $this->createAFakePost();
+    $class = new Class extends Post {
+        public function owner()
+        {
+            return $this->belongsTo(User::class, 'owner_id');
+        }
+    };
+
+    $item = $this->getFilledModelOf($class, Post::class);
+
     // assume that a transition have created due to our action
     $transition = ModelCreated::createFromModel($item);
 
@@ -95,18 +103,16 @@ test('created by db record can migrate up and rollback and up again', function()
 });
 
 test('mutation doesnt affect on transition properties on persist', function() {
-    $modelClassWithMutation = new Class extends Post {
-        protected $table = 'posts';
-
+    $mutationClass = new Class extends Post {
         public function getTitleAttribute($value)
         {
             return $value .'::mutated';
         }
     };
 
-    $modelClassWithMutation->setRawAttributes($this->item->getRawOriginal())->save();
-    $modelWithMutation = $modelClassWithMutation::first();
-    $transition = ModelCreated::createFromModel($modelClassWithMutation);
+
+    $modelWithMutation = $this->createAModelOf($mutationClass);
+    $transition = ModelCreated::createFromModel($modelWithMutation);
 
     $mutatedTitle = $modelWithMutation->title;
     expect($transition->getAttributes()['title'])->not->toBe($mutatedTitle);

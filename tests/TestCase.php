@@ -5,6 +5,7 @@ namespace Debuqer\EloquentMemory\Tests;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
@@ -37,6 +38,27 @@ class TestCase extends Orchestra
         $migration->up();
         $migration = include __DIR__ . '/../database/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
+    }
+
+    function getMockedDataFor($class = Post::class)
+    {
+        return Factory::factoryForModel($class)->raw();
+    }
+
+    function createAModelOf($class = Post::class, $factorySource = Post::class)
+    {
+        $attributes = $this->getMockedDataFor($factorySource);
+
+        return $class::create($attributes);
+    }
+
+    function getFilledModelOf($class = Post::class, $factorySource = Post::class)
+    {
+         DB::beginTransaction();
+         $item = $this->createAModelOf($class, $factorySource);
+         DB::rollBack();
+
+         return $item;
     }
 
     function createAUser()
