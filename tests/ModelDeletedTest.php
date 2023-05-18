@@ -7,7 +7,7 @@ use Illuminate\Database\QueryException;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
 
 beforeEach(function () {
-    $item = createAPost(); // we already have a post
+    $item = $this->createAPost(); // we already have a post
     $transition = ModelDeleted::createFromModel($item);
 
     $this->transition = $transition;
@@ -23,7 +23,7 @@ test('up will forceDelete a model from database', function () {
 })->expectException(ModelNotFoundException::class);
 
 test('up will forceDelete a model from database even when model uses softDelete', function () {
-    $softDeletableModel = createAPost(PostWithSoftDelete::class);
+    $softDeletableModel = $this->createAPost(PostWithSoftDelete::class);
 
     $model = $softDeletableModel;
     $transition = ModelDeleted::createFromModel($model); // must forceDelete the model

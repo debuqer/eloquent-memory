@@ -7,7 +7,7 @@ use Illuminate\Database\QueryException;
 
 beforeEach(function () {
     // we create a fake post
-    $item = createAFakePost();
+    $item = $this->createAFakePost();
     // assume that a transition have created due to our action
     $transition = ModelCreated::createFromModel($item);
 
@@ -47,7 +47,7 @@ test('migrate up can not perform creation when model already exists', function()
 })->expectException(QueryException::class);
 
 test('raise exception when id exists', function() {
-    createAPost();
+    $this->createAPost();
 
     $this->transition->up();
 })->expectException(QueryException::class);

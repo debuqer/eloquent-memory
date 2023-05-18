@@ -7,7 +7,7 @@ use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithEloquentMemory;
 
 beforeEach(function() {
-    $this->post = createAPost(Post::class);
+    $this->post = $this->createAPost(Post::class);
     $this->batchId = app(TransitionRepository::class)->getBatchId();
 });
 
@@ -61,7 +61,7 @@ test('it can record model deleted', function() {
 
 
 test('it can record model soft deleted', function () {
-    $post = createAPost(SoftDeletedPostWithEloquentMemory::class);
+    $post = $this->createAPost(SoftDeletedPostWithEloquentMemory::class);
     $oldAttributes = [$post->getDeletedAtColumn() => $post->getAttribute($post->getDeletedAtColumn())];
     $post->delete();
     $attributes = [$post->getDeletedAtColumn() => $post->getAttributeValue($post->getDeletedAtColumn())->format('Y-m-d\TH:i:s.u\Z')];
@@ -80,7 +80,7 @@ test('it can record model soft deleted', function () {
 });
 
 test('it can record model restored', function () {
-    $post = createAPost(SoftDeletedPostWithEloquentMemory::class);
+    $post = $this->createAPost(SoftDeletedPostWithEloquentMemory::class);
     $post->delete();
     $oldAttributes = [$post->getDeletedAtColumn() => $post->getAttributeValue($post->getDeletedAtColumn())->format('Y-m-d H:i:s')];
     $post->restore();

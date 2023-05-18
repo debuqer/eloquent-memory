@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon\Carbon;
 
 beforeEach(function () {
-    $before = createAPost();
+    $before = $this->createAPost();
     $after = (clone $before);
     $after->update([
         'title' => 'Title changed!',
@@ -29,7 +29,7 @@ test('up will update a model in database with given attributes', function () {
 });
 
 test('getRollbackChange returns instanceof ModelUpdated with reversed properties', function () {
-    $after = createAPost();
+    $after = $this->createAPost();
     $before = (clone $after);
     $before->update([
         'title' => 'Title changed!'
@@ -44,8 +44,8 @@ test('getRollbackChange returns instanceof ModelUpdated with reversed properties
 
     expect($c->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
     expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
-    testAttributes($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
-    testAttributes($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
+    $this->expectAttributesAreTheSame($c->getRollbackChange()->getOldAttributes(), $c->getAttributes());
+    $this->expectAttributesAreTheSame($c->getRollbackChange()->getAttributes(), $c->getOldAttributes());
 });
 
 test('migrate up and down rollback everything to first place', function () {
@@ -127,7 +127,7 @@ test('migrate up can fill despite casted attributes', function () {
         ];
     };
 
-    $attributes = createAFakePost()->getRawOriginal();
+    $attributes = $this->createAFakePost()->getRawOriginal();
     $modelWithGuarded->setRawAttributes($attributes)->save();
     $before = Post::latest('id')->first();
     $after = (clone $before);

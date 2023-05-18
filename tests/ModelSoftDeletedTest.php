@@ -18,7 +18,7 @@ beforeEach(function () {
     };
     $this->softDeletableModelClass = $softDeletableModelClass;
 
-    $attributes = createAFakePost()->getRawOriginal();
+    $attributes = $this->createAFakePost()->getRawOriginal();
     $softDeletableModelClass->setRawAttributes($attributes)->save();
     $before = $softDeletableModelClass::first();
     $after = (clone $before);
@@ -47,12 +47,12 @@ test('up will soft delete a model from database', function () {
 test('getRollbackChange will return instance of ModelRestored with same properties', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelRestored::class);
     expect($this->c->getRollbackChange()->getModelKey())->toBe($this->c->getModelKey());
-    testAttributes($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes());
-    testAttributes($this->c->getRollbackChange()->getAttributes(), $this->c->getOldAttributes());
+    $this->expectAttributesAreTheSame($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes());
+    $this->expectAttributesAreTheSame($this->c->getRollbackChange()->getAttributes(), $this->c->getOldAttributes());
 });
 
 test('raise error when model not using softDelete', function() {
-    $before = createAPost();
+    $before = $this->createAPost();
     $after = (clone $before);
     $after->delete();
 

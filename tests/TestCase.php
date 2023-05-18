@@ -2,7 +2,10 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
+use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 
@@ -34,5 +37,52 @@ class TestCase extends Orchestra
         $migration->up();
         $migration = include __DIR__ . '/../database/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
+    }
+
+    function createAUser()
+    {
+        return Factory::factoryForModel(User::class)->createOne();
+    }
+
+    function createEmptyPost($class = Post::class)
+    {
+        return new $class();
+    }
+
+    function createAFakePost()
+    {
+        DB::beginTransaction();
+        $model = $this->createAPost();
+        DB::rollBack();
+
+        return $model;
+    }
+
+    function createAPost($class = Post::class)
+    {
+        return Factory::factoryForModel($class)->createOne();
+    }
+
+    function createAPostAndDelete($class = Post::class)
+    {
+        $post = Factory::factoryForModel($class)->createOne();
+        $post->delete();
+
+        return $post;
+    }
+
+    function createAPostAndForceDelete($class = Post::class)
+    {
+        $post = Factory::factoryForModel($class)->createOne();
+        $post->forceDelete();
+
+        return $post;
+    }
+
+    function expectAttributesAreTheSame($attrs1, $attrs2)
+    {
+        foreach ($attrs1 as $attr => $value) {
+            expect($value)->toBe(  $attrs2[$attr] ?? null);
+        }
     }
 }
