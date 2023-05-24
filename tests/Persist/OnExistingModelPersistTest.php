@@ -28,3 +28,10 @@ it('[ModelCreated] can be made by persisted record', function () {
     expect($persistedTransition->getProperties())->toBe($this->transitions['ModelCreated']->getProperties());
     expect($persistedTransition->getRollbackChange()->getProperties())->toBe($this->transitions['ModelCreated']->getRollbackChange()->getProperties());
 });
+
+it('[ModelCreated] can persist without considering mutators', function () {
+    $persistedTransition = ModelCreated::createFromPersistedRecord($this->transitions['ModelCreated']->getModel());
+
+    expect($persistedTransition)->not->toBeNull();
+    expect($persistedTransition->getAttributes()['title'])->not->toBe('This title has changed');
+});

@@ -50,3 +50,11 @@ it('[ModelCreated] can not re-create another model when id reserved', function (
 
     $this->transitions['ModelCreated']->up();
 })->expectException(QueryException::class);
+
+
+it('[ModelCreated] migrate.up() will fill guarded fields too', function () {
+    $this->transitions['ModelCreated']->up();
+
+    $recentlyReCreatedModel = Post::first();
+    expect($recentlyReCreatedModel->getKey())->toBe($this->model->getKey());
+});
