@@ -1,5 +1,6 @@
 <?php
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Illuminate\Database\QueryException;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
@@ -10,7 +11,8 @@ beforeEach(function () {
     $this->attributes = $this->model->getRawOriginal();
 
     $this->transitions = [
-        'ModelCreated' => ModelCreated::createFromModel($this->model)
+        'ModelCreated' => ModelCreated::createFromModel($this->model),
+        'ModelDeleted' => ModelDeleted::createFromModel($this->model),
     ];
 });
 
@@ -49,3 +51,29 @@ it('[ModelCreated] migrate.up() will fill guarded fields too', function () {
     $recentlyReCreatedModel = Post::first();
     expect($recentlyReCreatedModel->getKey())->toBe($this->model->getKey());
 });
+
+
+it('[ModelDeleted] migrate.down() can re-create the model', function () {
+    $this->transitions['ModelDeleted']->down();
+
+    $recentlyReCreatedModel = Post::first();
+    expect($recentlyReCreatedModel->getKey())->toBe($this->model->getKey());
+    expect($this->arraysAreTheSame($recentlyReCreatedModel->getAttributes(), $this->model->getAttributes()))->toBeTrue();
+    expect($this->arraysAreTheSame($recentlyReCreatedModel->getRawOriginal(), $this->model->getRawOriginal()))->toBeTrue();
+});
+
+it('[ModelDeleted] migrate.down() and migrate.down() doesnt work', function () {
+    $this->transitions['ModelDeleted']->down();
+    expect(Post::find($this->model->getKey()))->not->toBeNull();
+
+    $this->transitions['ModelDeleted']->down();
+    expect(Post::find($this->model->getKey()))->not->toBeNull();
+})->expectException(QueryException::class);
+
+
+it('[ModelDeleted] migrate.up() doesnt work when model already deleted', function () {
+    $this->model->forceDelete();
+
+    $this->transitions['ModelDeleted']->up();
+    expect(Post::find($this->model->getKey()))->not->toBeNull();
+})->expectException(ModelNotFoundException::class);

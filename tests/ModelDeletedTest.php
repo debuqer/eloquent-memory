@@ -42,6 +42,7 @@ test('getRollbackChange returns instance of ModelCreated with same properties ',
     expect($this->transition->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());
 });
 
+/** @deprecated  */
 test('migrate down creates a model with the same properties', function() {
     $this->item->forceDelete(); // we assume Post deleted since we need to revert our action
     $this->transition->down(); // must create deleted model
@@ -52,6 +53,7 @@ test('migrate down creates a model with the same properties', function() {
     }
 });
 
+/** @deprecated  */
 test('migrate up and migrate down and migrate up again works', function () {
     $this->transition->up();
     expect(Post::find($this->item->getKey()))->toBeNull();
@@ -61,11 +63,12 @@ test('migrate up and migrate down and migrate up again works', function () {
     expect(Post::find($this->item->getKey()))->toBeNull();
 });
 
+/** @deprecated  */
 test('migrate up and migrate up again does not work', function () {
     $this->transition->up();
     $this->transition->up();
 })->expectException(ModelNotFoundException::class);
-
+/** @deprecated  */
 test('migrate down and migrate down again doesnt work', function () {
     $this->item->forceDelete();
 
@@ -73,18 +76,20 @@ test('migrate down and migrate down again doesnt work', function () {
     $this->transition->down();
 })->expectException(QueryException::class);
 
+/** @deprecated  */
 test('migrate up does not work when model already deleted', function () {
     $this->item->forceDelete();
 
     $this->transition->up();
 })->expectException(ModelNotFoundException::class);
 
+/** @deprecated  */
 test('persist can store transition in db', function () {
     $this->transition->persist();
 
     expect($this->transition->getModel()->exists)->toBeTrue();
 });
-
+/** @deprecated  */
 test('can be created from persisted model', function () {
     $this->transition->persist();
 
