@@ -1,6 +1,7 @@
 <?php
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Illuminate\Database\QueryException;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use \Debuqer\EloquentMemory\Transitions\ModelDeleted;
 
@@ -42,3 +43,10 @@ it('[ModelCreated] can re-create the model without changing created_at and updat
     expect($post->created_at->toString())->toBe($this->model->created_at->toString());
     expect($post->updated_at->toString())->toBe($this->model->updated_at->toString());
 });
+
+
+it('[ModelCreated] can not re-create another model when id reserved', function () {
+    $this->createAPost(); // reserves id = 1
+
+    $this->transitions['ModelCreated']->up();
+})->expectException(QueryException::class);

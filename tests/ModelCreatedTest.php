@@ -56,25 +56,36 @@ test('migrate up will not update created_at and updated_at', function() {
     expect($post->updated_at->toString())->toBe($this->item->updated_at->toString());
 });
 
+/**
+ * @deprecated
+ */
 test('migrate up can not perform creation when model already exists', function() {
     $this->transition->up(); // now model will create after this transition
     $this->transition->up(); // trying to create model again should fail
 })->expectException(QueryException::class);
 
+
+/**
+ * @deprecated
+ */
 test('raise exception when id exists', function() {
     $this->createAPost();
 
     $this->transition->up();
 })->expectException(QueryException::class);
 
-
+/**
+ * @deprecated
+ */
 test('persist will save a record in db', function () {
     $this->transition->persist();
 
     expect($this->transition->getModel()->exists)->toBeTrue();
 });
 
-
+/**
+ * @deprecated
+ */
 test('transition can be made by a db record', function() {
     $this->transition->persist(); // let's store the transition for further retrieve
     $newTransition = ModelCreated::createFromPersistedRecord($this->transition->getModel()); // $newTransition must be create
@@ -86,6 +97,9 @@ test('transition can be made by a db record', function() {
     expect($newTransition->getRollbackChange()->getProperties())->toBe($this->transition->getRollbackChange()->getProperties());
 });
 
+/**
+ * @deprecated
+ */
 test('created by db record can migrate up and rollback and up again', function() {
     $this->transition->persist(); // let's store the transition for further retrieve
 
