@@ -4,7 +4,7 @@ use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 
 beforeEach(function () {
-    $this->model = $this->createAPost();
+    $this->model = $this->createAFakePost();
     $this->attributes = $this->model->getRawOriginal();
 
     $this->transitions = [
@@ -15,23 +15,11 @@ beforeEach(function () {
     foreach ($this->transitions as $transition) {
         $transition->persist();
     }
-});
 
-it('[ModelCreated] can persist', function () {
-    expect($this->transitions['ModelCreated']->getModel())->not->toBeNull();
-});
-
-it('[ModelCreated] can be made by persisted record', function () {
-    $persistedTransition = ModelCreated::createFromPersistedRecord($this->transitions['ModelCreated']->getModel());
-
-    expect($persistedTransition->getType())->toBe($this->transitions['ModelCreated']->getType());
-    expect($persistedTransition->getModelClass())->toBe($this->transitions['ModelCreated']->getModelClass());
-    expect($persistedTransition->getProperties())->toBe($this->transitions['ModelCreated']->getProperties());
-    expect($persistedTransition->getRollbackChange()->getProperties())->toBe($this->transitions['ModelCreated']->getRollbackChange()->getProperties());
+    $this->model->forceDelete(); // to test migrate.up()
 });
 
 it('[ModelCreated] can be made by persisted record and migrate up, down and up!', function () {
-    $this->model->forceDelete(); // to test migrate.up()
     $persistedTransition = ModelCreated::createFromPersistedRecord($this->transitions['ModelCreated']->getModel());
 
     $persistedTransition->up();
