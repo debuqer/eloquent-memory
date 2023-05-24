@@ -2,7 +2,11 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
+use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 
@@ -35,4 +39,84 @@ class TestCase extends Orchestra
         $migration = include __DIR__ . '/../database/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
     }
+
+    function getMockedDataFor($class = Post::class)
+    {
+        return Factory::factoryForModel($class)->raw();
+    }
+
+    function createAModelOf($class = Post::class, $factorySource = Post::class)
+    {
+        $attributes = $this->getMockedDataFor($factorySource);
+
+        return $class::create($attributes);
+    }
+
+    function getFilledModelOf($class = Post::class, $factorySource = Post::class)
+    {
+         DB::beginTransaction();
+         $item = $this->createAModelOf($class, $factorySource);
+         DB::rollBack();
+
+         return $item;
+    }
+
+    function arraysAreTheSame($attrs1, $attrs2)
+    {
+        $allAttributes = array_merge(array_keys($attrs1, $attrs2));
+
+        $diff = [];
+        foreach ($allAttributes as $attr) {
+            $valueOfArray1 = isset($attrs1[$attr]) ? $attrs1[$attr] : null;
+            $valueOfArray2 = isset($attrs2[$attr]) ? $attrs2[$attr] : null;
+
+            if ( $valueOfArray1 !== $valueOfArray2) {
+                $diff[] = $attr;
+            }
+        }
+
+        return count($diff) === 0;
+    }
+
+    function createAUser()
+    {
+        return Factory::factoryForModel(User::class)->createOne();
+    }
+
+    function createEmptyPost($class = Post::class)
+    {
+        return new $class();
+    }
+
+    function createAFakePost()
+    {
+        DB::beginTransaction();
+        $model = $this->createAPost();
+        DB::rollBack();
+
+        return $model;
+    }
+
+    function createAPost($class = Post::class)
+    {
+        return Factory::factoryForModel($class)->createOne();
+    }
+
+    function createAPostAndDelete($class = Post::class)
+    {
+        $post = Factory::factoryForModel($class)->createOne();
+        $post->delete();
+
+        return $post;
+    }
+
+    function createAPostAndForceDelete($class = Post::class)
+    {
+        $post = Factory::factoryForModel($class)->createOne();
+        $post->forceDelete();
+
+        return $post;
+    }
+
+
 }

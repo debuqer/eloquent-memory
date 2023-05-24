@@ -14,7 +14,11 @@ class ModelCreated extends BaseTransition implements TransitionInterface
     use HasModelClass;
     use HasAttributes;
 
-    public static function createFromModel(Model $model)
+    /**
+     * @param Model $model
+     * @return TransitionInterface
+     */
+    public static function createFromModel(Model $model): TransitionInterface
     {
         return new static(['model_class' => get_class($model), 'attributes' => $model->getRawOriginal()]);
     }

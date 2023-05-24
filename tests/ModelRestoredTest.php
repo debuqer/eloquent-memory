@@ -14,7 +14,7 @@ beforeEach(function () {
         ];
     };
 
-    $attributes = createAFakePost()->getRawOriginal();
+    $attributes = $this->createAFakePost()->getRawOriginal();
     $softDeletableModelClass->setRawAttributes($attributes)->save();
     $before = $softDeletableModelClass::first();
     $before->delete();
@@ -35,8 +35,8 @@ test('up will restore a model from database', function () {
 test('getRollbackChange will return instance of ModelSoftDeleted with same properties', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
     expect($this->c->getRollbackChange()->getModelKey())->toBe($this->c->getModelKey());
-    testAttributes($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes());
-    testAttributes($this->c->getRollbackChange()->getAttributes(), $this->c->getOldAttributes());
+    expect($this->arraysAreTheSame($this->c->getRollbackChange()->getOldAttributes(), $this->c->getAttributes()))->toBeTrue();
+    expect($this->arraysAreTheSame($this->c->getRollbackChange()->getAttributes(), $this->c->getOldAttributes()))->toBeTrue();
 });
 
 test('can persist in db', function () {
