@@ -17,7 +17,7 @@ beforeEach(function () {
 
 
 
-it('[ModelCreated] can re-create the model', function () {
+it('[ModelCreated] migrate.up() can re-create the model', function () {
     $this->transitions['ModelCreated']->up();
 
     expect($this->model->exists)->toBeTrue();
@@ -25,7 +25,7 @@ it('[ModelCreated] can re-create the model', function () {
 });
 
 
-it('[ModelCreated] can re-create the model without changing created_at and updated_at', function () {
+it('[ModelCreated] migrate.up() can re-create the model without changing created_at and updated_at', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
     $this->transitions['ModelCreated']->up();
 
@@ -36,7 +36,7 @@ it('[ModelCreated] can re-create the model without changing created_at and updat
 });
 
 
-it('[ModelCreated] can not re-create another model when id reserved', function () {
+it('[ModelCreated] migrate.up() can not re-create another model when id reserved', function () {
     $this->createAPost(); // reserves id = 1
 
     $this->transitions['ModelCreated']->up();
