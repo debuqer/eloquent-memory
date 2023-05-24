@@ -16,6 +16,9 @@ beforeEach(function () {
 });
 
 
+/**
+ * @deprecated
+ */
 test('up will forceDelete a model from database', function () {
     $this->transition->up();
 
