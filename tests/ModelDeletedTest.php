@@ -25,6 +25,7 @@ test('up will forceDelete a model from database', function () {
     Post::findOrFail($this->item->getKey());
 })->expectException(ModelNotFoundException::class);
 
+/** @deprecated  */
 test('up will forceDelete a model from database even when model uses softDelete', function () {
     $softDeletableModel = $this->createAPost(PostWithSoftDelete::class);
 
@@ -35,6 +36,7 @@ test('up will forceDelete a model from database even when model uses softDelete'
     $softDeletableModel::withTrashed()->findOrFail($softDeletableModel->getKey());
 })->expectException(ModelNotFoundException::class);
 
+/** @deprecated  */
 test('getRollbackChange returns instance of ModelCreated with same properties ', function () {
     expect($this->transition->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
     expect($this->transition->getRollbackChange()->getAttributes())->toBe($this->item->getRawOriginal());

@@ -25,15 +25,6 @@ it('[ModelCreated] can re-create the model', function () {
 });
 
 
-
-
-it('[ModelCreated] has correct rollbackTransition', function () {
-    expect($this->transitions['ModelCreated']->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
-    expect($this->transitions['ModelCreated']->getRollbackChange()->getOldAttributes())->toBe($this->model->getRawOriginal());
-});
-
-
-
 it('[ModelCreated] can re-create the model without changing created_at and updated_at', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
     $this->transitions['ModelCreated']->up();
