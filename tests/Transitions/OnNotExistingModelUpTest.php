@@ -16,7 +16,7 @@ beforeEach(function () {
 
 
 
-it('[ModelCreated] can create a model', function () {
+it('[ModelCreated] can re-create the model', function () {
     $this->transitions['ModelCreated']->up();
 
     expect($this->model->exists)->toBeTrue();
@@ -33,7 +33,7 @@ it('[ModelCreated] has correct rollbackTransition', function () {
 
 
 
-it('[ModelCreated] can create a model without changing created_at and updated_at', function () {
+it('[ModelCreated] can re-create the model without changing created_at and updated_at', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
     $this->transitions['ModelCreated']->up();
 
