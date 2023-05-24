@@ -1,5 +1,6 @@
 <?php
 
+use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use \Debuqer\EloquentMemory\Transitions\ModelDeleted;
 
@@ -50,4 +51,20 @@ it('[ModelDeleted] can be made from persisted record', function () {
     expect($persistedTransition->getModelClass())->toBe($this->transitions['ModelDeleted']->getModelClass());
     expect($persistedTransition->getProperties())->toBe($this->transitions['ModelDeleted']->getProperties());
     expect($persistedTransition->getRollbackChange()->getProperties())->toBe($this->transitions['ModelDeleted']->getRollbackChange()->getProperties());
+});
+
+it('[ModelDeleted] retrieved persisted record can migrate.up() and migrate.down()', function () {
+    $persistedTransition = ModelDeleted::createFromPersistedRecord($this->transitions['ModelDeleted']->getModel());
+
+    $persistedTransition->up();
+    expect(Post::find($this->model->getKey()))->toBeNull();
+    $persistedTransition->down();
+    expect(Post::find($this->model->getKey()))->not->toBeNull();
+});
+
+it('[ModelDeleted] can persist without considering mutators', function () {
+    $persistedTransition = ModelDeleted::createFromPersistedRecord($this->transitions['ModelDeleted']->getModel());
+
+    expect($persistedTransition)->not->toBeNull();
+    expect($persistedTransition->getOldAttributes()['title'])->not->toBe('This title has changed');
 });
