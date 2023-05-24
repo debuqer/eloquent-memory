@@ -26,6 +26,9 @@ beforeEach(function () {
     $this->attributes = $item->getRawOriginal();
 });
 
+/**
+ * @deprecated
+ */
 test('Transition up will create a model with the same properties', function () {
     $this->transition->up();
     expect($this->item->exists)->toBeTrue(); // item exists
@@ -33,11 +36,17 @@ test('Transition up will create a model with the same properties', function () {
     expect($this->arraysAreTheSame($this->item->getRawOriginal(), $this->attributes))->toBeTrue();
 });
 
+/**
+ * @deprecated
+ */
 test('getRollbackChange will return an instanceof ModelDeleted with the same properties ', function () {
     expect($this->transition->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
     expect($this->transition->getRollbackChange()->getOldAttributes())->toBe($this->item->getRawOriginal());
 });
 
+/**
+ * @deprecated
+ */
 test('migrate up will not update created_at and updated_at', function() {
     Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
     $this->transition->up();
