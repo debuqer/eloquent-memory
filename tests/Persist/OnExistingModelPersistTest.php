@@ -20,9 +20,6 @@ beforeEach(function () {
     }
 });
 
-it('[ModelCreated] can persist', function () {
-    expect($this->transitions['ModelCreated']->getModel())->not->toBeNull();
-});
 
 it('[ModelCreated] can be made from persisted record', function () {
     $persistedTransition = ModelCreated::createFromPersistedRecord($this->transitions['ModelCreated']->getModel());
@@ -38,10 +35,6 @@ it('[ModelCreated] can persist without considering mutators', function () {
 
     expect($persistedTransition)->not->toBeNull();
     expect($persistedTransition->getAttributes()['title'])->not->toBe('This title has changed');
-});
-
-it('[ModelDeleted] can persist', function () {
-    expect($this->transitions['ModelDeleted']->getModel())->not->toBeNull();
 });
 
 

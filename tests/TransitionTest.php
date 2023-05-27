@@ -8,6 +8,12 @@ use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Carbon\Carbon;
 
+it('[ModelCreated] can persist', function () {
+    $transition = $this->getTransition('model-created');
+    $transition['handler']->persist();
+
+    expect($transition['handler']->getModel())->not->toBeNull();
+});
 
 it('[ModelCreated] migrate.up() can not re-create the model', function () {
     $transition = $this->getTransition('model-created');
@@ -56,6 +62,13 @@ it('[ModelCreated] migrate.up() will fill guarded fields too', function () {
 
     $recentlyReCreatedModel = Post::first();
     expect($recentlyReCreatedModel->getKey())->toBe($transition['model']->getKey());
+});
+
+it('[ModelDeleted] can persist', function () {
+    $transition = $this->getTransition('model-deleted');
+    $transition['handler']->persist();
+
+    expect($transition['handler']->getModel())->not->toBeNull();
 });
 
 it('[ModelDeleted] migrate.up() will forceDelete the model from database', function () {
@@ -139,6 +152,13 @@ it('[ModelDeleted] has correct rollbackTransition', function () {
 
     expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
     expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
+});
+
+it('[ModelRestored] can persist', function () {
+    $transition = $this->getTransition('model-restored');
+    $transition['handler']->persist();
+
+    expect($transition['handler']->getModel())->not->toBeNull();
 });
 
 it('[ModelRestored] migrate.up() can restore the model', function () {
