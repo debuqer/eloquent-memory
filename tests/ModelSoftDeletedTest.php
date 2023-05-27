@@ -58,7 +58,7 @@ test('raise error when model not using softDelete', function() {
 
     $c = ModelSoftDeleted::createFromModel($before, $after);
     $c->up();
-})->expectException(ModelNotFoundException::class);
+})->expectException(BadMethodCallException::class);
 
 test('can persist in db', function () {
     $this->c->persist();

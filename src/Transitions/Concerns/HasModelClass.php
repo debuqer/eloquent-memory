@@ -8,7 +8,7 @@ trait HasModelClass
 {
     public function getModelClass()
     {
-        return isset($this->properties['model_class']) ? $this->properties['model_class'] : null;
+        return $this->properties['model_class'] ?? null;
     }
 
     public function setModelClass(string $modelClass)
@@ -16,7 +16,7 @@ trait HasModelClass
         $this->properties['model_class'] = $modelClass;
     }
 
-    protected function getModelInstance($properties = [])
+    protected function getModelObject($properties = [])
     {
         return app($this->getModelClass(), $properties);
     }

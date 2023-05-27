@@ -15,4 +15,9 @@ class ModelSoftDeleted extends ModelUpdated implements TransitionInterface
             'attributes' => $this->getOldAttributes()
         ]);
     }
+
+    protected function getModelInstance()
+    {
+        return $this->getModelObject()->withTrashed();
+    }
 }

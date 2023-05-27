@@ -6,6 +6,7 @@ namespace Debuqer\EloquentMemory\Transitions;
 use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
@@ -25,7 +26,7 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 
     public function up()
     {
-        $this->getModelInstance()->setRawAttributes($this->getAttributes())->save();
+        $this->getModelObject()->setRawAttributes($this->getAttributes())->save();
     }
 
     public function getRollbackChange(): TransitionInterface

@@ -15,4 +15,10 @@ class ModelRestored extends ModelUpdated implements TransitionInterface
             'attributes' => $this->getOldAttributes()
         ]);
     }
+
+
+    protected function getModelInstance()
+    {
+        return $this->getModelObject()->withTrashed();
+    }
 }

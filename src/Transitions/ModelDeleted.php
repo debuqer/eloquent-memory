@@ -28,12 +28,12 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
 
     public function up()
     {
-        $this->getModelInstance()->findOrFail($this->getKeyForDeleting())->forceDelete();
+        $this->getModelObject()->findOrFail($this->getKeyForDeleting())->forceDelete();
     }
 
     protected function getKeyForDeleting()
     {
-        return $this->getOldAttributes()[$this->getModelInstance()->getKeyName()];
+        return $this->getOldAttributes()[$this->getModelObject()->getKeyName()];
     }
 
     public function getRollbackChange(): TransitionInterface
