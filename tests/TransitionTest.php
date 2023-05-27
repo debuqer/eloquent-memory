@@ -15,6 +15,46 @@ it('[ModelCreated] can persist', function () {
     expect($transition['handler']->getModel())->not->toBeNull();
 });
 
+it('[ModelCreated] can be made from persisted record', function () {
+    $transition = $this->getTransition('model-created');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
+
+    expect($persistedTransition->getType())->toBe($transition['handler']->getType());
+    expect($persistedTransition->getModelClass())->toBe($transition['handler']->getModelClass());
+    expect($persistedTransition->getProperties())->toBe($transition['handler']->getProperties());
+    expect($persistedTransition->getRollbackChange()->getProperties())->toBe($transition['handler']->getRollbackChange()->getProperties());
+});
+
+it('[ModelCreated] can persist without considering mutators', function () {
+    $transition = $this->getTransition('model-created');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
+
+    expect($persistedTransition)->not->toBeNull();
+    expect($persistedTransition->getAttributes()['title'])->not->toBe('This title has changed');
+});
+
+it('[ModelCreated] can be made by persisted record and migrate up, down and up!', function () {
+    $transition = $this->getTransition('model-created');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
+
+    $persistedTransition->up();
+    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
+
+    $persistedTransition->down();
+    expect(Post::find($transition['model']->getKey()))->toBeNull();
+
+    $persistedTransition->up();
+    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
+    expect($this->arraysAreTheSame(Post::find($transition['model']->getKey())->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
+    expect($this->arraysAreTheSame(Post::find($transition['model']->getKey())->getAttributes(), $transition['model']->getAttributes()))->toBeTrue();
+});
+
 it('[ModelCreated] migrate.up() can not re-create the model', function () {
     $transition = $this->getTransition('model-created');
 
@@ -69,6 +109,40 @@ it('[ModelDeleted] can persist', function () {
     $transition['handler']->persist();
 
     expect($transition['handler']->getModel())->not->toBeNull();
+});
+
+it('[ModelDeleted] can be made from persisted record', function () {
+    $transition = $this->getTransition('model-deleted');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
+
+    expect($persistedTransition->getType())->toBe($transition['handler']->getType());
+    expect($persistedTransition->getModelClass())->toBe($transition['handler']->getModelClass());
+    expect($persistedTransition->getProperties())->toBe($transition['handler']->getProperties());
+    expect($persistedTransition->getRollbackChange()->getProperties())->toBe($transition['handler']->getRollbackChange()->getProperties());
+});
+
+it('[ModelDeleted] retrieved persisted record can migrate.up() and migrate.down()', function () {
+    $transition = $this->getTransition('model-deleted');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
+
+    $persistedTransition->up();
+    expect(Post::find($transition['model']->getKey()))->toBeNull();
+    $persistedTransition->down();
+    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
+});
+
+it('[ModelDeleted] can persist without considering mutators', function () {
+    $transition = $this->getTransition('model-deleted');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
+
+    expect($persistedTransition)->not->toBeNull();
+    expect($persistedTransition->getOldAttributes()['title'])->not->toBe('This title has changed');
 });
 
 it('[ModelDeleted] migrate.up() will forceDelete the model from database', function () {
