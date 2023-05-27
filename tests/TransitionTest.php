@@ -230,7 +230,7 @@ it('[ModelDeleted] has correct rollbackTransition', function () {
     expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
 });
 
-test('[ModelRestored] can persist in db', function () {
+it('[ModelRestored] can persist in db', function () {
     $transition = $this->getTransition('model-restored');
     $transition['handler']->persist();
 
@@ -258,7 +258,7 @@ it('[ModelRestored] migrate.up() raises error when model not exists', function (
 })->expectException(ModelNotFoundException::class);
 
 
-test('[ModelRestored] which created from persisted record can migrate.up() and migrate.down()', function () {
+it('[ModelRestored] which created from persisted record can migrate.up() and migrate.down()', function () {
     $transition = $this->getTransition('model-restored');
     $transition['handler']->persist();
     $persistedTransition = ModelRestored::createFromPersistedRecord($transition['handler']->getModel());
@@ -281,7 +281,7 @@ it('[ModelRestored] has correct rollbackTransition', function () {
 });
 
 
-test('[ModelSoftDeleted] can persist in db', function () {
+it('[ModelSoftDeleted] can persist in db', function () {
     $transition = $this->getTransition('model-soft-deleted');
     $transition['handler']->persist();
 
@@ -309,7 +309,7 @@ it('[ModelSoftDeleted] migrate.up() raises error when model not exists', functio
 })->expectException(ModelNotFoundException::class);
 
 
-test('[ModelSoftDeleted] which created from persisted record can migrate.up() and migrate.down()', function () {
+it('[ModelSoftDeleted] which created from persisted record can migrate.up() and migrate.down()', function () {
     $transition = $this->getTransition('model-soft-deleted');
     $transition['handler']->persist();
     $persistedTransition = ModelSoftDeleted::createFromPersistedRecord($transition['handler']->getModel());
@@ -361,7 +361,7 @@ it('[ModelUpdated] can persist', function () {
 });
 
 
-test('[ModelUpdated] which created from persisted record can migrate.up() and migrate.down()', function () {
+it('[ModelUpdated] which created from persisted record can migrate.up() and migrate.down()', function () {
     $transition = $this->getTransition('model-updated');
     $transition['handler']->persist();
 
