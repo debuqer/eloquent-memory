@@ -8,6 +8,7 @@ use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -82,9 +83,22 @@ class TestCase extends Orchestra
                 'handler' => ModelRestored::createFromModel($model, $after)
             ];
             DB::rollBack();
+        }
+        if (in_array($transitionType, [ModelSoftDeleted::class, 'model-soft-deleted'])) {
+            $model = $this->createAModelOf($modelClass ?? PostWithSoftDelete::class);
+
+            DB::beginTransaction();
+            $after = (clone $model);
+            $after->delete();
+
+            $transition = [
+                'model' => $model,
+                'after' => $after,
+                'handler' => ModelSoftDeleted::createFromModel($model, $after)
+            ];
+            DB::rollBack();
 
         }
-
 
         return $transition;
     }
