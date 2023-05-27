@@ -9,6 +9,7 @@ use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +99,24 @@ class TestCase extends Orchestra
             ];
             DB::rollBack();
 
+        }
+        if (in_array($transitionType, [ModelUpdated::class, 'model-updated'])) {
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+
+            DB::beginTransaction();
+            $after = (clone $model);
+            $after->update([
+                'title' => 'Title changed',
+                'json' => ['new json'],
+            ]);
+            $after->syncOriginal();
+
+            $transition = [
+                'model' => $model,
+                'after' => $after,
+                'handler' => ModelUpdated::createFromModel($model, $after)
+            ];
+            DB::rollBack();
         }
 
         return $transition;

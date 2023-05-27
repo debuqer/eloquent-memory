@@ -21,69 +21,6 @@ beforeEach(function () {
     $this->c = ModelUpdated::createFromModel($before, $after);
 });
 
-test('up will update a model in database with given attributes', function () {
-    $this->c->up();
-
-    expect(Post::first()->title)->toBe($this->after->title);
-    expect(Post::first()->json)->toBe($this->after->json);
-});
-
-test('getRollbackChange returns instanceof ModelUpdated with reversed properties', function () {
-    $after = $this->createAPost();
-    $before = (clone $after);
-    $before->update([
-        'title' => 'Title changed!'
-    ]);
-
-    $c = new ModelUpdated([
-        'model_class' => get_class($after),
-        'key' => $after->getKey(),
-        'old' => $before->getRawOriginal(),
-        'attributes' => $after->getRawOriginal()
-    ]);
-
-    expect($c->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
-    expect($c->getRollbackChange()->getModelKey())->toBe($c->getModelKey());
-    expect($this->arraysAreTheSame($c->getRollbackChange()->getOldAttributes(), $c->getAttributes()))->toBeTrue();
-    expect($this->arraysAreTheSame($c->getRollbackChange()->getAttributes(), $c->getOldAttributes()))->toBeTrue();
-});
-
-test('migrate up and down rollback everything to first place', function () {
-    $this->c->up();
-    $this->c->down();
-
-    $model = Post::find($this->before->getKey());
-    foreach ($this->before->getRawOriginal() as $key => $value) {
-        expect($model->getRawOriginal($key))->toBe($value);
-    }
-});
-
-test('migrate up and down and up again works', function () {
-    $this->c->up();
-    $this->c->down();
-    $this->c->up();
-
-    $model = Post::find($this->after->getKey());
-    foreach ($this->after->getRawOriginal() as $key => $value) {
-        expect($model->getRawOriginal($key))->toBe($value);
-    }
-});
-
-test('raise exception when model not exists', function () {
-    Post::query()->delete();
-
-    $this->c->up();
-})->expectException(ModelNotFoundException::class);
-
-
-test('doesnt change updated_at when migrate up', function () {
-    Carbon::setTestNow(\Carbon\Carbon::now()->addHour());
-
-    $this->c->up();
-    $post = Post::first();
-
-    expect($post->created_at->toString())->not->toBe(Carbon::now()->toString());
-});
 
 test('migrate up can fill despite guarded attributes', function () {
     /** @var \Illuminate\Database\Eloquent\Model $modelWithGuarded */

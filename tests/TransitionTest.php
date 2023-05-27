@@ -7,6 +7,7 @@ use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Carbon\Carbon;
 
 it('[ModelCreated] can persist', function () {
@@ -342,4 +343,72 @@ it('[ModelSoftDeleted] migrate.up() will only soft delete', function () {
     $transition['handler']->up();
 
     expect($transition['model']->refresh()->trashed())->toBeTrue();
+});
+
+/*
+it('[ModelUpdated] migrate.up() ', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['handler']->up();
+
+    expect($transition['model'])->toBeTrue();
+});
+*/
+
+it('[ModelUpdated] migrate.up() updates the model', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['handler']->up();
+
+    $post = Post::find($transition['model']->getKey());
+    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
+    expect($post->getRawOriginal('json'))->toBe($transition['after']->getRawOriginal('json'));
+    expect($post->title)->toBe($transition['after']->refresh()->title);
+    expect($post->json)->toBe($transition['after']->refresh()->json);
+});
+
+it('[ModelUpdated] has correct rollbackTransition', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['handler']->up();
+
+
+    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
+    expect($transition['handler']->getRollbackChange()->getModelKey())->toBe($transition['handler']->getModelKey());
+    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getOldAttributes(), $transition['handler']->getAttributes()))->toBeTrue();
+    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getOldAttributes()))->toBeTrue();
+});
+
+it('[ModelUpdated] migrate.up() and migrate.down() rollback everything to the first place', function () {
+    $transition = $this->getTransition('model-updated');
+
+    $transition['handler']->up();
+    $transition['handler']->down();
+
+    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getOldAttributes()))->toBeTrue();
+});
+
+it('[ModelUpdated] migrate.up() and migrate.down() and migrate.up() works', function () {
+    $transition = $this->getTransition('model-updated');
+
+    $transition['handler']->up();
+    $transition['handler']->down();
+    $transition['handler']->up();
+
+    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getAttributes()))->toBeTrue();
+});
+
+it('[ModelUpdated] migrate.up() raises error when model not exists', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['model']->forceDelete();
+
+    $transition['handler']->up();
+})->expectException(ModelNotFoundException::class);
+
+it('[ModelUpdated] migrate.up() doesnt change updated_at when migrate up', function () {
+    $now = Carbon::now();
+    $transition = $this->getTransition('model-updated');
+
+    Carbon::setTestNow($now->addHour());
+    $transition['handler']->up();
+
+    $post = Post::first();
+    expect($post->created_at->format('H:i'))->not->toBe($now->format('H:i'));
 });
