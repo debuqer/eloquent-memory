@@ -107,7 +107,7 @@ class TestCase extends Orchestra
             $after = (clone $model);
             $after->update([
                 'title' => 'Title changed',
-                'json' => ['new json'],
+                'meta' => ['new json'],
             ]);
             $after->syncOriginal();
 

@@ -345,14 +345,36 @@ it('[ModelSoftDeleted] migrate.up() will only soft delete', function () {
     expect($transition['model']->refresh()->trashed())->toBeTrue();
 });
 
-/*
-it('[ModelUpdated] migrate.up() ', function () {
+
+it('[ModelUpdated] can persist', function () {
     $transition = $this->getTransition('model-updated');
     $transition['handler']->up();
+    $transition['handler']->persist();
 
-    expect($transition['model'])->toBeTrue();
+    expect($transition['handler']->getModel())->not->toBeNull();
+    expect($transition['handler']->getModel()->properties)->toBe($transition['handler']->getProperties());
+    expect($transition['handler']->getModel()->properties['old'])->toBe($transition['model']->getRawOriginal());
+    expect($transition['handler']->getModel()->properties['attributes'])->toBe($transition['after']->getRawOriginal());
+    expect($transition['handler']->getModel()->properties['key'])->toBe($transition['after']->getKey());
+    expect($transition['handler']->getModel()->properties['model_class'])->toBe(get_class($transition['after']));
+    expect($transition['handler']->getModel()->type)->toBe('model-updated');
 });
-*/
+
+
+test('[ModelUpdated] which created from persisted record can migrate.up() and migrate.down()', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['handler']->persist();
+
+    $persistedTransition = ModelUpdated::createFromPersistedRecord($transition['handler']->getModel());
+
+    $persistedTransition->up();
+    $post = Post::first();
+    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
+
+    $persistedTransition->down();
+    $post = Post::first();
+    expect($post->getRawOriginal('title'))->toBe($transition['model']->getRawOriginal('title'));
+});
 
 it('[ModelUpdated] migrate.up() updates the model', function () {
     $transition = $this->getTransition('model-updated');
@@ -412,3 +434,56 @@ it('[ModelUpdated] migrate.up() doesnt change updated_at when migrate up', funct
     $post = Post::first();
     expect($post->created_at->format('H:i'))->not->toBe($now->format('H:i'));
 });
+
+it('[ModelUpdated] migrate.up() can fill despite of guarded attributes', function () {
+    /** @var \Illuminate\Database\Eloquent\Model $modelWithGuarded */
+    $modelWithGuarded = new Class extends Post {
+        protected $table = 'posts';
+        protected $guarded = ['id', 'title'];
+    };
+
+    $transition = $this->getTransition('model-updated', $modelWithGuarded);
+    $transition['handler']->up();
+
+    $post = Post::first();
+    expect($post->title)->toBe($transition['model']->title);
+});
+
+
+it('[ModelUpdated] migrate.up() can fill despite of hidden attributes', function () {
+    /** @var \Illuminate\Database\Eloquent\Model $modelWithHidden */
+    $modelWithHidden = new Class extends Post {
+        protected $table = 'posts';
+        protected $hidden = ['title'];
+    };
+
+    $transition = $this->getTransition('model-updated', $modelWithHidden);
+    $transition['handler']->up();
+
+    $post = Post::first();
+    expect($post->title)->toBe($transition['model']->title);
+});
+
+it('[ModelUpdated] migrate.up() can fill despite of casted values', function () {
+    /** @var \Illuminate\Database\Eloquent\Model $modelWithCasts */
+    $modelWithCasts = new Class extends Post {
+        protected $table = 'posts';
+        protected $casts = [
+            'title' => 'bool',
+            'meta' => 'json'
+        ];
+    };
+
+    $transition = $this->getTransition('model-updated', $modelWithCasts);
+    $transition['handler']->up();
+
+    $post = Post::first();
+    expect($post->title)->toBe($transition['model']->title);
+});
+
+it('[ModelUpdated] raise error when model not exists at all', function () {
+    $transition = $this->getTransition('model-updated');
+    $transition['model']->forceDelete();
+
+    $transition['handler']->up();
+})->expectException(ModelNotFoundException::class);
