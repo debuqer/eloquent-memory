@@ -3,6 +3,7 @@
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use \Debuqer\EloquentMemory\Transitions\ModelCreated;
 use \Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use \Debuqer\EloquentMemory\Transitions\ModelRestored;
 
 beforeEach(function () {
     $this->model = $this->createAPost();

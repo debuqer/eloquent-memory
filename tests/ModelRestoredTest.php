@@ -26,12 +26,18 @@ beforeEach(function () {
     $this->after = $after;
 });
 
+/**
+ * @deprecated
+ */
 test('up will restore a model from database', function () {
     $this->c->up();
 
     expect($this->after->refresh()->trashed())->toBeFalse();
 });
 
+/**
+ * @deprecated
+ */
 test('getRollbackChange will return instance of ModelSoftDeleted with same properties', function () {
     expect($this->c->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
     expect($this->c->getRollbackChange()->getModelKey())->toBe($this->c->getModelKey());

@@ -17,7 +17,10 @@ beforeEach(function () {
 });
 
 
-
+it('[ModelCreated] has correct rollbackTransition', function () {
+    expect($this->transitions['ModelCreated']->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
+    expect($this->transitions['ModelCreated']->getRollbackChange()->getOldAttributes())->toBe($this->model->getRawOriginal());
+});
 
 it('[ModelCreated] migrate.up() can re-create the model', function () {
     $this->transitions['ModelCreated']->up();
@@ -77,3 +80,10 @@ it('[ModelDeleted] migrate.up() doesnt work when model already deleted', functio
     $this->transitions['ModelDeleted']->up();
     expect(Post::find($this->model->getKey()))->not->toBeNull();
 })->expectException(ModelNotFoundException::class);
+
+
+
+it('[ModelDeleted] has correct rollbackTransition', function () {
+    expect($this->transitions['ModelDeleted']->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
+    expect($this->transitions['ModelDeleted']->getRollbackChange()->getAttributes())->toBe($this->model->getRawOriginal());
+});
