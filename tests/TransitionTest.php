@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Carbon\Carbon;
 
 it('[ModelCreated] can persist', function () {
@@ -228,11 +229,17 @@ it('[ModelDeleted] has correct rollbackTransition', function () {
     expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
 });
 
-it('[ModelRestored] can persist', function () {
+test('[ModelRestored] can persist in db', function () {
     $transition = $this->getTransition('model-restored');
     $transition['handler']->persist();
 
     expect($transition['handler']->getModel())->not->toBeNull();
+    expect($transition['handler']->getModel()->properties)->toBe($transition['handler']->getProperties());
+    expect($transition['handler']->getModel()->properties['old'])->toBe($transition['model']->getRawOriginal());
+    expect($transition['handler']->getModel()->properties['attributes'])->toBe($transition['after']->getRawOriginal());
+    expect($transition['handler']->getModel()->properties['key'])->toBe($transition['after']->getKey());
+    expect($transition['handler']->getModel()->properties['model_class'])->toBe(get_class($transition['after']));
+    expect($transition['handler']->getModel()->type)->toBe('model-restored');
 });
 
 it('[ModelRestored] migrate.up() can restore the model', function () {
@@ -240,6 +247,28 @@ it('[ModelRestored] migrate.up() can restore the model', function () {
     $transition['handler']->up();
 
     expect(PostWithSoftDelete::withTrashed()->findOrFail($transition['model']->getKey()))->not->toBeNull();
+});
+
+it('[ModelRestored] migrate.up() raises error when model not exists', function () {
+    $transition = $this->getTransition('model-restored');
+    $transition['model']->forceDelete();
+
+    $transition['handler']->up();
+})->expectException(ModelNotFoundException::class);
+
+
+test('[ModelRestored] which created from persisted record can migrate.up() and migrate.down()', function () {
+    $transition = $this->getTransition('model-restored');
+    $transition['handler']->persist();
+    $persistedTransition = ModelRestored::createFromPersistedRecord($transition['handler']->getModel());
+
+    $persistedTransition->up();
+    $post = Post::first();
+    expect($post->getRawOriginal('deleted_at'))->toBe($transition['after']->getRawOriginal('deleted_at'));
+
+    $persistedTransition->down();
+    $post = Post::first();
+    expect($post->getRawOriginal('deleted_at'))->toBe($transition['model']->getRawOriginal('deleted_at'));
 });
 
 it('[ModelRestored] has correct rollbackTransition', function () {

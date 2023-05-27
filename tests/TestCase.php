@@ -73,7 +73,7 @@ class TestCase extends Orchestra
             $model->delete();
 
             DB::beginTransaction();
-            $after = (clone $model);+
+            $after = (clone $model);
             $after->restore();
 
             $transition = [
@@ -82,6 +82,7 @@ class TestCase extends Orchestra
                 'handler' => ModelRestored::createFromModel($model, $after)
             ];
             DB::rollBack();
+
         }
 
 
