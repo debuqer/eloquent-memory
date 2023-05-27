@@ -3,7 +3,11 @@
 namespace Debuqer\EloquentMemory\Tests;
 
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +42,50 @@ class TestCase extends Orchestra
         $migration->up();
         $migration = include __DIR__ . '/../database/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
+    }
+
+    /**
+     * @some refactor here
+     */
+    function getTransition(string $transitionType, $modelClass = null)
+    {
+        if (in_array($transitionType, [ModelCreated::class, 'model-created'])) {
+            DB::beginTransaction();
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+            $transition = [
+                'model' => $model,
+                'handler' => ModelCreated::createFromModel($model)
+            ];
+            DB::rollBack();
+        }
+        if (in_array($transitionType, [ModelDeleted::class, 'model-deleted'])) {
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+            DB::beginTransaction();
+
+            $transition = [
+                'model' => $model,
+                'handler' => ModelDeleted::createFromModel($model)
+            ];
+            DB::rollBack();
+        }
+        if (in_array($transitionType, [ModelRestored::class, 'model-restored'])) {
+            $model = $this->createAModelOf($modelClass ?? PostWithSoftDelete::class);
+            $model->delete();
+
+            DB::beginTransaction();
+            $after = (clone $model);+
+            $after->restore();
+
+            $transition = [
+                'model' => $model,
+                'after' => $after,
+                'handler' => ModelRestored::createFromModel($model, $after)
+            ];
+            DB::rollBack();
+        }
+
+
+        return $transition;
     }
 
     function getMockedDataFor($class = Post::class)
