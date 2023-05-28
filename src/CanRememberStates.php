@@ -10,7 +10,7 @@ use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Model;
-trait RemembersStates
+trait CanRememberStates
 {
     public static function booted()
     {
