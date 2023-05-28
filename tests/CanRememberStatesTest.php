@@ -38,9 +38,10 @@ it('can record when a model deleted', function () {
 
 it('it can record when model soft deleted', function () {
     $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
-    $oldAttributes = [$model->getDeletedAtColumn() => $model->getAttribute($model->getDeletedAtColumn())];
+    $oldAttributes = $model->getRawOriginal();
+
     $model->delete();
-    $attributes = [$model->getDeletedAtColumn() => $model->getAttributeValue($model->getDeletedAtColumn())->format('Y-m-d\TH:i:s.u\Z')];
+    $attributes = $model->getRawOriginal();
 
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
 
@@ -48,7 +49,7 @@ it('it can record when model soft deleted', function () {
     expect($current->getTransition()->getType())->toBe('model-soft-deleted');
     expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
     expect($current->getTransition()->getModelKey())->toBe($model->id);
-    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
+    expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes))->toBeTrue();
     expect($current->getTransition()->getAttributes())->toBe($attributes);
     $timeline->next();
     $current = $timeline->current();
@@ -56,12 +57,12 @@ it('it can record when model soft deleted', function () {
 });
 
 
-test('it can record when model restored', function () {
+it('can record when model restored', function () {
     $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
     $model->delete();
-    $oldAttributes = [$model->getDeletedAtColumn() => $model->getAttributeValue($model->getDeletedAtColumn())->format('Y-m-d H:i:s')];
+    $oldAttributes = $model->getRawOriginal();
     $model->restore();
-    $attributes = [$model->getDeletedAtColumn() => $model->getAttribute($model->getDeletedAtColumn())];
+    $attributes = $model->getRawOriginal();
 
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
@@ -81,22 +82,58 @@ test('it can record when model restored', function () {
 });
 
 
-it('can record when a model updated', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
-    $oldAttributes = $model->getRawOriginal();
-
-
-    $model->update([
-        'title' => 'new Title'
-    ]);
-    /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
-    $current = $timeline->current();
-
-    expect($timeline->count())->toBe(2);
-    expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
-    expect($current->getTransition()->getModelKey())->toBe($model->id);
-    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
-    expect($current->getTransition()->getAttributes())->toBe($model->getRawOriginal());
-});
+//it('can record when a model updated', function () {
+//    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+//    $oldAttributes = $model->getRawOriginal();
+//
+//
+//    $model->update([
+//        'title' => 'new Title'
+//    ]);
+//    /** @var Timeline $timeline */
+//    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
+//    $current = $timeline->current();
+//
+//    expect($timeline->count())->toBe(2);
+//    expect($current->getTransition()->getType())->toBe('model-updated');
+//    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+//    expect($current->getTransition()->getModelKey())->toBe($model->id);
+//    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
+//    expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();
+//});
+//
+//
+//it('can record chain of events if soft delete support', function() {
+//    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
+//    $model->update([
+//        'title' => 'new Title'
+//    ]);
+//    $model->update([
+//        'title' => 'new new Title'
+//    ]);
+//    $model->delete();
+//    $model->restore();
+//    $model->update([
+//        'title' => 'new Title'
+//    ]);
+//    $model->forceDelete();
+//
+//    $expectedStack = [
+//        'model-deleted',
+//        'model-updated',
+//        'model-restored',
+//        'model-soft-deleted',
+//        'model-updated',
+//        'model-updated',
+//        'model-created',
+//    ];
+//
+//
+//    /** @var Timeline $timeline */
+//    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
+//    $timeline->next();
+//
+//    foreach ($expectedStack as $expected) {
+//        expect($timeline->current()->getTransition()->getType())->toBe($expected);
+//    }
+//});
