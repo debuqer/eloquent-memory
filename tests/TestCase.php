@@ -134,15 +134,6 @@ class TestCase extends Orchestra
         return $class::create($attributes);
     }
 
-    function getFilledModelOf($class = Post::class, $factorySource = Post::class)
-    {
-         DB::beginTransaction();
-         $item = $this->createAModelOf($class, $factorySource);
-         DB::rollBack();
-
-         return $item;
-    }
-
     function arraysAreTheSame($attrs1, $attrs2)
     {
         $allAttributes = array_merge(array_keys($attrs1, $attrs2));
@@ -159,46 +150,5 @@ class TestCase extends Orchestra
 
         return count($diff) === 0;
     }
-
-    function createAUser()
-    {
-        return Factory::factoryForModel(User::class)->createOne();
-    }
-
-    function createEmptyPost($class = Post::class)
-    {
-        return new $class();
-    }
-
-    function createAFakePost()
-    {
-        DB::beginTransaction();
-        $model = $this->createAPost();
-        DB::rollBack();
-
-        return $model;
-    }
-
-    function createAPost($class = Post::class)
-    {
-        return Factory::factoryForModel($class)->createOne();
-    }
-
-    function createAPostAndDelete($class = Post::class)
-    {
-        $post = Factory::factoryForModel($class)->createOne();
-        $post->delete();
-
-        return $post;
-    }
-
-    function createAPostAndForceDelete($class = Post::class)
-    {
-        $post = Factory::factoryForModel($class)->createOne();
-        $post->forceDelete();
-
-        return $post;
-    }
-
 
 }

@@ -57,7 +57,7 @@ it('it can record when model soft deleted', function () {
 
 
 test('it can record when model restored', function () {
-    $model = $this->createAPost(SoftDeletedPostWithEloquentMemory::class);
+    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
     $model->delete();
     $oldAttributes = [$model->getDeletedAtColumn() => $model->getAttributeValue($model->getDeletedAtColumn())->format('Y-m-d H:i:s')];
     $model->restore();
