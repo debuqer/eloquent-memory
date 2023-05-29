@@ -29,10 +29,11 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
-        if ( $this->hasState('updating', $model) ) {
+        if ( $this->hasState('updating', $model) and ! $this->hasState('deleting', $model) and ! $this->hasState('restoring', $model)  ) {
             ModelUpdated::createFromModel($this->getState('updating', $model), $model)->persist();
-            $this->unsetState('updating', $model);
         }
+
+        $this->unsetState('updating', $model);
     }
 
     public function updating(Model $model): void
@@ -51,6 +52,8 @@ class StateRememberObserver
         } else {
             ModelDeleted::createFromModel($model)->persist();
         }
+
+        $this->unsetState('deleting', $model);
     }
 
 
@@ -66,8 +69,9 @@ class StateRememberObserver
     {
         if ( $this->hasState('deleting', $model) ) {
             ModelSoftDeleted::createFromModel($this->getState('deleting', $model), $model)->persist();
-            $this->unsetState('deleting', $model);
         }
+
+        $this->unsetState('deleting', $model);
     }
 
 
@@ -78,8 +82,9 @@ class StateRememberObserver
     {
         if ( $this->hasState('restoring', $model) ) {
             ModelRestored::createFromModel($this->getState('restoring', $model), $model)->persist();
-            $this->unsetState('restoring', $model);
         }
+
+        $this->unsetState('restoring', $model);
     }
 
     public function restoring(Model $model): void
@@ -96,7 +101,9 @@ class StateRememberObserver
 
     private function unsetState($event, $model)
     {
-        unset(static::$map[$model->getModelHash()][$event]);
+        if ( $this->hasState($event, $model) ) {
+            unset(static::$map[$model->getModelHash()][$event]);
+        }
     }
 
     private function hasState($event, $model)

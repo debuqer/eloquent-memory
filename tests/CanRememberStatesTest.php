@@ -73,6 +73,7 @@ it('can record when model restored', function () {
     expect($current->getTransition()->getModelKey())->toBe($model->id);
     expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
     expect($current->getTransition()->getAttributes())->toBe($attributes);
+
     $timeline->next();
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-soft-deleted');
