@@ -20,16 +20,6 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
     use HasOldAttributes;
     use HasAttributes;
 
-    public static function createFromChanges(Model $origin, array $changedAttributes)
-    {
-        return new static([
-            'model_class' => get_class($origin),
-            'key' => $origin->getKey(),
-            'old' => $origin->getRawOriginal(),
-            'attributes' => array_merge($origin->getRawOriginal(), $changedAttributes)
-        ]);
-    }
-
     public static function createFromModel(Model $before, Model $after)
     {
         return new static([
