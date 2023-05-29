@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;
 use Illuminate\Support\Arr;
 
-class ModelTransition extends Model implements ModelTransitionInterface
+class ModelTransition extends Model implements TransitionStorageModelContract
 {
     use CanGenerateBatchId;
 

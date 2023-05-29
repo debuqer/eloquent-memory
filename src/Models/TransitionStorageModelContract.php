@@ -4,10 +4,10 @@
 namespace Debuqer\EloquentMemory\Models;
 
 
-use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
-interface ModelTransitionInterface
+interface TransitionStorageModelContract
 {
     public static function persist(TransitionInterface $transition);
     public static function findUsingBatch($batch);
