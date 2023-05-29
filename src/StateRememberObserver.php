@@ -29,16 +29,9 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
-        if ( $this->hasState('updating', $model) and ! $this->hasState('deleting', $model) and ! $this->hasState('restoring', $model)  ) {
-            ModelUpdated::createFromModel($this->getState('updating', $model), $model)->persist();
-        }
+        ModelUpdated::createFromModel($this->getState('updating', $model), $model)->persist();
 
         $this->unsetState('updating', $model);
-    }
-
-    public function updating(Model $model): void
-    {
-        $this->setState('updating', $model);
     }
 
 
@@ -47,7 +40,7 @@ class StateRememberObserver
      */
     public function deleted(Model $model): void
     {
-        if ( in_array(SoftDeletes::class, class_uses($model)) and $model->trashed() ) {
+        if ( in_array(SoftDeletes::class, class_uses($model)) and ! $model->isForceDeleting()  ) {
             ModelSoftDeleted::createFromModel($this->getState('deleting', $model), $model)->persist();
         } else {
             ModelDeleted::createFromModel($model)->persist();
@@ -56,33 +49,12 @@ class StateRememberObserver
         $this->unsetState('deleting', $model);
     }
 
-
-    public function deleting(Model $model)
-    {
-        $this->setState('deleting', (clone $model));
-    }
-
-    /**
-     * Handle the Model "deleted" event.
-     */
-    public function trashed(Model $model): void
-    {
-        if ( $this->hasState('deleting', $model) ) {
-            ModelSoftDeleted::createFromModel($this->getState('deleting', $model), $model)->persist();
-        }
-
-        $this->unsetState('deleting', $model);
-    }
-
-
     /**
      * Handle the Model "restored" event.
      */
     public function restored(Model $model): void
     {
-        if ( $this->hasState('restoring', $model) ) {
-            ModelRestored::createFromModel($this->getState('restoring', $model), $model)->persist();
-        }
+        ModelRestored::createFromModel($this->getState('restoring', $model), $model)->persist();
 
         $this->unsetState('restoring', $model);
     }
@@ -90,6 +62,16 @@ class StateRememberObserver
     public function restoring(Model $model): void
     {
         $this->setState('restoring', (clone $model));
+    }
+
+    public function deleting(Model $model): void
+    {
+        $this->setState('deleting', (clone $model));
+    }
+
+    public function updating(Model $model): void
+    {
+        $this->setState('updating', $model);
     }
 
 

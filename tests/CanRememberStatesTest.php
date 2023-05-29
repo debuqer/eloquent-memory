@@ -77,64 +77,71 @@ it('can record when model restored', function () {
     $timeline->next();
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-soft-deleted');
+
     $timeline->next();
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-created');
 });
 
 
-//it('can record when a model updated', function () {
-//    $model = $this->createAModelOf(PostWithEloquentMemory::class);
-//    $oldAttributes = $model->getRawOriginal();
-//
-//
-//    $model->update([
-//        'title' => 'new Title'
-//    ]);
-//    /** @var Timeline $timeline */
-//    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
-//    $current = $timeline->current();
-//
-//    expect($timeline->count())->toBe(2);
-//    expect($current->getTransition()->getType())->toBe('model-updated');
-//    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
-//    expect($current->getTransition()->getModelKey())->toBe($model->id);
-//    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
-//    expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();
-//});
-//
-//
-//it('can record chain of events if soft delete support', function() {
-//    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
-//    $model->update([
-//        'title' => 'new Title'
-//    ]);
-//    $model->update([
-//        'title' => 'new new Title'
-//    ]);
-//    $model->delete();
-//    $model->restore();
-//    $model->update([
-//        'title' => 'new Title'
-//    ]);
-//    $model->forceDelete();
-//
-//    $expectedStack = [
-//        'model-deleted',
-//        'model-updated',
-//        'model-restored',
-//        'model-soft-deleted',
-//        'model-updated',
-//        'model-updated',
-//        'model-created',
-//    ];
-//
-//
-//    /** @var Timeline $timeline */
-//    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
-//    $timeline->next();
-//
-//    foreach ($expectedStack as $expected) {
-//        expect($timeline->current()->getTransition()->getType())->toBe($expected);
-//    }
-//});
+it('can record when a model updated', function () {
+    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $oldAttributes = $model->getRawOriginal();
+
+
+    $model->update([
+        'title' => 'new Title'
+    ]);
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
+    $current = $timeline->current();
+
+    expect($timeline->count())->toBe(2);
+    expect($current->getTransition()->getType())->toBe('model-updated');
+    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+    expect($current->getTransition()->getModelKey())->toBe($model->id);
+    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
+    expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();
+});
+
+
+it('can record chain of events if soft delete support', function() {
+    $expectedStack = [];
+
+    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
+    $expectedStack[] = 'model-created';
+
+    $model->update([
+        'title' => 'new Title'
+    ]);
+    $expectedStack[] = 'model-updated';
+
+    $model->update([
+        'title' => 'new new Title'
+    ]);
+    $expectedStack[] = 'model-updated';
+
+    $model->delete();
+    $expectedStack[] = 'model-soft-deleted';
+
+    $model->restore();
+    $expectedStack[] = 'model-restored';
+
+    $model->update([
+        'title' => 'new Title'
+    ]);
+    $expectedStack[] = 'model-updated';
+
+    $model->forceDelete();
+    $expectedStack[] = 'model-deleted';
+
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
+
+
+    foreach (array_reverse($expectedStack) as $expected) {
+       // dd($timeline->current());
+        expect($timeline->current()->getTransition()->getType())->toBe($expected);
+        $timeline->next();
+    }
+});
