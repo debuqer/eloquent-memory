@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Models\Concerns;
+namespace Debuqer\EloquentMemory\StorageModels\Concerns;
 
 
 use Illuminate\Support\Str;

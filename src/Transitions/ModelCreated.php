@@ -3,7 +3,7 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
+use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;

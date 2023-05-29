@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Models;
+namespace Debuqer\EloquentMemory\StorageModels;
 
 
-use Debuqer\EloquentMemory\Models\Concerns\CanGenerateBatchId;
+use Debuqer\EloquentMemory\StorageModels\Concerns\CanGenerateBatchId;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;

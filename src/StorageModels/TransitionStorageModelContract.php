@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Models;
+namespace Debuqer\EloquentMemory\StorageModels;
 
 
 use Debuqer\EloquentMemory\Timeline;

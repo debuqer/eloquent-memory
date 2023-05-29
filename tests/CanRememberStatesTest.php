@@ -1,5 +1,5 @@
 <?php
-use Debuqer\EloquentMemory\Models\TransitionRepository;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithEloquentMemory;
