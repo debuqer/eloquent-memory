@@ -21,7 +21,7 @@ class ModelCreated extends BaseTransition implements TransitionInterface
      */
     public static function createFromModel(Model $model): TransitionInterface
     {
-        return new static(['model_class' => get_class($model), 'attributes' => $model->getRawOriginal()]);
+        return new static(['model_class' => get_class($model), 'attributes' => static::getMemorizableAttributes($model)]);
     }
 
     public function up()

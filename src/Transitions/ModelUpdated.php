@@ -25,8 +25,8 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
         return new static([
             'model_class' => get_class($after),
             'key' => $after->getKey(),
-            'old' => $before->getRawOriginal(),
-            'attributes' => $after->getRawOriginal()
+            'old' => static::getMemorizableAttributes($before),
+            'attributes' => static::getMemorizableAttributes($after)
         ]);
     }
 

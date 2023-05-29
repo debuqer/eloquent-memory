@@ -22,7 +22,7 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
         return new static([
             'model_class' => get_class($model),
             'key' => $model->getKey(),
-            'old' => $model->getRawOriginal()
+            'old' => static::getMemorizableAttributes($model)
         ]);
     }
 

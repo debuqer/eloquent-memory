@@ -8,6 +8,7 @@ use Debuqer\EloquentMemory\StorageModels\ModelTransition;
 use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
@@ -63,5 +64,14 @@ abstract class BaseTransition implements TransitionInterface
     public function setModel($model)
     {
         $this->model = $model;
+    }
+
+    public static function getMemorizableAttributes(Model $model)
+    {
+        if ( method_exists($model, 'getMemorizableAttributes') ) {
+            return $model->getMemorizableAttributes();
+        }
+
+        return $model->getRawOriginal();
     }
 }

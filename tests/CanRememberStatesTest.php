@@ -4,6 +4,7 @@ use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithEloquentMemory;
 use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 
 beforeEach(function () {
     $this->batch_id = app(TransitionRepository::class)->getBatchId();
@@ -144,4 +145,17 @@ it('can record chain of events if soft delete support', function() {
         expect($timeline->current()->getTransition()->getType())->toBe($expected);
         $timeline->next();
     }
+});
+
+it('can exclude attributes', function() {
+    $model = $this->createAModelOf(PostWithExcludeAttributes::class);
+    $model->update([
+        'title' => 'changed',
+    ]);
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
+    $current = $timeline->current();
+
+    $attributes = $current->getTransition()->getAttributes();
+    expect(isset($attributes['title']))->toBeFalse();
 });
