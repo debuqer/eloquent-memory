@@ -6,8 +6,6 @@ namespace Debuqer\EloquentMemory;
 
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
-use Debuqer\EloquentMemory\Transitions\ModelRestored;
-use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,51 +27,33 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
+        $model->syncOriginal();
         ModelUpdated::createFromModel($this->getState('updating', $model), $model)->persist();
 
         $this->unsetState('updating', $model);
     }
 
-
-    /**
-     * Handle the Model "deleted" event.
-     */
     public function deleted(Model $model): void
     {
-        if ( in_array(SoftDeletes::class, class_uses($model)) and ! $model->isForceDeleting()  ) {
-            ModelSoftDeleted::createFromModel($this->getState('deleting', $model), $model)->persist();
-        } else {
+        if ( ! in_array(SoftDeletes::class, class_uses($model)) or $model->isForceDeleting()  ) {
             ModelDeleted::createFromModel($model)->persist();
+        } else {
+            $model->syncOriginal();
+            ModelUpdated::createFromModel($this->getState('deleting', $model), $model)->persist();
         }
 
         $this->unsetState('deleting', $model);
     }
 
-    /**
-     * Handle the Model "restored" event.
-     */
-    public function restored(Model $model): void
-    {
-        ModelRestored::createFromModel($this->getState('restoring', $model), $model)->persist();
-
-        $this->unsetState('restoring', $model);
-    }
-
-    public function restoring(Model $model): void
-    {
-        $this->setState('restoring', (clone $model));
-    }
-
     public function deleting(Model $model): void
     {
-        $this->setState('deleting', (clone $model));
+        $this->setState('deleting', $model);
     }
 
     public function updating(Model $model): void
     {
         $this->setState('updating', $model);
     }
-
 
 
     private function setState($event, $model)

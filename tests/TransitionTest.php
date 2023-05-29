@@ -3,10 +3,8 @@ use Illuminate\Database\QueryException;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
-use Debuqer\EloquentMemory\Transitions\ModelRestored;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Carbon\Carbon;
 
@@ -229,122 +227,6 @@ it('[ModelDeleted] has correct rollbackTransition', function () {
     expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
     expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
 });
-
-it('[ModelRestored] can persist in db', function () {
-    $transition = $this->getTransition('model-restored');
-    $transition['handler']->persist();
-
-    expect($transition['handler']->getModel())->not->toBeNull();
-    expect($transition['handler']->getModel()->properties)->toBe($transition['handler']->getProperties());
-    expect($transition['handler']->getModel()->properties['old'])->toBe($transition['model']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['attributes'])->toBe($transition['after']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['key'])->toBe($transition['after']->getKey());
-    expect($transition['handler']->getModel()->properties['model_class'])->toBe(get_class($transition['after']));
-    expect($transition['handler']->getModel()->type)->toBe('model-restored');
-});
-
-it('[ModelRestored] migrate.up() can restore the model', function () {
-    $transition = $this->getTransition('model-restored');
-    $transition['handler']->up();
-
-    expect(PostWithSoftDelete::withTrashed()->findOrFail($transition['model']->getKey()))->not->toBeNull();
-});
-
-it('[ModelRestored] migrate.up() raises error when model not exists', function () {
-    $transition = $this->getTransition('model-restored');
-    $transition['model']->forceDelete();
-
-    $transition['handler']->up();
-})->expectException(ModelNotFoundException::class);
-
-
-it('[ModelRestored] which created from persisted record can migrate.up() and migrate.down()', function () {
-    $transition = $this->getTransition('model-restored');
-    $transition['handler']->persist();
-    $persistedTransition = ModelRestored::createFromPersistedRecord($transition['handler']->getModel());
-
-    $persistedTransition->up();
-    $post = Post::first();
-    expect($post->getRawOriginal('deleted_at'))->toBe($transition['after']->getRawOriginal('deleted_at'));
-
-    $persistedTransition->down();
-    $post = Post::first();
-    expect($post->getRawOriginal('deleted_at'))->toBe($transition['model']->getRawOriginal('deleted_at'));
-});
-
-it('[ModelRestored] has correct rollbackTransition', function () {
-    $transition = $this->getTransition('model-restored');
-
-    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelSoftDeleted::class);
-    expect($transition['handler']->getRollbackChange()->getModelKey())->toBe($transition['model']->getKey());
-    expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
-});
-
-
-it('[ModelSoftDeleted] can persist in db', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-    $transition['handler']->persist();
-
-    expect($transition['handler']->getModel())->not->toBeNull();
-    expect($transition['handler']->getModel()->properties)->toBe($transition['handler']->getProperties());
-    expect($transition['handler']->getModel()->properties['old'])->toBe($transition['model']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['attributes'])->toBe($transition['after']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['key'])->toBe($transition['after']->getKey());
-    expect($transition['handler']->getModel()->properties['model_class'])->toBe(get_class($transition['after']));
-    expect($transition['handler']->getModel()->type)->toBe('model-soft-deleted');
-});
-
-it('[ModelSoftDeleted] migrate.up() can delete the model', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-    $transition['handler']->up();
-
-    expect(PostWithSoftDelete::findOrFail($transition['model']->getKey()));
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelSoftDeleted] migrate.up() raises error when model not exists', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-    $transition['model']->forceDelete();
-
-    $transition['handler']->up();
-})->expectException(ModelNotFoundException::class);
-
-
-it('[ModelSoftDeleted] which created from persisted record can migrate.up() and migrate.down()', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-    $transition['handler']->persist();
-    $persistedTransition = ModelSoftDeleted::createFromPersistedRecord($transition['handler']->getModel());
-
-    $persistedTransition->up();
-    $post = Post::first();
-    expect($post->getRawOriginal('deleted_at'))->toBe($transition['after']->getRawOriginal('deleted_at'));
-
-    $persistedTransition->down();
-    $post = Post::first();
-    expect($post->getRawOriginal('deleted_at'))->toBe($transition['model']->getRawOriginal('deleted_at'));
-});
-
-it('[ModelSoftDeleted] has correct rollbackTransition', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-
-    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelRestored::class);
-    expect($transition['handler']->getRollbackChange()->getModelKey())->toBe($transition['model']->getKey());
-    expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
-});
-
-it('[ModelSoftDeleted] raise error when model not uses softDelete', function () {
-    $transition = $this->getTransition('model-soft-deleted', Post::class);
-
-    $transition['handler']->up();
-})->expectException(BadMethodCallException::class);
-
-it('[ModelSoftDeleted] migrate.up() will only soft delete', function () {
-    $transition = $this->getTransition('model-soft-deleted');
-
-    $transition['handler']->up();
-
-    expect($transition['model']->refresh()->trashed())->toBeTrue();
-});
-
 
 it('[ModelUpdated] can persist', function () {
     $transition = $this->getTransition('model-updated');

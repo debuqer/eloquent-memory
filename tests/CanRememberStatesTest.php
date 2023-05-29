@@ -46,7 +46,7 @@ it('it can record when model soft deleted', function () {
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
 
     $current = $timeline->current();
-    expect($current->getTransition()->getType())->toBe('model-soft-deleted');
+    expect($current->getTransition()->getType())->toBe('model-updated');
     expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
     expect($current->getTransition()->getModelKey())->toBe($model->id);
     expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes))->toBeTrue();
@@ -68,7 +68,7 @@ it('can record when model restored', function () {
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
 
     $current = $timeline->current();
-    expect($current->getTransition()->getType())->toBe('model-restored');
+    expect($current->getTransition()->getType())->toBe('model-updated');
     expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
     expect($current->getTransition()->getModelKey())->toBe($model->id);
     expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
@@ -76,7 +76,7 @@ it('can record when model restored', function () {
 
     $timeline->next();
     $current = $timeline->current();
-    expect($current->getTransition()->getType())->toBe('model-soft-deleted');
+    expect($current->getTransition()->getType())->toBe('model-updated');
 
     $timeline->next();
     $current = $timeline->current();
@@ -121,11 +121,12 @@ it('can record chain of events if soft delete support', function() {
     ]);
     $expectedStack[] = 'model-updated';
 
+
     $model->delete();
-    $expectedStack[] = 'model-soft-deleted';
+    $expectedStack[] = 'model-updated';
 
     $model->restore();
-    $expectedStack[] = 'model-restored';
+    $expectedStack[] = 'model-updated';
 
     $model->update([
         'title' => 'new Title'
@@ -138,9 +139,7 @@ it('can record chain of events if soft delete support', function() {
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
 
-
     foreach (array_reverse($expectedStack) as $expected) {
-       // dd($timeline->current());
         expect($timeline->current()->getTransition()->getType())->toBe($expected);
         $timeline->next();
     }
