@@ -70,36 +70,6 @@ class TestCase extends Orchestra
             ];
             DB::rollBack();
         }
-        if (in_array($transitionType, [ModelRestored::class, 'model-restored'])) {
-            $model = $this->createAModelOf($modelClass ?? PostWithSoftDelete::class);
-            $model->delete();
-
-            DB::beginTransaction();
-            $after = (clone $model);
-            $after->restore();
-
-            $transition = [
-                'model' => $model,
-                'after' => $after,
-                'handler' => ModelRestored::createFromModel($model, $after)
-            ];
-            DB::rollBack();
-        }
-        if (in_array($transitionType, [ModelSoftDeleted::class, 'model-soft-deleted'])) {
-            $model = $this->createAModelOf($modelClass ?? PostWithSoftDelete::class);
-
-            DB::beginTransaction();
-            $after = (clone $model);
-            $after->delete();
-
-            $transition = [
-                'model' => $model,
-                'after' => $after,
-                'handler' => ModelSoftDeleted::createFromModel($model, $after)
-            ];
-            DB::rollBack();
-
-        }
         if (in_array($transitionType, [ModelUpdated::class, 'model-updated'])) {
             $model = $this->createAModelOf($modelClass ?? Post::class);
 
