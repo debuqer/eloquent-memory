@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
+use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
@@ -18,5 +18,5 @@ interface TransitionInterface
     public function persist();
     public function getModel();
 
-    public static function createFromPersistedRecord(ModelTransitionInterface $change);
+    public static function createFromPersistedRecord(TransitionStorageModelContract $change);
 }

@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Models;
+namespace Debuqer\EloquentMemory\StorageModels;
 
 
-use Debuqer\EloquentMemory\Models\Concerns\CanGenerateBatchId;
+use Debuqer\EloquentMemory\StorageModels\Concerns\CanGenerateBatchId;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;
 use Illuminate\Support\Arr;
 
-class ModelTransition extends Model implements ModelTransitionInterface
+class ModelTransition extends Model implements TransitionStorageModelContract
 {
     use CanGenerateBatchId;
 

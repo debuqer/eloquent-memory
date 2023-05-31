@@ -3,7 +3,13 @@
 namespace Debuqer\EloquentMemory\Tests;
 
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelRestored;
+use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +46,52 @@ class TestCase extends Orchestra
         $migration->up();
     }
 
+    /**
+     * @some refactor here
+     */
+    function getTransition(string $transitionType, $modelClass = null)
+    {
+        if (in_array($transitionType, [ModelCreated::class, 'model-created'])) {
+            DB::beginTransaction();
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+            $transition = [
+                'model' => $model,
+                'handler' => ModelCreated::createFromModel($model)
+            ];
+            DB::rollBack();
+        }
+        if (in_array($transitionType, [ModelDeleted::class, 'model-deleted'])) {
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+            DB::beginTransaction();
+
+            $transition = [
+                'model' => $model,
+                'handler' => ModelDeleted::createFromModel($model)
+            ];
+            DB::rollBack();
+        }
+        if (in_array($transitionType, [ModelUpdated::class, 'model-updated'])) {
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+
+            DB::beginTransaction();
+            $after = (clone $model);
+            $after->update([
+                'title' => 'Title changed',
+                'meta' => ['new json'],
+            ]);
+            $after->syncOriginal();
+
+            $transition = [
+                'model' => $model,
+                'after' => $after,
+                'handler' => ModelUpdated::createFromModel($model, $after)
+            ];
+            DB::rollBack();
+        }
+
+        return $transition;
+    }
+
     function getMockedDataFor($class = Post::class)
     {
         return Factory::factoryForModel($class)->raw();
@@ -50,15 +102,6 @@ class TestCase extends Orchestra
         $attributes = $this->getMockedDataFor($factorySource);
 
         return $class::create($attributes);
-    }
-
-    function getFilledModelOf($class = Post::class, $factorySource = Post::class)
-    {
-         DB::beginTransaction();
-         $item = $this->createAModelOf($class, $factorySource);
-         DB::rollBack();
-
-         return $item;
     }
 
     function arraysAreTheSame($attrs1, $attrs2)
@@ -77,46 +120,5 @@ class TestCase extends Orchestra
 
         return count($diff) === 0;
     }
-
-    function createAUser()
-    {
-        return Factory::factoryForModel(User::class)->createOne();
-    }
-
-    function createEmptyPost($class = Post::class)
-    {
-        return new $class();
-    }
-
-    function createAFakePost()
-    {
-        DB::beginTransaction();
-        $model = $this->createAPost();
-        DB::rollBack();
-
-        return $model;
-    }
-
-    function createAPost($class = Post::class)
-    {
-        return Factory::factoryForModel($class)->createOne();
-    }
-
-    function createAPostAndDelete($class = Post::class)
-    {
-        $post = Factory::factoryForModel($class)->createOne();
-        $post->delete();
-
-        return $post;
-    }
-
-    function createAPostAndForceDelete($class = Post::class)
-    {
-        $post = Factory::factoryForModel($class)->createOne();
-        $post->forceDelete();
-
-        return $post;
-    }
-
 
 }

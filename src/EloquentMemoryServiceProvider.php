@@ -2,8 +2,8 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\Models\ModelTransition;
-use Debuqer\EloquentMemory\Models\TransitionRepository;
+use Debuqer\EloquentMemory\StorageModels\ModelTransition;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

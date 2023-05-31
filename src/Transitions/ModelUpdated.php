@@ -4,13 +4,14 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
+use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasOldAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class ModelUpdated extends BaseTransition implements TransitionInterface
 {
@@ -24,8 +25,8 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
         return new static([
             'model_class' => get_class($after),
             'key' => $after->getKey(),
-            'old' => $before->getRawOriginal(),
-            'attributes' => $after->getRawOriginal()
+            'old' => static::getMemorizableAttributes($before),
+            'attributes' => static::getMemorizableAttributes($after)
         ]);
     }
 
@@ -38,7 +39,15 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
 
     protected function update(array $update)
     {
-        $this->getModelInstance()->findOrFail($this->getModelKey())->update($update);
+        /** @var Model $model */
+        $model = $this->getModelInstance()->findOrFail($this->getModelKey());
+        $model->unguard();
+        $model->forceFill($update)->save();
+    }
+
+    protected function getModelInstance()
+    {
+        return $this->getModelObject();
     }
 
     protected function getAllAttributes()

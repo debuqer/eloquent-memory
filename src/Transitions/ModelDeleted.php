@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
+use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasOldAttributes;
@@ -22,18 +22,18 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
         return new static([
             'model_class' => get_class($model),
             'key' => $model->getKey(),
-            'old' => $model->getRawOriginal()
+            'old' => static::getMemorizableAttributes($model)
         ]);
     }
 
     public function up()
     {
-        $this->getModelInstance()->findOrFail($this->getKeyForDeleting())->forceDelete();
+        $this->getModelObject()->findOrFail($this->getKeyForDeleting())->forceDelete();
     }
 
     protected function getKeyForDeleting()
     {
-        return $this->getOldAttributes()[$this->getModelInstance()->getKeyName()];
+        return $this->getOldAttributes()[$this->getModelObject()->getKeyName()];
     }
 
     public function getRollbackChange(): TransitionInterface

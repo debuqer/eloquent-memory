@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\Models;
+namespace Debuqer\EloquentMemory\StorageModels;
 
 
-use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
-interface ModelTransitionInterface
+interface TransitionStorageModelContract
 {
     public static function persist(TransitionInterface $transition);
     public static function findUsingBatch($batch);

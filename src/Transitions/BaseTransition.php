@@ -4,10 +4,11 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
-use Debuqer\EloquentMemory\Models\ModelTransition;
-use Debuqer\EloquentMemory\Models\ModelTransitionInterface;
-use Debuqer\EloquentMemory\Models\TransitionRepository;
+use Debuqer\EloquentMemory\StorageModels\ModelTransition;
+use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
@@ -18,7 +19,7 @@ abstract class BaseTransition implements TransitionInterface
 
 
 
-    public static function createFromPersistedRecord(ModelTransitionInterface $change)
+    public static function createFromPersistedRecord(TransitionStorageModelContract $change)
     {
         return new static($change->properties);
     }
@@ -63,5 +64,14 @@ abstract class BaseTransition implements TransitionInterface
     public function setModel($model)
     {
         $this->model = $model;
+    }
+
+    public static function getMemorizableAttributes(Model $model)
+    {
+        if ( method_exists($model, 'getMemorizableAttributes') ) {
+            return $model->getMemorizableAttributes();
+        }
+
+        return $model->getRawOriginal();
     }
 }
