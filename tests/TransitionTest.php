@@ -342,7 +342,7 @@ it('[ModelUpdated] migrate.up() can fill despite of hidden attributes', function
     $transition = $this->getTransition('model-updated', $modelWithHidden);
     $transition['handler']->up();
 
-    $post = $modelWithHidden::first();
+    $post = Post::first();
     expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
 });
 
@@ -360,7 +360,7 @@ it('[ModelUpdated] migrate.up() can fill despite of casted values', function () 
     $transition['handler']->up();
 
     $post = Post::first();
-    expect($post->getRawOriginal('title'))->toBe($transition['model']->getRawOriginal('title'));
+    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
 });
 
 it('[ModelUpdated] raise error when model not exists at all', function () {

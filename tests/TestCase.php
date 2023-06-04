@@ -79,7 +79,7 @@ class TestCase extends Orchestra
                 'title' => 'Title changed',
                 'meta' => ['new json'],
             ]);
-            $after->syncOriginal();
+            $after->refresh();
 
             $transition = [
                 'model' => $model,
