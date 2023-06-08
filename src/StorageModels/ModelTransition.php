@@ -4,6 +4,7 @@
 namespace Debuqer\EloquentMemory\StorageModels;
 
 
+use Carbon\Carbon;
 use Debuqer\EloquentMemory\StorageModels\Concerns\CanGenerateBatchId;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -27,17 +28,26 @@ class ModelTransition extends Model implements TransitionStorageModelContract
     public static function persist(TransitionInterface $transition) {
         return static::create([
             'type' => $transition->getType(),
+            'model_class' => $transition->getModelClass(),
             'properties' => $transition->getProperties(),
             'batch' => app(TransitionRepository::class)->getBatchId()
         ]);
     }
 
-    public static function find(array $where): Timeline
+    public static function find(array $where, int $limit = null, Carbon $until = null, Carbon $from = null): Timeline
     {
         $timeline = new Timeline();
-        static::query()->where($where)->get()->each(function ($item) use(&$timeline) {
-            $timeline->insert($item, $item->id);
-        });
+        static::query()->where($where)
+            ->when($until, function ($query) use($until) {
+                $query->where('created_at', '<=', $until);
+            })->when($from, function ($query) use($from) {
+                $query->where('created_at', '>=', $from);
+            })
+            ->when($limit, function ($query) use($limit) {
+                $query->limit($limit);
+            })->get()->each(function ($item) use(&$timeline) {
+                $timeline->insert($item, $item->id);
+            });
 
         return $timeline;
     }

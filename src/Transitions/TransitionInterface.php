@@ -14,6 +14,7 @@ interface TransitionInterface
     public function up();
     public function down();
     public function getRollbackChange(): TransitionInterface;
+    public function getModelClass();
 
     public function persist();
     public function getModel();

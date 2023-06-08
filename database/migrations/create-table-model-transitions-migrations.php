@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('model_transitions', function (Blueprint $table) {
             $table->id();
             $table->string('type');
+            $table->string('model_class');
             $table->json('properties');
             $table->uuid('batch');
             $table->timestamps();
