@@ -32,7 +32,7 @@ trait CanRememberStates
 
         $state = $transitionRepository->current();
 
-        if ( ! $state ) {
+        if ( ! $state or $state->type === 'model-deleted' ) {
             return null;  // model not exists
         } else {
             return (new $this)->forceFill($state['properties']['attributes'])->syncOriginal();

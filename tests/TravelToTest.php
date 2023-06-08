@@ -9,7 +9,7 @@ beforeEach(function () {
     $this->model = (clone $this->transition['model']);
 });
 
-it('can return model state for 1 hour ago created', function () {
+it('can retrieve the model after update', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // time travel
 
     $this->model->update([
@@ -20,5 +20,21 @@ it('can return model state for 1 hour ago created', function () {
     $oldModel = $this->model->getStateOf(Carbon::now()->subHour()); // return a model when model was created (1 hour ago)
 
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
+});
+
+it('can retrieve the model after delete', function () {
+    $this->model->forceDelete();
+    Carbon::setTestNow(Carbon::now()->addHour()); // time travel
+
+    $oldModel = $this->model->getStateOf(Carbon::now()->subHour()); // return a model when model was created (1 hour ago)
+    expect($oldModel)->toBeNull();
+});
+
+it('can retrieve the model after soft delete', function () {
+    $this->model->delete();
+    Carbon::setTestNow(Carbon::now()->addHour()); // time travel
+
+    $oldModel = $this->model->getStateOf(Carbon::now()->subHour()); // return a model when model was created (1 hour ago)
+    expect($oldModel)->toBeNull();
 });
 
