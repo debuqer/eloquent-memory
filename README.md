@@ -5,15 +5,12 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/debuqer/eloquent-memory/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/debuqer/eloquent-memory/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/debuqer/eloquent-memory.svg?style=flat-square)](https://packagist.org/packages/debuqer/eloquent-memory)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/eloquent-memory.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/eloquent-memory)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Eloquent memory give you a Laravel model based time machine to perform time traveling through your models state. 
+```php 
+$article = Article::find(5);
+  
+$article->travelTo(Carbon::now()->subMinutes(5)); // transform article model into 1 years ago version in a given time    
+```
 
 ## Installation
 
@@ -40,20 +37,34 @@ This is the contents of the published config file:
 
 ```php
 return [
+    'changes' => [
+        'model-updated' => ModelUpdated::class,
+        'model-created' => ModelCreated::class,
+        'model-deleted' => ModelDeleted::class,
+    ]
 ];
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="eloquent-memory-views"
-```
-
 ## Usage
+In order to force models to keep track of their state, CanRememberStates trait must be use in the model class 
 
 ```php
-$eloquentMemory = new Debuqer\EloquentMemory();
-echo $eloquentMemory->echoPhrase('Hello, Debuqer!');
+
+use Debuqer\EloquentMemory\CanRememberStates;
+
+class Post extends Model 
+{
+    use CanRememberStates;
+}
+
+```
+
+The model records their states in a database and the states can be retrieved by method travelTo
+
+```php
+$article = Article::find(5);
+  
+$article->travelTo(Carbon::now()->subDays(5)); // any carbon instance is acceptable
 ```
 
 ## Testing
@@ -64,7 +75,7 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+This package is in dev mode and not recommend to use in production environment
 
 ## Contributing
 
