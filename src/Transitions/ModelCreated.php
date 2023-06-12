@@ -23,14 +23,4 @@ class ModelCreated extends BaseTransition implements TransitionInterface
     {
         return new static(['model_class' => get_class($model), 'attributes' => static::getMemorizableAttributes($model)]);
     }
-
-    public function up()
-    {
-        $this->getModelObject()->setRawAttributes($this->getAttributes())->save();
-    }
-
-    public function getRollbackChange(): TransitionInterface
-    {
-        return new ModelDeleted(['model_class' => $this->getModelClass(), 'old' => $this->getAttributes()]);
-    }
 }

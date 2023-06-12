@@ -42,15 +42,6 @@ abstract class BaseTransition implements TransitionInterface
         return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
     }
 
-    /**
-     * @codeCoverageIgnore
-     * @return mixed
-     */
-    public function down()
-    {
-        return $this->getRollbackChange()->up();
-    }
-
     public function persist()
     {
         $this->model = app(TransitionRepository::class)->persist($this);

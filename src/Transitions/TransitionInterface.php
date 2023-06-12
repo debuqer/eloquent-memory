@@ -11,9 +11,6 @@ interface TransitionInterface
 {
     public function getProperties(): array;
     public function getType(): string;
-    public function up();
-    public function down();
-    public function getRollbackChange(): TransitionInterface;
     public function getModelClass();
 
     public function persist();

@@ -25,19 +25,4 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
             'old' => static::getMemorizableAttributes($model)
         ]);
     }
-
-    public function up()
-    {
-        $this->getModelObject()->findOrFail($this->getKeyForDeleting())->forceDelete();
-    }
-
-    protected function getKeyForDeleting()
-    {
-        return $this->getOldAttributes()[$this->getModelObject()->getKeyName()];
-    }
-
-    public function getRollbackChange(): TransitionInterface
-    {
-        return new ModelCreated(['model_class' => $this->getModelClass(), 'attributes' => $this->getOldAttributes()]);
-    }
 }
