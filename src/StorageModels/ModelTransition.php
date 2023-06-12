@@ -27,6 +27,7 @@ class ModelTransition extends Model implements TransitionStorageModelContract
 
     public static function persist(TransitionInterface $transition) {
         return static::create([
+            'address' => $transition->getTransitionStorageAddress(),
             'type' => $transition->getType(),
             'model_class' => $transition->getModelClass(),
             'properties' => $transition->getProperties(),

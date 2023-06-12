@@ -65,4 +65,9 @@ abstract class BaseTransition implements TransitionInterface
 
         return $model->getRawOriginal();
     }
+
+    public function getTransitionStorageAddress(): string
+    {
+        return md5($this->getModelClass());
+    }
 }
