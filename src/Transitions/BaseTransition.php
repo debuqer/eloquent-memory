@@ -8,12 +8,14 @@ use Debuqer\EloquentMemory\StorageModels\ModelTransition;
 use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
 {
     use HasProperties;
+    use HasSubject;
 
     protected $model;
 
@@ -21,7 +23,15 @@ abstract class BaseTransition implements TransitionInterface
 
     public static function createFromPersistedRecord(TransitionStorageModelContract $change)
     {
-        return new static($change->properties);
+        $transition = new static($change->properties);
+
+        $attributes = $transition->getProperties()['attributes'] ?? [];
+        $subjectClass = $change->model_class;
+        $subject = new $subjectClass($attributes);
+
+        $transition->setSubject($subject);
+
+        return $transition;
     }
 
     /**
@@ -68,6 +78,6 @@ abstract class BaseTransition implements TransitionInterface
 
     public function getTransitionStorageAddress(): string
     {
-        return md5($this->getModelClass());
+        return md5($this->getSubjectClass());
     }
 }

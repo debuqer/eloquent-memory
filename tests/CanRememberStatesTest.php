@@ -18,7 +18,7 @@ it('can record when a model created', function () {
 
     expect($timeline->count())->toBe(1);
     expect($current->getTransition()->getType())->toBe('model-created');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubjectClass())->toBe(PostWithEloquentMemory::class);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getAttributes()));
 });
 
@@ -33,7 +33,7 @@ it('can record when a model deleted', function () {
 
     expect($timeline->count())->toBe(2);
     expect($current->getTransition()->getType())->toBe('model-deleted');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubjectClass())->toBe(PostWithEloquentMemory::class);
     expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes));
 });
 
@@ -49,7 +49,7 @@ it('it can record when model soft deleted', function () {
 
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubjectClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
     expect($current->getTransition()->getModelKey())->toBe($model->id);
     expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes))->toBeTrue();
     expect($current->getTransition()->getAttributes())->toBe($attributes);
@@ -71,8 +71,8 @@ it('can record when model restored', function () {
 
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
-    expect($current->getTransition()->getModelKey())->toBe($model->id);
+    expect($current->getTransition()->getSubjectClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubject()->getKey())->toBe($model->id);
     expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
     expect($current->getTransition()->getAttributes())->toBe($attributes);
 
@@ -100,7 +100,7 @@ it('can record when a model updated', function () {
 
     expect($timeline->count())->toBe(2);
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubjectClass())->toBe(PostWithEloquentMemory::class);
     expect($current->getTransition()->getModelKey())->toBe($model->id);
     expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();

@@ -14,15 +14,16 @@ use Illuminate\Support\Arr;
 class ModelDeleted extends BaseTransition implements TransitionInterface
 {
     use HasModelClass;
-    use HasModelKey;
     use HasOldAttributes;
 
     public static function createFromModel(Model $model)
     {
-        return new static([
-            'model_class' => get_class($model),
-            'key' => $model->getKey(),
+        /** @var BaseTransition $transition */
+        $transition = new static([
             'old' => static::getMemorizableAttributes($model)
         ]);
+        $transition->setSubject($model);
+
+        return $transition;
     }
 }

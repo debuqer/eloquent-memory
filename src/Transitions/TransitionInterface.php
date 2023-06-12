@@ -12,6 +12,8 @@ interface TransitionInterface
     public function getProperties(): array;
     public function getType(): string;
     public function getModelClass();
+    public function getSubject();
+    public function getSubjectClass();
 
     public function persist();
     public function getModel();

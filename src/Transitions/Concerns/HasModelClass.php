@@ -18,6 +18,6 @@ trait HasModelClass
 
     protected function getModelObject($properties = [])
     {
-        return app($this->getModelClass(), $properties);
+        return app($this->getSubjectClass(), $properties);
     }
 }

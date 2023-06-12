@@ -16,17 +16,14 @@ use PhpParser\Node\Expr\AssignOp\Mod;
 class ModelUpdated extends BaseTransition implements TransitionInterface
 {
     use HasModelClass;
-    use HasModelKey;
     use HasOldAttributes;
     use HasAttributes;
 
     public static function createFromModel(Model $before, Model $after)
     {
-        return new static([
-            'model_class' => get_class($after),
-            'key' => $after->getKey(),
-            'old' => static::getMemorizableAttributes($before),
-            'attributes' => static::getMemorizableAttributes($after)
-        ]);
+        $transition = new static(['attributes' => static::getMemorizableAttributes($before)]);
+        $transition->setSubject($before);
+
+        return $transition;
     }
 }
