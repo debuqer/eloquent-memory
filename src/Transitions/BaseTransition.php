@@ -44,14 +44,6 @@ abstract class BaseTransition implements TransitionInterface
         $this->setProperties($properties);
     }
 
-    /**
-     * @return mixed|string
-     */
-    protected function getClassName()
-    {
-        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
-    }
-
     public function persist(): void
     {
         $this->model = app(TransitionRepository::class)->persist($this);
@@ -105,5 +97,13 @@ abstract class BaseTransition implements TransitionInterface
     public function getSubjectKey()
     {
         return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? null;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    protected function getClassName()
+    {
+        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
     }
 }

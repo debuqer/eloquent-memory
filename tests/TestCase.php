@@ -84,7 +84,7 @@ class TestCase extends Orchestra
             $transition = [
                 'model' => $model,
                 'after' => $after,
-                'handler' => ModelUpdated::createFromModel($model, $after)
+                'handler' => ModelUpdated::createFromModel($after)
             ];
             DB::rollBack();
         }
