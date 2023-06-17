@@ -9,11 +9,6 @@ use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 
 trait CanRememberStates
 {
-    public function getModelHash()
-    {
-        return md5($this->getTable().'_'.$this->getKeyName().'_'.$this->getKey());
-    }
-
     public function getMemorizableAttributes()
     {
         return $this->getRawOriginal();
