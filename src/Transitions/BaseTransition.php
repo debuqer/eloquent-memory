@@ -55,22 +55,6 @@ abstract class BaseTransition implements TransitionInterface
     }
 
     /**
-     * @return mixed
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     * @param Model $model
-     */
-    public function setModel(Model $model)
-    {
-        $this->model = $model;
-    }
-
-    /**
      * @param Model $model
      * @return array|mixed
      */

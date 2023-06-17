@@ -28,6 +28,20 @@ it('can create a ModelCreated from model', function () {
     expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
 
+it('can persist ModelCreated', function () {
+    $batchId = app(TransitionRepository::class)->getBatchId();
+    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
+    $transitionCreatedFromModel->persist();
+
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    expect($current)->not->toBeNull();
+});
+
 it('can create a model from persisted ModelUpdated', function () {
     $batchId = app(TransitionRepository::class)->getBatchId();
 
@@ -55,6 +69,22 @@ it('can create a ModelUpdated from model', function () {
     expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
 
+it('can persist ModelUpdated', function () {
+    $batchId = app(TransitionRepository::class)->getBatchId();
+    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model->update([
+        'title' => 'new Title',
+    ]);
+
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-updated', $model);
+    $transitionCreatedFromModel->persist();
+
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    expect($current)->not->toBeNull();
+});
 
 it('can create a model from persisted ModelDeleted', function () {
     $batchId = app(TransitionRepository::class)->getBatchId();
@@ -77,3 +107,19 @@ it('can create a ModelDeleted from model', function () {
     expect($transitionCreatedFromModel)->toBeInstanceOf(ModelDeleted::class);
     expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
+
+it('can persist ModelDeleted', function () {
+    $batchId = app(TransitionRepository::class)->getBatchId();
+    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model->delete();
+
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-deleted', $model);
+    $transitionCreatedFromModel->persist();
+
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    expect($current)->not->toBeNull();
+});
+
