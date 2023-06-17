@@ -7,7 +7,6 @@ namespace Debuqer\EloquentMemory;
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\StorageModels\ModelTransition;
 use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
-use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 trait CanRememberStates
 {
