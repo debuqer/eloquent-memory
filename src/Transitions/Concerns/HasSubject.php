@@ -19,11 +19,17 @@ trait HasSubject
         return $this->subject;
     }
 
+    /**
+     * @return false|string
+     */
     public function getSubjectType()
     {
         return get_class($this->getSubject());
     }
 
+    /**
+     * @param Model $subject
+     */
     public function setSubject(Model $subject)
     {
         $this->subject = $subject;
