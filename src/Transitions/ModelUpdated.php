@@ -15,8 +15,14 @@ use PhpParser\Node\Expr\AssignOp\Mod;
 
 class ModelUpdated extends BaseTransition implements TransitionInterface
 {
+    const TypeName = "model-updated";
+
     use HasAttributes;
 
+    /**
+     * @param Model $model
+     * @return static
+     */
     public static function createFromModel(Model $model)
     {
         $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
@@ -25,6 +31,9 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
         return $transition;
     }
 
+    /**
+     * @return mixed
+     */
     public function getModelCreatedFromState()
     {
         $model = app($this->getSubjectType())->forceFill($this->getProperties()['attributes'])->syncOriginal();

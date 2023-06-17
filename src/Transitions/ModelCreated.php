@@ -3,15 +3,13 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
-use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
-use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 
 class ModelCreated extends BaseTransition implements TransitionInterface
 {
+    const TypeName = "model-created";
+
     use HasAttributes;
 
     /**
@@ -27,6 +25,9 @@ class ModelCreated extends BaseTransition implements TransitionInterface
         return $transition;
     }
 
+    /**
+     * @return mixed
+     */
     public function getModelCreatedFromState()
     {
         $model = app($this->getSubjectType())->forceFill($this->getProperties()['attributes'])->syncOriginal();

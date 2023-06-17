@@ -3,9 +3,6 @@
 
 namespace Debuqer\EloquentMemory\StorageModels\Concerns;
 
-
-use Illuminate\Support\Str;
-
 trait CanGenerateBatchId
 {
     protected static $batch;
@@ -13,7 +10,7 @@ trait CanGenerateBatchId
     public static function getBatchId(): string
     {
         if ( ! static::$batch ) {
-            static::$batch = Str::orderedUuid();
+            static::$batch = md5(microtime(true));
         }
 
         return static::$batch;

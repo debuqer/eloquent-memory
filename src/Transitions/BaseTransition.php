@@ -3,24 +3,26 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Facades\EloquentMemory;
-use Debuqer\EloquentMemory\StorageModels\ModelTransition;
 use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
 {
     use HasProperties;
     use HasSubject;
 
+    const TypeName = "";
+
     protected $model;
 
 
-
+    /**
+     * @param TransitionStorageModelContract $change
+     * @return static
+     */
     public static function createFromPersistedRecord(TransitionStorageModelContract $change)
     {
         $transition = new static($change->properties);
@@ -42,31 +44,44 @@ abstract class BaseTransition implements TransitionInterface
         $this->setProperties($properties);
     }
 
-    public function getType(): string
-    {
-        return Str::kebab($this->getClassName());
-    }
-
+    /**
+     * @return mixed|string
+     */
     protected function getClassName()
     {
         return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
     }
 
-    public function persist()
+    public function persist(): void
     {
         $this->model = app(TransitionRepository::class)->persist($this);
     }
 
+    public function getType(): string
+    {
+        return static::TypeName;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getModel()
     {
         return $this->model;
     }
 
-    public function setModel($model)
+    /**
+     * @param Model $model
+     */
+    public function setModel(Model $model)
     {
         $this->model = $model;
     }
 
+    /**
+     * @param Model $model
+     * @return array|mixed
+     */
     public static function getMemorizableAttributes(Model $model)
     {
         if ( method_exists($model, 'getMemorizableAttributes') ) {
@@ -76,11 +91,17 @@ abstract class BaseTransition implements TransitionInterface
         return $model->getRawOriginal();
     }
 
+    /**
+     * @return string
+     */
     public function getTransitionStorageAddress(): string
     {
         return md5($this->getSubjectType());
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getSubjectKey()
     {
         return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? null;

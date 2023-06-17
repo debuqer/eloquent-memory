@@ -14,8 +14,14 @@ use Illuminate\Support\Arr;
 
 class ModelDeleted extends BaseTransition implements TransitionInterface
 {
+    const TypeName = "model-deleted";
+
     use HasAttributes;
 
+    /**
+     * @param Model $model
+     * @return BaseTransition
+     */
     public static function createFromModel(Model $model)
     {
         /** @var BaseTransition $transition */
@@ -27,6 +33,9 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
         return $transition;
     }
 
+    /**
+     * @return null
+     */
     public function getModelCreatedFromState()
     {
         return null;
