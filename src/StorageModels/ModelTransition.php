@@ -10,6 +10,7 @@ use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Fluent;
 
 class ModelTransition extends Model implements TransitionStorageModelContract
 {
@@ -36,18 +37,27 @@ class ModelTransition extends Model implements TransitionStorageModelContract
         ]);
     }
 
-    public static function find(array $where, int $limit = null, Carbon $until = null, Carbon $from = null): Timeline
+
+    public static function queryOnTransitions(array $data)
+    {
+        $where = new Fluent($data);
+        return static::query()->when($where->offsetExists('before'), function ($query) use($where) {
+            $query->where('created_at', '<', $where->get('before'));
+        })->when($where->offsetExists('until'), function ($query) use($where) {
+            $query->where('created_at', '<=', $where->get('until'));
+        })->when($where->offsetExists('after'), function ($query) use($where) {
+            $query->where('created_at', '>', $where->get('after'));
+        })->when($where->offsetExists('to'), function ($query) use($where) {
+            $query->where('created_at', '>=', $where->get('to'));
+        })->when($where->offsetExists('take'), function ($query) use($where) {
+            $query->take($where->get('take'));
+        })->where($where->get('conditions', []));
+    }
+
+    public static function find(array $where): Timeline
     {
         $timeline = new Timeline();
-        static::query()->where($where)
-            ->when($until, function ($query) use($until) {
-                $query->where('created_at', '<=', $until);
-            })->when($from, function ($query) use($from) {
-                $query->where('created_at', '>=', $from);
-            })
-            ->when($limit, function ($query) use($limit) {
-                $query->limit($limit);
-            })->get()->each(function ($item) use(&$timeline) {
+        static::queryOnTransitions($where)->get()->each(function ($item) use(&$timeline) {
                 $timeline->insert($item, $item->id);
             });
 

@@ -17,7 +17,7 @@ it('can return model state for 1 hour ago created', function () {
     ]);
 
     $this->model->refresh();
-    $oldModel = $this->model->getStateOf(Carbon::now()->subHour()); // return a model when model was created (1 hour ago)
+    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(60)); // return a model when model was created (1 hour ago)
 
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
