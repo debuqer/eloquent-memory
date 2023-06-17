@@ -12,7 +12,6 @@ use Illuminate\Support\Arr;
 
 class ModelCreated extends BaseTransition implements TransitionInterface
 {
-    use HasModelClass;
     use HasAttributes;
 
     /**

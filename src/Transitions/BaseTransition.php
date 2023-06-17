@@ -26,7 +26,7 @@ abstract class BaseTransition implements TransitionInterface
         $transition = new static($change->properties);
 
         $attributes = $transition->getProperties()['attributes'] ?? [];
-        $subjectClass = $change->model_class;
+        $subjectClass = $change->subject_type;
         $subject = new $subjectClass($attributes);
 
         $transition->setSubject($subject);
@@ -78,6 +78,11 @@ abstract class BaseTransition implements TransitionInterface
 
     public function getTransitionStorageAddress(): string
     {
-        return md5($this->getSubjectClass());
+        return md5($this->getSubjectType());
+    }
+
+    public function getSubjectKey()
+    {
+        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? null;
     }
 }

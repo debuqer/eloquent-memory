@@ -27,9 +27,10 @@ class ModelTransition extends Model implements TransitionStorageModelContract
 
     public static function persist(TransitionInterface $transition) {
         return static::create([
-            'address' => $transition->getTransitionStorageAddress(),
             'type' => $transition->getType(),
-            'model_class' => $transition->getSubjectClass(),
+            'address' => $transition->getTransitionStorageAddress(),
+            'subject_type' => $transition->getSubjectType(),
+            'subject_key' => $transition->getSubjectKey(),
             'properties' => $transition->getProperties(),
             'batch' => app(TransitionRepository::class)->getBatchId()
         ]);

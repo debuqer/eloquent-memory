@@ -27,7 +27,7 @@ trait CanRememberStates
     public function getStateOf(Carbon $givenTime)
     {
         $transitionRepository = app(TransitionRepository::class)->find([
-            'model_class' => get_class($this),
+            'subject_type' => get_class($this),
         ], null, $givenTime);
 
         $state = $transitionRepository->current();
