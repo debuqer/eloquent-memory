@@ -17,10 +17,10 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
 {
     use HasAttributes;
 
-    public static function createFromModel(Model $before, Model $after)
+    public static function createFromModel(Model $model)
     {
-        $transition = new static(['attributes' => static::getMemorizableAttributes($after)]);
-        $transition->setSubject($after);
+        $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
+        $transition->setSubject($model);
 
         return $transition;
     }
