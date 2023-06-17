@@ -44,11 +44,17 @@ abstract class BaseTransition implements TransitionInterface
         $this->setProperties($properties);
     }
 
+    /**
+     *
+     */
     public function persist(): void
     {
         $this->model = app(TransitionRepository::class)->persist($this);
     }
 
+    /**
+     * @return string
+     */
     public function getType(): string
     {
         return static::TypeName;
