@@ -38,7 +38,8 @@ trait CanRememberStates
             'conditions' => [
                 ['subject_type', '=', get_class($this)],
             ],
-            'until' => $givenTime
+            'until' => $givenTime,
+            'limit' => 1,
         ]);
 
         /** @var ModelTransition $state */
