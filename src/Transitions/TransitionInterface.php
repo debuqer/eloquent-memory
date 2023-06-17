@@ -20,4 +20,6 @@ interface TransitionInterface
 
     public static function createFromPersistedRecord(TransitionStorageModelContract $change);
     public function getTransitionStorageAddress(): string;
+
+    public function getModelCreatedFromState();
 }

@@ -22,3 +22,21 @@ it('can return model state for 1 hour ago created', function () {
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
 
+it('can return model when it deleted 10 minutes later', function () {
+    Carbon::setTestNow(Carbon::now()->addMinutes(60)); // time travel
+
+    $this->model->delete();
+
+    Carbon::setTestNow(Carbon::now()->addMinutes(10));
+
+    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // model already deleted
+    expect($oldModel)->toBeNull();
+
+    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // model already deleted
+    expect($oldModel)->toBeNull();
+
+    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(11)); // model exists
+    expect($oldModel->exists)->toBeTrue();
+});
+
+

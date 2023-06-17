@@ -26,4 +26,12 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 
         return $transition;
     }
+
+    public function getModelCreatedFromState()
+    {
+        $model = app($this->getSubjectType())->forceFill($this->getProperties()['attributes'])->syncOriginal();
+        $model->exists = true;
+
+        return $model;
+    }
 }
