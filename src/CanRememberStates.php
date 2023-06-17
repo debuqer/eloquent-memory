@@ -20,6 +20,18 @@ trait CanRememberStates
         static::observe(StateRememberObserver::class);
     }
 
+    /**
+     * @return string
+     */
+    public function getModelAddress()
+    {
+        return md5(get_class($this) . serialize($this->getKey()));
+    }
+
+    /**
+     * @param Carbon $givenTime
+     * @return null
+     */
     public function getStateOf(Carbon $givenTime)
     {
         $transitionRepository = app(TransitionRepository::class)->find([

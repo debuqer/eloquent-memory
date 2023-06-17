@@ -72,15 +72,15 @@ abstract class BaseTransition implements TransitionInterface
      */
     public function getTransitionStorageAddress(): string
     {
-        return md5($this->getSubjectType());
+        return md5($this->getSubject()->getModelAddress());
     }
 
     /**
-     * @return mixed|null
+     * @return string
      */
     public function getSubjectKey()
     {
-        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? null;
+        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? "";
     }
 
     /**
