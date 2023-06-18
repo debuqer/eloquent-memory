@@ -21,6 +21,9 @@ class EloquentPersistedTransactionRecord extends Model implements PersistedTrans
 
     public $timestamps = true;
 
+    /**
+     * @return TransitionInterface
+     */
     public function getTransition(): TransitionInterface
     {
         $transitionClass = config('eloquent-memory.changes.' . $this->type);
@@ -29,6 +32,10 @@ class EloquentPersistedTransactionRecord extends Model implements PersistedTrans
     }
 
 
+    /**
+     * @param array $data
+     * @return Collection
+     */
     public static function queryOnTransitions(array $data): Collection
     {
         $where = new Fluent($data);

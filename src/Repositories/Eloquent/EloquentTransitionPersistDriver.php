@@ -8,12 +8,15 @@ use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Debuqer\EloquentMemory\Timeline;
-use Illuminate\Support\Fluent;
 
 class EloquentTransitionPersistDriver implements TransitionPersistDriverInterface
 {
-    public static function persist(TransitionInterface $transition) {
-        return EloquentPersistedTransactionRecord::create([
+    /**
+     * @param TransitionInterface $transition
+     */
+    public static function persist(TransitionInterface $transition): void
+    {
+        EloquentPersistedTransactionRecord::create([
             'type' => $transition->getType(),
             'address' => $transition->getTransitionStorageAddress(),
             'subject_type' => $transition->getSubjectType(),
@@ -23,6 +26,10 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
         ]);
     }
 
+    /**
+     * @param array $where
+     * @return Timeline
+     */
     public static function find(array $where): Timeline
     {
         $timeline = new Timeline();
