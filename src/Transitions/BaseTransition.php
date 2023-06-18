@@ -95,12 +95,4 @@ abstract class BaseTransition implements TransitionInterface
     {
         return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? "";
     }
-
-    /**
-     * @return mixed|string
-     */
-    protected function getClassName()
-    {
-        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
-    }
 }
