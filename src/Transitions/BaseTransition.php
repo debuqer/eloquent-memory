@@ -14,10 +14,11 @@ abstract class BaseTransition implements TransitionInterface
     use HasProperties;
     use HasSubject;
 
+    /**
+     *  The unique name of transition
+     *  Will play the role of key in config.changes
+     */
     const TypeName = "";
-
-    protected $model;
-
 
     /**
      * @param TransitionStorageModelContract $change
@@ -49,7 +50,7 @@ abstract class BaseTransition implements TransitionInterface
      */
     public function persist(): void
     {
-        $this->model = app(TransitionRepository::class)->persist($this);
+        app(TransitionRepository::class)->persist($this);
     }
 
     /**
@@ -74,6 +75,9 @@ abstract class BaseTransition implements TransitionInterface
     }
 
     /**
+     * unique identifier for pair of (subject_type, subject_id)
+     * as a database index facilitates searching
+     *
      * @return string
      */
     public function getTransitionStorageAddress(): string

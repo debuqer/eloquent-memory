@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
 {
+    public static function createFromPersistedRecord(TransitionStorageModelContract $change);
+
     public function getProperties(): array;
     public function getType(): string;
-    public function getSubjectKey();
+
     public function getSubject();
     public function getSubjectType();
-
-    public function persist();
-
-    public static function createFromPersistedRecord(TransitionStorageModelContract $change);
+    public function getSubjectKey();
     public function getTransitionStorageAddress(): string;
 
+    public function persist();
     public function getModelCreatedFromState();
 }
