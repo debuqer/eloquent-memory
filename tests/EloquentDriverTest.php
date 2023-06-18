@@ -101,4 +101,12 @@ it('can query on transitions', function () {
      */
     $count = app(TransitionRepository::class)->find(['before' => (clone $now)->subMinutes(2), 'from' => (clone $now)->subMinutes(4)])->count();
     expect($count)->toBe(2);
+
+    /**
+     *  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+     *  |    |    | -9 | -8 | * | * | * | -4 | -3 | -2 | -1 |  0 |
+     *  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+     */
+    $count = app(TransitionRepository::class)->find(['until' => (clone $now)->subMinutes(5), 'after' => (clone $now)->subMinutes(8), 'take' => 1])->count();
+    expect($count)->toBe(1);
 });
