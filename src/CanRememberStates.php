@@ -5,8 +5,8 @@ namespace Debuqer\EloquentMemory;
 
 
 use Carbon\Carbon;
-use Debuqer\EloquentMemory\StorageModels\EloquentDriver;
-use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentDriver;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
 trait CanRememberStates
 {

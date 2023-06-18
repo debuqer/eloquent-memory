@@ -1,7 +1,7 @@
 <?php
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
-use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;

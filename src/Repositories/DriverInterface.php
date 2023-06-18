@@ -1,16 +1,14 @@
 <?php
 
 
-namespace Debuqer\EloquentMemory\StorageModels;
+namespace Debuqer\EloquentMemory\Repositories;
 
 
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
-interface TransitionRepositoryInterface
+interface DriverInterface
 {
     public static function persist(TransitionInterface $transition);
     public static function find(array $where): Timeline;
-
-    public function getTransition(): TransitionInterface;
 }

@@ -4,12 +4,13 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\StorageModels\TransitionRepositoryInterface;
+use Debuqer\EloquentMemory\Repositories\DriverInterface;
+use Debuqer\EloquentMemory\Repositories\ModelInterface;
 use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
 {
-    public static function createFromPersistedRecord(TransitionRepositoryInterface $change);
+    public static function createFromPersistedRecord(ModelInterface $change);
 
     public function getProperties(): array;
     public function getType(): string;

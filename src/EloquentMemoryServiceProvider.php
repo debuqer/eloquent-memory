@@ -2,8 +2,8 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\StorageModels\EloquentDriver;
-use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentDriver;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
