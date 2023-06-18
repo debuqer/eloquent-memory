@@ -5,7 +5,7 @@ namespace Debuqer\EloquentMemory;
 
 
 use Carbon\Carbon;
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentDriver;
+use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
 trait CanRememberStates
@@ -42,7 +42,7 @@ trait CanRememberStates
             'limit' => 1,
         ]);
 
-        /** @var EloquentDriver $state */
+        /** @var EloquentTransitionPersistDriver $state */
         $state = $transitionRepository->current();
 
         if ( ! $state or $state->type === 'model-deleted' ) {

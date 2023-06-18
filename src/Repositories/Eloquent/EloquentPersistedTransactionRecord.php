@@ -4,12 +4,12 @@
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
 
 
-use Debuqer\EloquentMemory\Repositories\ModelInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Fluent;
 
-class EloquentModel extends Model implements ModelInterface
+class EloquentPersistedTransactionRecord extends Model implements PersistedTransactionRecordInterface
 {
     protected $table = 'model_transitions';
 
@@ -31,7 +31,7 @@ class EloquentModel extends Model implements ModelInterface
     public static function queryOnTransitions(array $data)
     {
         $where = new Fluent($data);
-        return EloquentModel::query()->when($where->offsetExists('before'), function ($query) use($where) {
+        return EloquentPersistedTransactionRecord::query()->when($where->offsetExists('before'), function ($query) use($where) {
             $query->where('created_at', '<', $where->get('before'));
         })->when($where->offsetExists('until'), function ($query) use($where) {
             $query->where('created_at', '<=', $where->get('until'));

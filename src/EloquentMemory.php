@@ -2,8 +2,8 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\Repositories\DriverInterface;
-use Debuqer\EloquentMemory\Repositories\ModelInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +29,7 @@ class EloquentMemory
         return $transitionClass::createFromModel($model);
     }
 
-    public function getTransitionFromPersistedRecord(ModelInterface $record)
+    public function getTransitionFromPersistedRecord(PersistedTransactionRecordInterface $record)
     {
         return $record->getTransition();
     }

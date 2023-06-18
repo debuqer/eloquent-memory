@@ -2,7 +2,7 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentDriver;
+use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -12,7 +12,7 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
     public function boot()
     {
         $this->app->bind(TransitionRepository::class, function ($app) {
-            return new EloquentDriver();
+            return new EloquentTransitionPersistDriver();
         });
     }
 

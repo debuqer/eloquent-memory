@@ -3,8 +3,8 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Repositories\DriverInterface;
-use Debuqer\EloquentMemory\Repositories\ModelInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
@@ -22,10 +22,10 @@ abstract class BaseTransition implements TransitionInterface
     const TypeName = "";
 
     /**
-     * @param ModelInterface $change
+     * @param PersistedTransactionRecordInterface $change
      * @return static
      */
-    public static function createFromPersistedRecord(ModelInterface $change)
+    public static function createFromPersistedRecord(PersistedTransactionRecordInterface $change)
     {
         $transition = new static($change->properties);
 
