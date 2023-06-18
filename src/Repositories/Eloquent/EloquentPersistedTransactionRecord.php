@@ -45,8 +45,8 @@ class EloquentPersistedTransactionRecord extends Model implements PersistedTrans
             $query->where('created_at', '<=', $where->get('until'));
         })->when($where->offsetExists('after'), function ($query) use ($where) {
             $query->where('created_at', '>', $where->get('after'));
-        })->when($where->offsetExists('to'), function ($query) use ($where) {
-            $query->where('created_at', '>=', $where->get('to'));
+        })->when($where->offsetExists('from'), function ($query) use ($where) {
+            $query->where('created_at', '>=', $where->get('from'));
         })->when($where->offsetExists('take'), function ($query) use ($where) {
             $query->take($where->get('take'));
         })->where($where->get('conditions', []))
