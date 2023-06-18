@@ -26,7 +26,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
     public static function find(array $where): Timeline
     {
         $timeline = new Timeline();
-        EloquentPersistedTransactionRecord::queryOnTransitions($where)->get()->each(function ($item) use (&$timeline) {
+        EloquentPersistedTransactionRecord::queryOnTransitions($where)->each(function ($item) use (&$timeline) {
             $timeline->insert($item, $item->id);
         });
 
