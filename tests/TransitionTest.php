@@ -7,6 +7,7 @@ use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 it('can create a model from persisted ModelCreated', function () {
     $batchId = EloquentMemory::batchId();
@@ -41,6 +42,13 @@ it('can persist ModelCreated', function () {
     $current = $timeline->current();
 
     expect($current)->not->toBeNull();
+});
+
+it('can get the model from state of ModelCreated', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-created', PostWithEloquentMemory::class);
+
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
 
 it('can create a model from persisted ModelUpdated', function () {
@@ -87,6 +95,13 @@ it('can persist ModelUpdated', function () {
     expect($current)->not->toBeNull();
 });
 
+it('can get the model from state of ModelUpdated', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-updated', PostWithEloquentMemory::class);
+
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
+});
+
 it('can create a model from persisted ModelDeleted', function () {
     $batchId = EloquentMemory::batchId();
 
@@ -122,6 +137,13 @@ it('can persist ModelDeleted', function () {
     $current = $timeline->current();
 
     expect($current)->not->toBeNull();
+});
+
+it('can get the model from state of ModelDeleted', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-deleted', PostWithEloquentMemory::class);
+
+    expect($transition['handler']->getModelCreatedFromState())->toBeNull();
 });
 
 it('has unique address', function () {
