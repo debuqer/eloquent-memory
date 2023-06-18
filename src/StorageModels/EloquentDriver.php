@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;
 use Illuminate\Support\Fluent;
 
-class ModelTransition extends Model implements TransitionRepositoryInterface
+class EloquentDriver extends Model implements TransitionRepositoryInterface
 {
     protected $table = 'model_transitions';
 
