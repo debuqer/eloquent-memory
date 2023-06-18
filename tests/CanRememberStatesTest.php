@@ -7,7 +7,7 @@ use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 
 beforeEach(function () {
-    $this->batch_id = app(TransitionRepository::class)->getBatchId();
+    $this->batch_id = \Debuqer\EloquentMemory\Facades\EloquentMemory::batchId();
 });
 
 it('can record when a model created', function () {

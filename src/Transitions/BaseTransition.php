@@ -3,7 +3,7 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepositoryInterface;
 use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
@@ -21,10 +21,10 @@ abstract class BaseTransition implements TransitionInterface
     const TypeName = "";
 
     /**
-     * @param TransitionStorageModelContract $change
+     * @param TransitionRepositoryInterface $change
      * @return static
      */
-    public static function createFromPersistedRecord(TransitionStorageModelContract $change)
+    public static function createFromPersistedRecord(TransitionRepositoryInterface $change)
     {
         $transition = new static($change->properties);
 

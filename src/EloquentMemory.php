@@ -2,12 +2,24 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepositoryInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class EloquentMemory
 {
+    protected $batchId;
+
+    public function __construct()
+    {
+        $this->batchId = md5(microtime(true));
+    }
+
+    public function batchId(): string
+    {
+        return $this->batchId;
+    }
+
     public function getTransitionFromModel(string $type, Model $model)
     {
         /** @var TransitionInterface $transitionClass */
@@ -16,7 +28,7 @@ class EloquentMemory
         return $transitionClass::createFromModel($model);
     }
 
-    public function getTransitionFromPersistedRecord(TransitionStorageModelContract $record)
+    public function getTransitionFromPersistedRecord(TransitionRepositoryInterface $record)
     {
         return $record->getTransition();
     }

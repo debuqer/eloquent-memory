@@ -8,7 +8,7 @@ use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 
 it('can create a model from persisted ModelCreated', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
 
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
     /** @var Timeline $timeline */
@@ -29,7 +29,7 @@ it('can create a ModelCreated from model', function () {
 });
 
 it('can persist ModelCreated', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
 
     $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
@@ -43,7 +43,7 @@ it('can persist ModelCreated', function () {
 });
 
 it('can create a model from persisted ModelUpdated', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
 
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
     $model->update([
@@ -70,7 +70,7 @@ it('can create a ModelUpdated from model', function () {
 });
 
 it('can persist ModelUpdated', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
     $model->update([
         'title' => 'new Title',
@@ -87,7 +87,7 @@ it('can persist ModelUpdated', function () {
 });
 
 it('can create a model from persisted ModelDeleted', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
 
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
     $model->delete();
@@ -109,7 +109,7 @@ it('can create a ModelDeleted from model', function () {
 });
 
 it('can persist ModelDeleted', function () {
-    $batchId = app(TransitionRepository::class)->getBatchId();
+    $batchId = EloquentMemory::batchId();
     $model = $this->createAModelOf(PostWithEloquentMemory::class);
     $model->delete();
 

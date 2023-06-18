@@ -4,18 +4,14 @@
 namespace Debuqer\EloquentMemory\StorageModels;
 
 
-use Carbon\Carbon;
-use Debuqer\EloquentMemory\StorageModels\Concerns\CanGenerateBatchId;
+use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Debuqer\EloquentMemory\Timeline;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Fluent;
 
-class ModelTransition extends Model implements TransitionStorageModelContract
+class ModelTransition extends Model implements TransitionRepositoryInterface
 {
-    use CanGenerateBatchId;
-
     protected $table = 'model_transitions';
 
     protected $guarded = ['id'];
@@ -33,7 +29,7 @@ class ModelTransition extends Model implements TransitionStorageModelContract
             'subject_type' => $transition->getSubjectType(),
             'subject_key' => $transition->getSubjectKey(),
             'properties' => $transition->getProperties(),
-            'batch' => app(TransitionRepository::class)->getBatchId()
+            'batch' => EloquentMemory::batchId(),
         ]);
     }
 
@@ -62,10 +58,6 @@ class ModelTransition extends Model implements TransitionStorageModelContract
             });
 
         return $timeline;
-    }
-
-    public static function findUsingBatch($batch) {
-
     }
 
     public function getTransition(): TransitionInterface

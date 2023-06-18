@@ -2,7 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Facades;
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
+use Debuqer\EloquentMemory\StorageModels\TransitionRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Facade;
  * @see \Debuqer\EloquentMemory\EloquentMemory
  *
  * @method getTransitionFromModel(string $type, Model $model)
- * @method getTransitionFromPersistedRecord(TransitionStorageModelContract $record)
+ * @method getTransitionFromPersistedRecord(TransitionRepositoryInterface $record)
+ * @method batchId()
  */
 class EloquentMemory extends Facade
 {
