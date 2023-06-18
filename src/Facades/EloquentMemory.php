@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Debuqer\EloquentMemory\EloquentMemory
  *
- * @method getTransitionFromModel(string $type, Model $model)
- * @method getTransitionFromPersistedRecord(TransitionPersistDriverInterface $record)
- * @method batchId()
+ * @method static getTransitionFromModel(string $type, Model $model)
+ * @method static getTransitionFromPersistedRecord(TransitionPersistDriverInterface $record)
+ * @method static batchId()
  */
 class EloquentMemory extends Facade
 {
