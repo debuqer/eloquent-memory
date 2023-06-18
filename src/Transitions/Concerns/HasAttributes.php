@@ -13,12 +13,4 @@ trait HasAttributes
     {
         return isset($this->properties['attributes']) ? $this->properties['attributes'] : null;
     }
-
-    /**
-     * @param array $attributes
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->properties['attributes'] = $attributes;
-    }
 }
