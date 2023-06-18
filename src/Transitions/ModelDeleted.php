@@ -11,8 +11,6 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
 {
     const TypeName = "model-deleted";
 
-    use HasAttributes;
-
     /**
      * @param Model $model
      * @return BaseTransition

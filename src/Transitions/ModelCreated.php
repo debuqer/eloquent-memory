@@ -10,8 +10,6 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 {
     const TypeName = "model-created";
 
-    use HasAttributes;
-
     /**
      * @param Model $model
      * @return TransitionInterface

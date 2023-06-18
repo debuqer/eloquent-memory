@@ -6,6 +6,7 @@ namespace Debuqer\EloquentMemory\Transitions;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 abstract class BaseTransition implements TransitionInterface
 {
     use HasProperties;
+    use HasAttributes;
     use HasSubject;
 
     /**

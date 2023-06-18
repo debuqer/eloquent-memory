@@ -11,8 +11,6 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
 {
     const TypeName = "model-updated";
 
-    use HasAttributes;
-
     /**
      * @param Model $model
      * @return static
