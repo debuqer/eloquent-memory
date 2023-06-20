@@ -21,7 +21,7 @@ abstract class BaseTransition implements TransitionInterface
      *  The unique name of transition
      *  Will play the role of key in config.changes
      */
-    const TypeName = "";
+    const TypeName = '';
 
     /**
      * @param PersistedTransactionRecordInterface $change
