@@ -10,5 +10,14 @@ return [
         'model-updated' => ModelUpdated::class,
         'model-created' => ModelCreated::class,
         'model-deleted' => ModelDeleted::class,
+    ],
+
+    'drivers' => [
+        'default' => 'eloquent',
+
+        'eloquent' => [
+            'class_name' => \Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver::class,
+            'connection' => 'default',
+        ],
     ]
 ];

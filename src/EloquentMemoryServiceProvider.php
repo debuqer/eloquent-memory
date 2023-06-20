@@ -11,9 +11,7 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
 {
     public function boot()
     {
-        $this->app->bind(TransitionRepository::class, function ($app) {
-            return new EloquentTransitionPersistDriver();
-        });
+        //
     }
 
     public function configurePackage(Package $package): void
