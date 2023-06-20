@@ -70,11 +70,7 @@ abstract class BaseTransition implements TransitionInterface
      */
     public static function getMemorizableAttributes(Model $model)
     {
-        if ( method_exists($model, 'getMemorizableAttributes') ) {
-            return $model->getMemorizableAttributes();
-        }
-
-        return $model->getRawOriginal();
+        return $model->getMemorizableAttributes();
     }
 
     /**
