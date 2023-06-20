@@ -1,6 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 it('can persist normal transition', function () {
     $batchId = EloquentMemory::batchId();
-    $transition = $this->getTransition('model-created', PostWithEloquentMemory::class);
+    $transition = $this->getTransition('model-created', PostWithRememberState::class);
     $transition['handler']->persist();
 
     /** @var Timeline $timeline */
@@ -26,7 +26,7 @@ it('can query on transitions', function () {
     $now = Carbon::now();
     for ( $i = 0; $i <= 9; $i ++ ) {
         Carbon::setTestNow((clone $now)->subMinutes($i));
-        $transition = $this->getTransition('model-created', PostWithEloquentMemory::class);
+        $transition = $this->getTransition('model-created', PostWithRememberState::class);
         $transition['handler']->persist();
     }
 

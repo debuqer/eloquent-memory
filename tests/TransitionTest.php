@@ -1,6 +1,6 @@
 <?php
 use Debuqer\EloquentMemory\Timeline;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
@@ -12,7 +12,7 @@ use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 it('can create a model from persisted ModelCreated', function () {
     $batchId = EloquentMemory::batchId();
 
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
     $current = $timeline->current();
@@ -23,7 +23,7 @@ it('can create a model from persisted ModelCreated', function () {
 });
 
 it('can create a ModelCreated from model', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
     $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
     expect($transitionCreatedFromModel)->toBeInstanceOf(ModelCreated::class);
@@ -32,7 +32,7 @@ it('can create a ModelCreated from model', function () {
 
 it('can persist ModelCreated', function () {
     $batchId = EloquentMemory::batchId();
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
     $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
     $transitionCreatedFromModel->persist();
@@ -46,7 +46,7 @@ it('can persist ModelCreated', function () {
 
 it('can get the model from state of ModelCreated', function () {
     /** @var TransitionInterface $transition */
-    $transition = $this->getTransition('model-created', PostWithEloquentMemory::class);
+    $transition = $this->getTransition('model-created', PostWithRememberState::class);
 
     expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
@@ -54,7 +54,7 @@ it('can get the model from state of ModelCreated', function () {
 it('can create a model from persisted ModelUpdated', function () {
     $batchId = EloquentMemory::batchId();
 
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->update([
         'title' => 'new Title'
     ]);
@@ -68,7 +68,7 @@ it('can create a model from persisted ModelUpdated', function () {
 });
 
 it('can create a ModelUpdated from model', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->update([
         'title' => 'new Title',
     ]);
@@ -80,7 +80,7 @@ it('can create a ModelUpdated from model', function () {
 
 it('can persist ModelUpdated', function () {
     $batchId = EloquentMemory::batchId();
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->update([
         'title' => 'new Title',
     ]);
@@ -97,7 +97,7 @@ it('can persist ModelUpdated', function () {
 
 it('can get the model from state of ModelUpdated', function () {
     /** @var TransitionInterface $transition */
-    $transition = $this->getTransition('model-updated', PostWithEloquentMemory::class);
+    $transition = $this->getTransition('model-updated', PostWithRememberState::class);
 
     expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
@@ -105,7 +105,7 @@ it('can get the model from state of ModelUpdated', function () {
 it('can create a model from persisted ModelDeleted', function () {
     $batchId = EloquentMemory::batchId();
 
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->delete();
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
@@ -116,7 +116,7 @@ it('can create a model from persisted ModelDeleted', function () {
 });
 
 it('can create a ModelDeleted from model', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->delete();
 
     $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-deleted', $model);
@@ -126,7 +126,7 @@ it('can create a ModelDeleted from model', function () {
 
 it('can persist ModelDeleted', function () {
     $batchId = EloquentMemory::batchId();
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $model->delete();
 
     $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-deleted', $model);
@@ -141,14 +141,14 @@ it('can persist ModelDeleted', function () {
 
 it('can get the model from state of ModelDeleted', function () {
     /** @var TransitionInterface $transition */
-    $transition = $this->getTransition('model-deleted', PostWithEloquentMemory::class);
+    $transition = $this->getTransition('model-deleted', PostWithRememberState::class);
 
     expect($transition['handler']->getModelCreatedFromState())->toBeNull();
 });
 
 it('has unique address', function () {
     $batchId = EloquentMemory::batchId();
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);

@@ -1,6 +1,6 @@
 <?php
 use Carbon\Carbon;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory as Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState as Post;
 
 beforeEach(function () {
     $this->transition = $this->getTransition('travel-test', Post::class);
