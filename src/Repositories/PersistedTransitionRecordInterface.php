@@ -23,4 +23,5 @@ interface PersistedTransitionRecordInterface
     public function getProperties(): array;
     public function getSubjectType(): string;
     public function getSubjectKey(): string;
+    public function getCreationDate(): string;
 }

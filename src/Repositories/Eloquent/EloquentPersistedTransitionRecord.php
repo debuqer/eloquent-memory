@@ -72,4 +72,9 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
     {
         return $this->type;
     }
+
+    public function getCreationDate(): string
+    {
+        return $this->id;
+    }
 }

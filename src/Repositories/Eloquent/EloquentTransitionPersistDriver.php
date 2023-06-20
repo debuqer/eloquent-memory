@@ -34,8 +34,10 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
     {
         $timeline = new Timeline();
         EloquentPersistedTransitionRecord::queryOnTransitions($where)->each(function ($item) use (&$timeline) {
-            $timeline->insert($item, $item->id);
+            $timeline->insert($item, $item->getCreationDate());
         });
+
+        $timeline->latestFirst();
 
         return $timeline;
     }
