@@ -3,7 +3,7 @@ use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
-use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Carbon\Carbon;
 
 it('can persist normal transition', function () {
@@ -14,7 +14,7 @@ it('can persist normal transition', function () {
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
 
-    /** @var PersistedTransactionRecordInterface $current */
+    /** @var PersistedTransitionRecordInterface $current */
     $current = $timeline->current();
 
     expect($current->getTransition()->getType())->toBe('model-created');

@@ -6,7 +6,7 @@ use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
-use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 it('can create a model from persisted ModelCreated', function () {
@@ -152,7 +152,7 @@ it('has unique address', function () {
 
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
-    /** @var PersistedTransactionRecordInterface $current */
+    /** @var PersistedTransitionRecordInterface $current */
     $current = $timeline->current();
 
     expect($current->getTransition()->getTransitionStorageAddress())->toBe($model->getModelAddress());

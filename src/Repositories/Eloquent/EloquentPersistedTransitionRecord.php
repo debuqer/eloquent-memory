@@ -4,13 +4,13 @@
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
 
 
-use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Fluent;
 
-class EloquentPersistedTransactionRecord extends Model implements PersistedTransactionRecordInterface
+class EloquentPersistedTransitionRecord extends Model implements PersistedTransitionRecordInterface
 {
     protected $table = 'model_transitions';
 
@@ -39,7 +39,7 @@ class EloquentPersistedTransactionRecord extends Model implements PersistedTrans
     public static function queryOnTransitions(array $data): Collection
     {
         $where = new Fluent($data);
-        return EloquentPersistedTransactionRecord::query()->when($where->offsetExists('before'), function ($query) use ($where) {
+        return EloquentPersistedTransitionRecord::query()->when($where->offsetExists('before'), function ($query) use ($where) {
             $query->where('created_at', '<', $where->get('before'));
         })->when($where->offsetExists('until'), function ($query) use ($where) {
             $query->where('created_at', '<=', $where->get('until'));
@@ -51,5 +51,20 @@ class EloquentPersistedTransactionRecord extends Model implements PersistedTrans
             $query->take($where->get('take'));
         })->where($where->get('conditions', []))
             ->get();
+    }
+
+    public function getProperties(): array
+    {
+        return $this->properties ?? [];
+    }
+
+    public function getSubjectType(): string
+    {
+        return $this->subject_type;
+    }
+
+    public function getSubjectKey(): string
+    {
+        return $this->subject_key;
     }
 }

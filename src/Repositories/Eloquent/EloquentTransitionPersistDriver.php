@@ -16,7 +16,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
      */
     public static function persist(TransitionInterface $transition): void
     {
-        EloquentPersistedTransactionRecord::create([
+        EloquentPersistedTransitionRecord::create([
             'type' => $transition->getType(),
             'address' => $transition->getTransitionStorageAddress(),
             'subject_type' => $transition->getSubjectType(),
@@ -33,7 +33,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
     public static function find(array $where): Timeline
     {
         $timeline = new Timeline();
-        EloquentPersistedTransactionRecord::queryOnTransitions($where)->each(function ($item) use (&$timeline) {
+        EloquentPersistedTransitionRecord::queryOnTransitions($where)->each(function ($item) use (&$timeline) {
             $timeline->insert($item, $item->id);
         });
 

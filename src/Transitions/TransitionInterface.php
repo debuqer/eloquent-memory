@@ -5,12 +5,12 @@ namespace Debuqer\EloquentMemory\Transitions;
 
 
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
-use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
 {
-    public static function createFromPersistedRecord(PersistedTransactionRecordInterface $change);
+    public static function createFromPersistedRecord(PersistedTransitionRecordInterface $change);
 
     public function getProperties(): array;
     public function getType(): string;

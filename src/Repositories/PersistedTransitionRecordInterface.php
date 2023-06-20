@@ -6,7 +6,7 @@ namespace Debuqer\EloquentMemory\Repositories;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Support\Collection;
 
-interface PersistedTransactionRecordInterface
+interface PersistedTransitionRecordInterface
 {
     /**
      * @return TransitionInterface
@@ -18,4 +18,8 @@ interface PersistedTransactionRecordInterface
      * @return Collection
      */
     public static function queryOnTransitions(array $data): Collection;
+
+    public function getProperties(): array;
+    public function getSubjectType(): string;
+    public function getSubjectKey(): string;
 }

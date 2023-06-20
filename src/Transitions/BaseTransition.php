@@ -4,7 +4,7 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
-use Debuqer\EloquentMemory\Repositories\PersistedTransactionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
@@ -24,15 +24,15 @@ abstract class BaseTransition implements TransitionInterface
     const TypeName = '';
 
     /**
-     * @param PersistedTransactionRecordInterface $change
+     * @param PersistedTransitionRecordInterface $persistedTransitionRecord
      * @return static
      */
-    public static function createFromPersistedRecord(PersistedTransactionRecordInterface $change)
+    public static function createFromPersistedRecord(PersistedTransitionRecordInterface $persistedTransitionRecord)
     {
-        $transition = new static($change->properties);
+        $transition = new static($persistedTransitionRecord->getProperties());
 
         $attributes = $transition->getProperties()['attributes'] ?? [];
-        $subjectClass = $change->subject_type;
+        $subjectClass = $persistedTransitionRecord->getSubjectType();
         $subject = app($subjectClass)->forceFill($attributes);
 
         $transition->setSubject($subject);
