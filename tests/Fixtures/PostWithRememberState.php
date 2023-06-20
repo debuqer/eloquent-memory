@@ -5,6 +5,7 @@ namespace Debuqer\EloquentMemory\Tests\Fixtures;
 
 use Debuqer\EloquentMemory\CanRememberStates;
 
-class PostWithEloquentMemory extends Post {
+class PostWithRememberState extends Post
+{
     use CanRememberStates;
 }

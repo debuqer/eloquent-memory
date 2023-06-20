@@ -3,25 +3,41 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Facades\EloquentMemory;
-use Debuqer\EloquentMemory\StorageModels\ModelTransition;
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
-use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
+use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 abstract class BaseTransition implements TransitionInterface
 {
     use HasProperties;
+    use HasAttributes;
+    use HasSubject;
 
-    protected $model;
+    /**
+     *  The unique name of transition
+     *  Will play the role of key in config.changes
+     */
+    const TypeName = '';
 
-
-
-    public static function createFromPersistedRecord(TransitionStorageModelContract $change)
+    /**
+     * @param PersistedTransitionRecordInterface $persistedTransitionRecord
+     * @return static
+     */
+    public static function createFromPersistedRecord(PersistedTransitionRecordInterface $persistedTransitionRecord)
     {
-        return new static($change->properties);
+        $transition = new static($persistedTransitionRecord->getProperties());
+
+        $attributes = $transition->getProperties()['attributes'] ?? [];
+        $subjectClass = $persistedTransitionRecord->getSubjectType();
+        $subject = app($subjectClass)->forceFill($attributes);
+
+        $transition->setSubject($subject);
+
+        return $transition;
     }
 
     /**
@@ -32,46 +48,47 @@ abstract class BaseTransition implements TransitionInterface
         $this->setProperties($properties);
     }
 
-    public function getType(): string
+    /**
+     *
+     */
+    public function persist(): void
     {
-        return Str::kebab($this->getClassName());
-    }
-
-    protected function getClassName()
-    {
-        return explode('\\', get_class($this))[count(explode('\\', get_class($this)))-1];
+        app(TransitionRepository::class)->persist($this);
     }
 
     /**
-     * @codeCoverageIgnore
-     * @return mixed
+     * @return string
      */
-    public function down()
+    public function getType(): string
     {
-        return $this->getRollbackChange()->up();
+        return static::TypeName;
     }
 
-    public function persist()
-    {
-        $this->model = app(TransitionRepository::class)->persist($this);
-    }
-
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    public function setModel($model)
-    {
-        $this->model = $model;
-    }
-
+    /**
+     * @param Model $model
+     * @return array|mixed
+     */
     public static function getMemorizableAttributes(Model $model)
     {
-        if ( method_exists($model, 'getMemorizableAttributes') ) {
-            return $model->getMemorizableAttributes();
-        }
+        return $model->getMemorizableAttributes();
+    }
 
-        return $model->getRawOriginal();
+    /**
+     * unique identifier for pair of (subject_type, subject_id)
+     * as a database index facilitates searching
+     *
+     * @return string
+     */
+    public function getTransitionStorageAddress(): string
+    {
+        return $this->getSubject()->getModelAddress();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubjectKey()
+    {
+        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? "";
     }
 }

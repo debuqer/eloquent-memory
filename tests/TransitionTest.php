@@ -1,371 +1,159 @@
 <?php
-use Illuminate\Database\QueryException;
-use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
-use Carbon\Carbon;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Facades\EloquentMemory;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
-it('[ModelCreated] can persist', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->persist();
+it('can create a model from persisted ModelCreated', function () {
+    $batchId = EloquentMemory::batchId();
 
-    expect($transition['handler']->getModel())->not->toBeNull();
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
+    expect($transitionCreatedFromPersistedRecord)->toBeInstanceOf(ModelCreated::class);
+    expect($transitionCreatedFromPersistedRecord->getSubject())->toBeInstanceOf(get_class($model));
 });
 
-it('[ModelCreated] can be made from persisted record', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->persist();
+it('can create a ModelCreated from model', function () {
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
-    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
-
-    expect($persistedTransition->getType())->toBe($transition['handler']->getType());
-    expect($persistedTransition->getModelClass())->toBe($transition['handler']->getModelClass());
-    expect($persistedTransition->getProperties())->toBe($transition['handler']->getProperties());
-    expect($persistedTransition->getRollbackChange()->getProperties())->toBe($transition['handler']->getRollbackChange()->getProperties());
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
+    expect($transitionCreatedFromModel)->toBeInstanceOf(ModelCreated::class);
+    expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
 
-it('[ModelCreated] can persist without considering mutators', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->persist();
+it('can persist ModelCreated', function () {
+    $batchId = EloquentMemory::batchId();
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
-    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-created', $model);
+    $transitionCreatedFromModel->persist();
 
-    expect($persistedTransition)->not->toBeNull();
-    expect($persistedTransition->getAttributes()['title'])->not->toBe('This title has changed');
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    expect($current)->not->toBeNull();
 });
 
-it('[ModelCreated] can be made by persisted record and migrate up, down and up!', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->persist();
+it('can get the model from state of ModelCreated', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-created', PostWithRememberState::class);
 
-    $persistedTransition = ModelCreated::createFromPersistedRecord($transition['handler']->getModel());
-
-    $persistedTransition->up();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-
-    $persistedTransition->down();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
-
-    $persistedTransition->up();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-    expect($this->arraysAreTheSame(Post::find($transition['model']->getKey())->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
-    expect($this->arraysAreTheSame(Post::find($transition['model']->getKey())->getAttributes(), $transition['model']->getAttributes()))->toBeTrue();
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
 
-it('[ModelCreated] migrate.up() can not re-create the model', function () {
-    $transition = $this->getTransition('model-created');
+it('can create a model from persisted ModelUpdated', function () {
+    $batchId = EloquentMemory::batchId();
 
-    $transition['handler']->up();
-    $transition['handler']->up();
-})->expectException(QueryException::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->update([
+        'title' => 'new Title'
+    ]);
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
 
-it('[ModelCreated] migrate.down() removes recently created model', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->down();
-
-    Post::findOrFail($transition['model']->getKey());
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelCreated] has correct rollbackTransition', function () {
-    $transition = $this->getTransition('model-created');
-
-    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelDeleted::class);
-    expect($transition['handler']->getRollbackChange()->getOldAttributes())->toBe($transition['model']->getRawOriginal());
+    $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
+    expect($transitionCreatedFromPersistedRecord)->toBeInstanceOf(ModelUpdated::class);
+    expect($transitionCreatedFromPersistedRecord->getSubject())->toBeInstanceOf(get_class($model));
 });
 
+it('can create a ModelUpdated from model', function () {
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->update([
+        'title' => 'new Title',
+    ]);
 
-it('[ModelCreated] migrate.up() can re-create the model without changing created_at and updated_at', function () {
-    $transition = $this->getTransition('model-created');
-
-    Carbon::setTestNow(Carbon::now()->addHour()); // traveling in time
-    $transition['handler']->up();
-
-    $post = Post::first(); // get the post directly from database
-
-    expect($post->created_at->toString())->toBe($transition['model']->created_at->toString());
-    expect($post->updated_at->toString())->toBe($transition['model']->updated_at->toString());
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-updated', $model);
+    expect($transitionCreatedFromModel)->toBeInstanceOf(ModelUpdated::class);
+    expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
 
-it('[ModelCreated] migrate.up() can not re-create another model when id reserved', function () {
-    $transition = $this->getTransition('model-created');
-    $this->createAModelOf(Post::class);
+it('can persist ModelUpdated', function () {
+    $batchId = EloquentMemory::batchId();
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->update([
+        'title' => 'new Title',
+    ]);
 
-    $transition['handler']->up();
-})->expectException(QueryException::class);
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-updated', $model);
+    $transitionCreatedFromModel->persist();
 
-it('[ModelCreated] migrate.up() will fill guarded fields too', function () {
-    $transition = $this->getTransition('model-created');
-    $transition['handler']->up();
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
 
-    $recentlyReCreatedModel = Post::first();
-    expect($recentlyReCreatedModel->getKey())->toBe($transition['model']->getKey());
+    expect($current)->not->toBeNull();
 });
 
-it('[ModelDeleted] can persist', function () {
-    $transition = $this->getTransition('model-deleted');
-    $transition['handler']->persist();
+it('can get the model from state of ModelUpdated', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-updated', PostWithRememberState::class);
 
-    expect($transition['handler']->getModel())->not->toBeNull();
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
 
-it('[ModelDeleted] can be made from persisted record', function () {
-    $transition = $this->getTransition('model-deleted');
-    $transition['handler']->persist();
+it('can create a model from persisted ModelDeleted', function () {
+    $batchId = EloquentMemory::batchId();
 
-    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->delete();
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
 
-    expect($persistedTransition->getType())->toBe($transition['handler']->getType());
-    expect($persistedTransition->getModelClass())->toBe($transition['handler']->getModelClass());
-    expect($persistedTransition->getProperties())->toBe($transition['handler']->getProperties());
-    expect($persistedTransition->getRollbackChange()->getProperties())->toBe($transition['handler']->getRollbackChange()->getProperties());
+    $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
+    expect($transitionCreatedFromPersistedRecord)->toBeInstanceOf(ModelDeleted::class);
 });
 
-it('[ModelDeleted] retrieved persisted record can migrate.up() and migrate.down()', function () {
-    $transition = $this->getTransition('model-deleted');
-    $transition['handler']->persist();
+it('can create a ModelDeleted from model', function () {
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->delete();
 
-    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
-
-    $persistedTransition->up();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
-    $persistedTransition->down();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-deleted', $model);
+    expect($transitionCreatedFromModel)->toBeInstanceOf(ModelDeleted::class);
+    expect($transitionCreatedFromModel->getSubject())->toBeInstanceOf(get_class($model));
 });
 
-it('[ModelDeleted] can persist without considering mutators', function () {
-    $transition = $this->getTransition('model-deleted');
-    $transition['handler']->persist();
+it('can persist ModelDeleted', function () {
+    $batchId = EloquentMemory::batchId();
+    $model = $this->createAModelOf(PostWithRememberState::class);
+    $model->delete();
 
-    $persistedTransition = ModelDeleted::createFromPersistedRecord($transition['handler']->getModel());
+    $transitionCreatedFromModel = EloquentMemory::getTransitionFromModel('model-deleted', $model);
+    $transitionCreatedFromModel->persist();
 
-    expect($persistedTransition)->not->toBeNull();
-    expect($persistedTransition->getOldAttributes()['title'])->not->toBe('This title has changed');
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    $current = $timeline->current();
+
+    expect($current)->not->toBeNull();
 });
 
-it('[ModelDeleted] migrate.up() will forceDelete the model from database', function () {
-    $transition = $this->getTransition('model-deleted');
-    $transition['handler']->up();
+it('can get the model from state of ModelDeleted', function () {
+    /** @var TransitionInterface $transition */
+    $transition = $this->getTransition('model-deleted', PostWithRememberState::class);
 
-    Post::findOrFail($transition['model']->getKey());
-})->expectException(ModelNotFoundException::class);
-
-
-it('[ModelDeleted] migrate.up(), migrate.down() and migrate.up() works', function () {
-    $transition = $this->getTransition('model-deleted');
-
-    $transition['handler']->up();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
-
-    $transition['handler']->down();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-
-    $transition['handler']->up();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
+    expect($transition['handler']->getModelCreatedFromState())->toBeNull();
 });
 
-it('[ModelDeleted] migrate.up() and migrate.up() doesnt work', function () {
-    $transition = $this->getTransition('model-deleted');
+it('has unique address', function () {
+    $batchId = EloquentMemory::batchId();
+    $model = $this->createAModelOf(PostWithRememberState::class);
 
-    $transition['handler']->up();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
+    /** @var Timeline $timeline */
+    $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);
+    /** @var PersistedTransitionRecordInterface $current */
+    $current = $timeline->current();
 
-    $transition['handler']->up();
-    expect(Post::find($transition['model']->getKey()))->toBeNull();
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelDeleted] can delete the model even it uses soft deleting', function () {
-    $transition = $this->getTransition('model-deleted', PostWithSoftDelete::class);
-    $transition['handler']->up();
-
-    PostWithSoftDelete::withTrashed()->findOrFail($transition['model']->getKey());
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelDeleted] can delete already soft deleted model', function () {
-    $transition = $this->getTransition('model-deleted', PostWithSoftDelete::class);
-    $transition['model']->delete();
-    $transition['handler']->up();
-
-    PostWithSoftDelete::withTrashed()->findOrFail($transition['model']->getKey());
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelDeleted] migrate.down() can re-create the model', function () {
-    $transition = $this->getTransition('model-deleted', Post::class);
-    $transition['model']->delete();
-    $transition['handler']->down();
-
-    $recentlyReCreatedModel = Post::first();
-    expect($recentlyReCreatedModel->getKey())->toBe($transition['model']->getKey());
-    expect($this->arraysAreTheSame($recentlyReCreatedModel->getAttributes(), $transition['model']->getAttributes()))->toBeTrue();
-    expect($this->arraysAreTheSame($recentlyReCreatedModel->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
+    expect($current->getTransition()->getTransitionStorageAddress())->toBe($model->getModelAddress());
 });
-
-it('[ModelDeleted] migrate.down() and migrate.down() doesnt work', function () {
-    $transition = $this->getTransition('model-deleted', Post::class);
-    $transition['handler']->down();
-
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-
-    $transition['handler']->down();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-})->expectException(QueryException::class);
-
-
-it('[ModelDeleted] migrate.up() doesnt work when model already deleted', function () {
-    $transition = $this->getTransition('model-deleted', Post::class);
-    $transition['model']->forceDelete();
-
-    $transition['handler']->up();
-    expect(Post::find($transition['model']->getKey()))->not->toBeNull();
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelDeleted] has correct rollbackTransition', function () {
-    $transition = $this->getTransition('model-deleted', Post::class);
-
-    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelCreated::class);
-    expect($transition['handler']->getRollbackChange()->getAttributes())->toBe($transition['model']->getRawOriginal());
-});
-
-it('[ModelUpdated] can persist', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['handler']->up();
-    $transition['handler']->persist();
-
-    expect($transition['handler']->getModel())->not->toBeNull();
-    expect($transition['handler']->getModel()->properties)->toBe($transition['handler']->getProperties());
-    expect($transition['handler']->getModel()->properties['old'])->toBe($transition['model']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['attributes'])->toBe($transition['after']->getRawOriginal());
-    expect($transition['handler']->getModel()->properties['key'])->toBe($transition['after']->getKey());
-    expect($transition['handler']->getModel()->properties['model_class'])->toBe(get_class($transition['after']));
-    expect($transition['handler']->getModel()->type)->toBe('model-updated');
-});
-
-
-it('[ModelUpdated] which created from persisted record can migrate.up() and migrate.down()', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['handler']->persist();
-
-    $persistedTransition = ModelUpdated::createFromPersistedRecord($transition['handler']->getModel());
-
-    $persistedTransition->up();
-    $post = Post::first();
-    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
-
-    $persistedTransition->down();
-    $post = Post::first();
-    expect($post->getRawOriginal('title'))->toBe($transition['model']->getRawOriginal('title'));
-});
-
-it('[ModelUpdated] migrate.up() updates the model', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['handler']->up();
-
-    $post = Post::find($transition['model']->getKey());
-    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
-    expect($post->getRawOriginal('json'))->toBe($transition['after']->getRawOriginal('json'));
-    expect($post->title)->toBe($transition['after']->refresh()->title);
-    expect($post->json)->toBe($transition['after']->refresh()->json);
-});
-
-it('[ModelUpdated] has correct rollbackTransition', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['handler']->up();
-
-
-    expect($transition['handler']->getRollbackChange())->toBeInstanceOf(ModelUpdated::class);
-    expect($transition['handler']->getRollbackChange()->getModelKey())->toBe($transition['handler']->getModelKey());
-    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getOldAttributes(), $transition['handler']->getAttributes()))->toBeTrue();
-    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getOldAttributes()))->toBeTrue();
-});
-
-it('[ModelUpdated] migrate.up() and migrate.down() rollback everything to the first place', function () {
-    $transition = $this->getTransition('model-updated');
-
-    $transition['handler']->up();
-    $transition['handler']->down();
-
-    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getOldAttributes()))->toBeTrue();
-});
-
-it('[ModelUpdated] migrate.up() and migrate.down() and migrate.up() works', function () {
-    $transition = $this->getTransition('model-updated');
-
-    $transition['handler']->up();
-    $transition['handler']->down();
-    $transition['handler']->up();
-
-    expect($this->arraysAreTheSame($transition['handler']->getRollbackChange()->getAttributes(), $transition['handler']->getAttributes()))->toBeTrue();
-});
-
-it('[ModelUpdated] migrate.up() raises error when model not exists', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['model']->forceDelete();
-
-    $transition['handler']->up();
-})->expectException(ModelNotFoundException::class);
-
-it('[ModelUpdated] migrate.up() doesnt change updated_at when migrate up', function () {
-    $now = Carbon::now();
-    $transition = $this->getTransition('model-updated');
-
-    Carbon::setTestNow($now->addHour());
-    $transition['handler']->up();
-
-    $post = Post::first();
-    expect($post->created_at->format('H:i'))->not->toBe($now->format('H:i'));
-});
-
-it('[ModelUpdated] migrate.up() can fill despite of guarded attributes', function () {
-    /** @var \Illuminate\Database\Eloquent\Model $modelWithGuarded */
-    $modelWithGuarded = new Class extends Post {
-        protected $table = 'posts';
-        protected $guarded = ['id', 'title'];
-    };
-
-    $transition = $this->getTransition('model-updated', $modelWithGuarded);
-    $transition['handler']->up();
-
-    $post = Post::first();
-    expect($post->title)->toBe($transition['model']->title);
-});
-
-
-it('[ModelUpdated] migrate.up() can fill despite of hidden attributes', function () {
-    /** @var \Illuminate\Database\Eloquent\Model $modelWithHidden */
-    $modelWithHidden = new Class extends Post {
-        protected $table = 'posts';
-        protected $hidden = ['title'];
-    };
-
-    $transition = $this->getTransition('model-updated', $modelWithHidden);
-    $transition['handler']->up();
-
-    $post = Post::first();
-    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
-});
-
-it('[ModelUpdated] migrate.up() can fill despite of casted values', function () {
-    /** @var \Illuminate\Database\Eloquent\Model $modelWithCasts */
-    $modelWithCasts = new Class extends Post {
-        protected $table = 'posts';
-        protected $casts = [
-            'title' => 'bool',
-            'meta' => 'json'
-        ];
-    };
-
-    $transition = $this->getTransition('model-updated', $modelWithCasts);
-    $transition['handler']->up();
-
-    $post = Post::first();
-    expect($post->getRawOriginal('title'))->toBe($transition['after']->getRawOriginal('title'));
-});
-
-it('[ModelUpdated] raise error when model not exists at all', function () {
-    $transition = $this->getTransition('model-updated');
-    $transition['model']->forceDelete();
-
-    $transition['handler']->up();
-})->expectException(ModelNotFoundException::class);

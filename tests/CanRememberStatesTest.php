@@ -1,29 +1,29 @@
 <?php
-use Debuqer\EloquentMemory\StorageModels\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithEloquentMemory;
-use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithEloquentMemory;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
+use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 
 beforeEach(function () {
-    $this->batch_id = app(TransitionRepository::class)->getBatchId();
+    $this->batch_id = \Debuqer\EloquentMemory\Facades\EloquentMemory::batchId();
 });
 
 it('can record when a model created', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
     $current = $timeline->current();
 
     expect($timeline->count())->toBe(1);
     expect($current->getTransition()->getType())->toBe('model-created');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
+    expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getAttributes()));
 });
 
 it('can record when a model deleted', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $oldAttributes = $model->getRawOriginal();
 
     $model->delete();
@@ -33,13 +33,13 @@ it('can record when a model deleted', function () {
 
     expect($timeline->count())->toBe(2);
     expect($current->getTransition()->getType())->toBe('model-deleted');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
-    expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes));
+    expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
+    expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $oldAttributes));
 });
 
 
 it('it can record when model soft deleted', function () {
-    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
+    $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
     $oldAttributes = $model->getRawOriginal();
 
     $model->delete();
@@ -49,10 +49,9 @@ it('it can record when model soft deleted', function () {
 
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
-    expect($current->getTransition()->getModelKey())->toBe($model->id);
-    expect($this->arraysAreTheSame($current->getTransition()->getOldAttributes(), $oldAttributes))->toBeTrue();
-    expect($current->getTransition()->getAttributes())->toBe($attributes);
+    expect($current->getTransition()->getSubjectType())->toBe(SoftDeletedPostWithRememberState::class);
+    expect($current->getTransition()->getSubjectKey())->toBe($model->id);
+    expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $oldAttributes))->toBeTrue();
     $timeline->next();
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-created');
@@ -60,7 +59,7 @@ it('it can record when model soft deleted', function () {
 
 
 it('can record when model restored', function () {
-    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
+    $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
     $model->delete();
     $oldAttributes = $model->getRawOriginal();
     $model->restore();
@@ -71,9 +70,8 @@ it('can record when model restored', function () {
 
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(SoftDeletedPostWithEloquentMemory::class);
-    expect($current->getTransition()->getModelKey())->toBe($model->id);
-    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
+    expect($current->getTransition()->getSubjectType())->toBe(SoftDeletedPostWithRememberState::class);
+    expect($current->getTransition()->getSubjectKey())->toBe($model->id);
     expect($current->getTransition()->getAttributes())->toBe($attributes);
 
     $timeline->next();
@@ -87,7 +85,7 @@ it('can record when model restored', function () {
 
 
 it('can record when a model updated', function () {
-    $model = $this->createAModelOf(PostWithEloquentMemory::class);
+    $model = $this->createAModelOf(PostWithRememberState::class);
     $oldAttributes = $model->getRawOriginal();
 
 
@@ -100,9 +98,8 @@ it('can record when a model updated', function () {
 
     expect($timeline->count())->toBe(2);
     expect($current->getTransition()->getType())->toBe('model-updated');
-    expect($current->getTransition()->getModelClass())->toBe(PostWithEloquentMemory::class);
-    expect($current->getTransition()->getModelKey())->toBe($model->id);
-    expect($current->getTransition()->getOldAttributes())->toBe($oldAttributes);
+    expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
+    expect($current->getTransition()->getSubjectKey())->toBe($model->id);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();
 });
 
@@ -110,7 +107,7 @@ it('can record when a model updated', function () {
 it('can record chain of events if soft delete support', function() {
     $expectedStack = [];
 
-    $model = $this->createAModelOf(SoftDeletedPostWithEloquentMemory::class);
+    $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
     $expectedStack[] = 'model-created';
 
     $model->update([

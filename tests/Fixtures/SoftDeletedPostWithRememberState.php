@@ -5,6 +5,6 @@ namespace Debuqer\EloquentMemory\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SoftDeletedPostWithEloquentMemory extends PostWithEloquentMemory {
+class SoftDeletedPostWithRememberState extends PostWithRememberState {
     use SoftDeletes;
 }

@@ -84,9 +84,16 @@ class TestCase extends Orchestra
             $transition = [
                 'model' => $model,
                 'after' => $after,
-                'handler' => ModelUpdated::createFromModel($model, $after)
+                'handler' => ModelUpdated::createFromModel($after)
             ];
             DB::rollBack();
+        }
+        if (in_array($transitionType, ['travel-test'])) {
+            $model = $this->createAModelOf($modelClass ?? Post::class);
+            $transition = [
+                'model' => $model,
+                'handler' => ModelCreated::createFromModel($model)
+            ];
         }
 
         return $transition;

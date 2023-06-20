@@ -4,19 +4,22 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Illuminate\Database\Eloquent\Model;
 
 interface TransitionInterface
 {
+    public static function createFromPersistedRecord(PersistedTransitionRecordInterface $change);
+
     public function getProperties(): array;
     public function getType(): string;
-    public function up();
-    public function down();
-    public function getRollbackChange(): TransitionInterface;
+
+    public function getSubject();
+    public function getSubjectType();
+    public function getSubjectKey();
+    public function getTransitionStorageAddress(): string;
 
     public function persist();
-    public function getModel();
-
-    public static function createFromPersistedRecord(TransitionStorageModelContract $change);
+    public function getModelCreatedFromState();
 }

@@ -11,9 +11,15 @@ return new class extends Migration
         Schema::create('model_transitions', function (Blueprint $table) {
             $table->id();
             $table->string('type');
+            $table->string('address', 32);
+
+            $table->string('subject_type');
+            $table->json('subject_key');
             $table->json('properties');
             $table->uuid('batch');
             $table->timestamps();
+
+            $table->index('address');
         });
     }
 };

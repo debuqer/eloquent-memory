@@ -3,17 +3,12 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\StorageModels\TransitionStorageModelContract;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
-use Debuqer\EloquentMemory\Transitions\Concerns\HasModelClass;
-use Debuqer\EloquentMemory\Transitions\Concerns\HasModelKey;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 
 class ModelCreated extends BaseTransition implements TransitionInterface
 {
-    use HasModelClass;
-    use HasAttributes;
+    const TypeName = "model-created";
 
     /**
      * @param Model $model
@@ -21,16 +16,21 @@ class ModelCreated extends BaseTransition implements TransitionInterface
      */
     public static function createFromModel(Model $model): TransitionInterface
     {
-        return new static(['model_class' => get_class($model), 'attributes' => static::getMemorizableAttributes($model)]);
+        /** @var BaseTransition $transition */
+        $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
+        $transition->setSubject($model);
+
+        return $transition;
     }
 
-    public function up()
+    /**
+     * @return mixed
+     */
+    public function getModelCreatedFromState()
     {
-        $this->getModelObject()->setRawAttributes($this->getAttributes())->save();
-    }
+        $model = app($this->getSubjectType())->forceFill($this->getProperties()['attributes'])->syncOriginal();
+        $model->exists = true;
 
-    public function getRollbackChange(): TransitionInterface
-    {
-        return new ModelDeleted(['model_class' => $this->getModelClass(), 'old' => $this->getAttributes()]);
+        return $model;
     }
 }

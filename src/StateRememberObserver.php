@@ -28,9 +28,7 @@ class StateRememberObserver
     public function updated(Model $model): void
     {
         $model->syncOriginal();
-        ModelUpdated::createFromModel($this->getState('updating', $model), $model)->persist();
-
-        $this->unsetState('updating', $model);
+        ModelUpdated::createFromModel($model)->persist();
     }
 
     public function deleted(Model $model): void
@@ -39,42 +37,7 @@ class StateRememberObserver
             ModelDeleted::createFromModel($model)->persist();
         } else {
             $model->syncOriginal();
-            ModelUpdated::createFromModel($this->getState('deleting', $model), $model)->persist();
+            ModelUpdated::createFromModel($model)->persist();
         }
-
-        $this->unsetState('deleting', $model);
-    }
-
-    public function deleting(Model $model): void
-    {
-        $this->setState('deleting', $model);
-    }
-
-    public function updating(Model $model): void
-    {
-        $this->setState('updating', $model);
-    }
-
-
-    private function setState($event, $model)
-    {
-        static::$map[$model->getModelHash()][$event] = (clone $model);
-    }
-
-    private function unsetState($event, $model)
-    {
-        if ( $this->hasState($event, $model) ) {
-            unset(static::$map[$model->getModelHash()][$event]);
-        }
-    }
-
-    private function hasState($event, $model)
-    {
-        return isset(static::$map[$model->getModelHash()]) and isset(static::$map[$model->getModelHash()][$event]);
-    }
-
-    private function getState($event, $model)
-    {
-        return $this->hasState($event, $model) ? static::$map[$model->getModelHash()][$event] : null;
     }
 }
