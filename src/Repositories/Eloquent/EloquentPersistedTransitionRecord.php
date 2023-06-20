@@ -67,4 +67,9 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
     {
         return $this->subject_key;
     }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
 }

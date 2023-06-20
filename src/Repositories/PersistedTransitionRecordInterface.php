@@ -19,6 +19,7 @@ interface PersistedTransitionRecordInterface
      */
     public static function queryOnTransitions(array $data): Collection;
 
+    public function getType(): string;
     public function getProperties(): array;
     public function getSubjectType(): string;
     public function getSubjectKey(): string;
