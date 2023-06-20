@@ -46,7 +46,7 @@ trait CanRememberStates
         /** @var PersistedTransitionRecordInterface $state */
         $state = $transitionRepository->current();
 
-        if ( ! $state or $state->getType() == 'model-deleted' ) {
+        if ( ! $state or $state->getTransition()->getType() == 'model-deleted' ) {
             return null;  // model not exists
         } else {
             return $state->getTransition()->getModelCreatedFromState();
