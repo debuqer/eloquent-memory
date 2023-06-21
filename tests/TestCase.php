@@ -38,11 +38,11 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $migration = include __DIR__ . '/../database/migrations/create-post.php';
+        $migration = include __DIR__ . '/Fixtures/migrations/create-post.php';
         $migration->up();
-        $migration = include __DIR__ . '/../database/migrations/create-user.php';
+        $migration = include __DIR__ . '/Fixtures/migrations/create-user.php';
         $migration->up();
-        $migration = include __DIR__ . '/../database/migrations/create-table-model-transitions-migrations.php';
+        $migration = include __DIR__ . '/Fixtures/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
     }
 
