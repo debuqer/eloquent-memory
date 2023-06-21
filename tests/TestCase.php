@@ -23,7 +23,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Debuqer\\EloquentMemory\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Debuqer\\EloquentMemory\\Tests\\Fixtures\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
