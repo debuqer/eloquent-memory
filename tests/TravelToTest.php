@@ -39,4 +39,30 @@ it('can return model when it deleted 10 minutes later', function () {
     expect($oldModel->exists)->toBeTrue();
 });
 
+it('can re-generate some of destroyed models', function () {
+    $this->model->delete();
+
+    $models = [];
+    for ($i = 0; $i < 5; $i ++) {
+        $models[$i] = $this->createAModelOf(Post::class);
+    }
+
+    Carbon::setTestNow(Carbon::now()->addMinutes(10));
+
+    for ($i = 0; $i < 5; $i ++) {
+        $models[$i]->delete();
+    }
+
+    Carbon::setTestNow(Carbon::now()->addMinutes(10));
+
+    $restoredModels = [];
+    for ($i = 0; $i < 5; $i ++) {
+        $restoredModels[$i] = $models[$i]->getStateOf(Carbon::now()->subMinutes(20));
+
+        expect($this->arraysAreTheSame($models[$i]->getAttributes(), $restoredModels[$i]->getAttributes()))->toBeTrue();
+    }
+});
+
+
+
 
