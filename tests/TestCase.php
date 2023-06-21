@@ -3,15 +3,10 @@
 namespace Debuqer\EloquentMemory\Tests;
 
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithSoftDelete;
-use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
-use Debuqer\EloquentMemory\Transitions\ModelRestored;
-use Debuqer\EloquentMemory\Transitions\ModelSoftDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
