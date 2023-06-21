@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory;
-
 
 class Timeline extends \SplPriorityQueue
 {
-    const ORDER_DESC = 'desc';
-    const ORDER_ASC = 'asc';
+    public const ORDER_DESC = 'desc';
+    public const ORDER_ASC = 'asc';
 
     protected $order;
 
@@ -34,4 +32,3 @@ class Timeline extends \SplPriorityQueue
         };
     }
 }
-

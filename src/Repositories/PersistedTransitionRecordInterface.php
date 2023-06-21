@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories;
 
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;

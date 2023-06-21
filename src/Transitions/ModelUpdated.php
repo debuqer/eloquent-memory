@@ -1,15 +1,13 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
-
 
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseTransition implements TransitionInterface
 {
-    const TypeName = "model-updated";
+    public const TypeName = "model-updated";
 
     /**
      * @param Model $model

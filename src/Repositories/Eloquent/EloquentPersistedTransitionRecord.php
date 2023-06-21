@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
-
 
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;

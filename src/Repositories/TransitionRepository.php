@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories;
-
 
 use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Timeline;
@@ -51,7 +49,7 @@ class TransitionRepository
     {
         $config = config('eloquent-memory.drivers.'.$this->driver);
 
-        return new $config['class_name'];
+        return new $config['class_name']();
     }
 
     public function persist(TransitionInterface $transition)

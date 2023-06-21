@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
@@ -8,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseTransition implements TransitionInterface
 {
-    const TypeName = "model-created";
+    public const TypeName = "model-created";
 
     /**
      * @param Model $model

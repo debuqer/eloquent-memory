@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
-
 
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;

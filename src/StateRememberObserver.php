@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory;
-
 
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
@@ -33,7 +31,7 @@ class StateRememberObserver
 
     public function deleted(Model $model): void
     {
-        if ( ! in_array(SoftDeletes::class, class_uses($model)) or $model->isForceDeleting()  ) {
+        if (! in_array(SoftDeletes::class, class_uses($model)) or $model->isForceDeleting()) {
             ModelDeleted::createFromModel($model)->persist();
         } else {
             $model->syncOriginal();
