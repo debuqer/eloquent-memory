@@ -63,6 +63,13 @@ it('can re-generate some of destroyed models', function () {
     }
 });
 
+it('can create the state of model with model and id', function () {
+    $state = (new Post(['id' => 1]))->getStateOf(Carbon::now());
+
+    expect($state->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
+});
+
+
 
 
 
