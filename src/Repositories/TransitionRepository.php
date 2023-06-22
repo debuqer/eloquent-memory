@@ -12,15 +12,11 @@ class TransitionRepository
     protected $handler;
 
     /**
-     * @var string
+     * TransitionRepository constructor.
      */
-    protected $driver;
-
     public function __construct()
     {
-        $this->driver = config('eloquent-memory.drivers.default', 'eloquent');
-
-        $this->setHandler();
+        $this->setHandler(config('eloquent-memory.driver', 'eloquent'));
     }
 
 
@@ -30,28 +26,33 @@ class TransitionRepository
      */
     public function driver($driverName): self
     {
-        $this->driver = $driverName;
-        $this->setHandler();
+        $this->setHandler($driverName);
 
         return $this;
     }
 
-    protected function setHandler(): void
+    /**
+     * @param string $driverName
+     */
+    protected function setHandler(string $driverName): void
     {
-        $this->handler = $this->getPersistDriverHandler();
+        $this->handler = $this->getPersistDriverHandler($driverName);
     }
 
     /**
-     * @param $handler
+     * @param string $driverName
      * @return EloquentTransitionPersistDriver
      */
-    protected function getPersistDriverHandler(): EloquentTransitionPersistDriver
+    protected function getPersistDriverHandler(string $driverName): EloquentTransitionPersistDriver
     {
-        $config = config('eloquent-memory.drivers.'.$this->driver);
+        $config = config('eloquent-memory.drivers.'.$driverName);
 
         return new $config['class_name']();
     }
 
+    /**
+     * @param TransitionInterface $transition
+     */
     public function persist(TransitionInterface $transition)
     {
         $this->handler->persist($transition);
