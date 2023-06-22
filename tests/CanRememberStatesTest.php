@@ -11,27 +11,36 @@ beforeEach(function () {
 });
 
 it('can record when a model created', function () {
+    $expectedStack = [];
+
     $model = $this->createAModelOf(PostWithRememberState::class);
+    $expectedStack[] = 'user-created';
+    $expectedStack[] = 'model-created';
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
     $current = $timeline->current();
 
-    expect($timeline->count())->toBe(1);
+    expect($timeline->count())->toBe(count($expectedStack));
     expect($current->getTransition()->getType())->toBe('model-created');
     expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getAttributes()));
 });
 
 it('can record when a model deleted', function () {
+    $expectedStack = [];
+
     $model = $this->createAModelOf(PostWithRememberState::class);
+    $expectedStack[] = 'model-created';
+    $expectedStack[] = 'user-created';
     $oldAttributes = $model->getRawOriginal();
 
     $model->delete();
+    $expectedStack[] = 'model-deleted';
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
     $current = $timeline->current();
 
-    expect($timeline->count())->toBe(2);
+    expect($timeline->count())->toBe(count($expectedStack));
     expect($current->getTransition()->getType())->toBe('model-deleted');
     expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $oldAttributes));
@@ -86,17 +95,21 @@ it('can record when model restored', function () {
 
 it('can record when a model updated', function () {
     $model = $this->createAModelOf(PostWithRememberState::class);
-    $oldAttributes = $model->getRawOriginal();
+    $expectedStack = [];
+    $expectedStack[] = 'model-created';
+    $expectedStack[] = 'user-created';
 
 
     $model->update([
         'title' => 'new Title'
     ]);
+    $expectedStack[] = 'model-updated';
+
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $this->batch_id]);
     $current = $timeline->current();
 
-    expect($timeline->count())->toBe(2);
+    expect($timeline->count())->toBe(count($expectedStack));
     expect($current->getTransition()->getType())->toBe('model-updated');
     expect($current->getTransition()->getSubjectType())->toBe(PostWithRememberState::class);
     expect($current->getTransition()->getSubjectKey())->toBe($model->id);
@@ -108,6 +121,7 @@ it('can record chain of events if soft delete support', function() {
     $expectedStack = [];
 
     $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
+    $expectedStack[] = 'model-created';  // user
     $expectedStack[] = 'model-created';
 
     $model->update([

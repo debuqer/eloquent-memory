@@ -7,7 +7,7 @@ class Timeline extends \SplPriorityQueue
     public const ORDER_DESC = 'desc';
     public const ORDER_ASC = 'asc';
 
-    protected $order;
+    protected $order = 'desc';
 
     public function latestFirst()
     {
@@ -25,10 +25,6 @@ class Timeline extends \SplPriorityQueue
 
     public function compare($priority1, $priority2)
     {
-        return match($this->order) {
-            null => $priority1 > $priority2 ? 0 : -1,
-            'desc' => $priority1 > $priority2 ? 0 : -1,
-            'asc' => $priority2 > $priority1 ? 0 : -1
-        };
+        return ($this->order === static::ORDER_ASC ? -1 : 1 ) * strcmp($priority1, $priority2);
     }
 }
