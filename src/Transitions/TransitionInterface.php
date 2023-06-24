@@ -19,5 +19,5 @@ interface TransitionInterface
     public function getTransitionStorageAddress(): string;
 
     public function persist();
-    public function getModelCreatedFromState();
+    public function getModelCreatedFromState(Model $current);
 }

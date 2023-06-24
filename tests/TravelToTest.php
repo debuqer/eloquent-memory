@@ -17,8 +17,7 @@ it('can return model state for 1 hour ago created', function () {
     ]);
 
     $this->model->refresh();
-    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(60)); // return a model when model was created (1 hour ago)
-
+    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // return a model when model was created (1 hour ago)
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
 
@@ -63,12 +62,19 @@ it('can re-generate some of destroyed models', function () {
     }
 });
 
-it('can create the state of model with model and id', function () {
-    $state = (new Post(['id' => 1]))->getStateOf(Carbon::now());
+it('can rollback to the old state of model', function () {
+    Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
-    expect($state->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
+    $this->model->update([
+        'title' => '1 time past'
+    ]);
+
+    $state = (new Post(['id' => 1]))->getStateOf(Carbon::now()->subMinutes(5));
+
+    $model = Post::find(1);
+
+    expect($model->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
-
 
 
 

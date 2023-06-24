@@ -38,16 +38,16 @@ trait CanRememberStates
                 ['subject_type', '=', get_class($this)],
             ],
             'until' => $givenTime,
-            'limit' => 1,
+            'take' => 1,
         ]);
 
         /** @var PersistedTransitionRecordInterface $state */
-        $state = $transitionRepository->current();
+        $state = $transitionRepository->current();;
 
         if (! $state or $state->getTransition()->getType() == 'model-deleted') {
             return null;  // model not exists
         } else {
-            return $state->getTransition()->getModelCreatedFromState();
+            return $state->getTransition()->getModelCreatedFromState($this);
         }
     }
 }

@@ -48,7 +48,7 @@ it('can get the model from state of ModelCreated', function () {
     /** @var TransitionInterface $transition */
     $transition = $this->getTransition('model-created', PostWithRememberState::class);
 
-    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState($transition['model'])->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
 
 it('can create a model from persisted ModelUpdated', function () {
@@ -99,7 +99,7 @@ it('can get the model from state of ModelUpdated', function () {
     /** @var TransitionInterface $transition */
     $transition = $this->getTransition('model-updated', PostWithRememberState::class);
 
-    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState()->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
+    expect($this->arraysAreTheSame($transition['handler']->getModelCreatedFromState($transition['model'])->getRawOriginal(), $transition['model']->getRawOriginal()))->toBeTrue();
 });
 
 it('can create a model from persisted ModelDeleted', function () {
@@ -143,7 +143,7 @@ it('can get the model from state of ModelDeleted', function () {
     /** @var TransitionInterface $transition */
     $transition = $this->getTransition('model-deleted', PostWithRememberState::class);
 
-    expect($transition['handler']->getModelCreatedFromState())->toBeNull();
+    expect($transition['handler']->getModelCreatedFromState($transition['model']))->toBeNull();
 });
 
 it('has unique address', function () {

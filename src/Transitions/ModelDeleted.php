@@ -25,9 +25,10 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
     }
 
     /**
+     * @param Model $current
      * @return null
      */
-    public function getModelCreatedFromState()
+    public function getModelCreatedFromState(Model $current)
     {
         return null;
     }
