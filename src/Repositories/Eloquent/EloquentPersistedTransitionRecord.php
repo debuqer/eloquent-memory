@@ -2,6 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
         'properties' => 'json'
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * @return TransitionInterface
@@ -38,16 +39,17 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
     {
         $where = new Fluent($data);
         return EloquentPersistedTransitionRecord::query()->when($where->offsetExists('before'), function ($query) use ($where) {
-            $query->where('created_at', '<', $where->get('before'));
+            $query->where('date_recorded', '<', $where->get('before'));
         })->when($where->offsetExists('until'), function ($query) use ($where) {
-            $query->where('created_at', '<=', $where->get('until'));
+            $query->where('date_recorded', '<=', $where->get('until'));
         })->when($where->offsetExists('after'), function ($query) use ($where) {
-            $query->where('created_at', '>', $where->get('after'));
+            $query->where('date_recorded', '>', $where->get('after'));
         })->when($where->offsetExists('from'), function ($query) use ($where) {
-            $query->where('created_at', '>=', $where->get('from'));
+            $query->where('date_recorded', '>=', $where->get('from'));
         })->when($where->offsetExists('take'), function ($query) use ($where) {
             $query->take($where->get('take'));
         })->where($where->get('conditions', []))
+            ->orderBy('date_recorded', 'desc')
             ->get();
     }
 
@@ -73,6 +75,6 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
 
     public function getCreationDate(): string
     {
-        return $this->id;
+        return $this->date_recorded;
     }
 }

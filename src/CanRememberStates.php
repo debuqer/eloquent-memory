@@ -37,12 +37,12 @@ trait CanRememberStates
             'conditions' => [
                 ['subject_type', '=', get_class($this)],
             ],
-            'until' => $givenTime,
+            'until' => $givenTime->getTimestampMs(),
             'take' => 1,
         ]);
 
         /** @var PersistedTransitionRecordInterface $state */
-        $state = $transitionRepository->current();;
+        $state = $transitionRepository->current();
 
         if (! $state or $state->getTransition()->getType() == 'model-deleted') {
             return null;  // model not exists

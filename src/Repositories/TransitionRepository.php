@@ -2,6 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Repositories;
 
+use Carbon\Carbon;
 use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
@@ -55,7 +56,7 @@ class TransitionRepository
      */
     public function persist(TransitionInterface $transition)
     {
-        $this->handler->persist($transition);
+        $this->handler->persist($transition, Carbon::now());
     }
 
     /**

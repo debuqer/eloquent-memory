@@ -17,7 +17,7 @@ return new class extends Migration
             $table->json('subject_key');
             $table->json('properties');
             $table->uuid('batch');
-            $table->timestamps();
+            $table->unsignedInteger('date_recorded');
 
             $table->index('address');
         });

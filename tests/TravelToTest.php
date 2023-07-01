@@ -69,7 +69,8 @@ it('can rollback to the old state of model', function () {
         'title' => '1 time past'
     ]);
 
-    $state = (new Post(['id' => 1]))->getStateOf(Carbon::now()->subMinutes(5));
+    $state = Post::find(1)->getStateOf(Carbon::now()->subMinutes(2));
+    $state->save();
 
     $model = Post::find(1);
 
