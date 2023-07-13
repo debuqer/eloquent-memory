@@ -18,6 +18,7 @@ it('can return model state for 1 hour ago created', function () {
 
     $this->model->refresh();
     $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // return a model when model was created (1 hour ago)
+    $oldModel->save();
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
 
@@ -27,9 +28,6 @@ it('can return model when it deleted 10 minutes later', function () {
     $this->model->delete();
 
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
-
-    $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // model already deleted
-    expect($oldModel)->toBeNull();
 
     $oldModel = $this->model->getStateOf(Carbon::now()->subMinutes(5)); // model already deleted
     expect($oldModel)->toBeNull();
@@ -69,6 +67,7 @@ it('can rollback to the old state of model', function () {
         'title' => '1 time past'
     ]);
 
+    /** @var \Illuminate\Database\Eloquent\Model $state */
     $state = Post::find(1)->getStateOf(Carbon::now()->subMinutes(2));
     $state->save();
 

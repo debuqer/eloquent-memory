@@ -28,10 +28,9 @@ class ModelCreated extends BaseTransition implements TransitionInterface
      */
     public function getModelCreatedFromState(Model $current)
     {
-        $class = $this->getSubjectType();
-        $model = app($class)->forceFill($this->getProperties()['attributes']);
-        $model->exists = $current->exists;
-
-        return $model;
+        return $current
+            ->setRawAttributes($this->getProperties()['attributes'])
+            ->setExists(true)
+            ->syncChanges();
     }
 }

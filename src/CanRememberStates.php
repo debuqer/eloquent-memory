@@ -37,7 +37,7 @@ trait CanRememberStates
             'conditions' => [
                 ['subject_type', '=', get_class($this)],
             ],
-            'until' => $givenTime->getTimestampMs(),
+            'until' => $givenTime,
             'take' => 1,
         ]);
 
@@ -49,5 +49,16 @@ trait CanRememberStates
         } else {
             return $state->getTransition()->getModelCreatedFromState($this);
         }
+    }
+
+    /**
+     * @param bool $exists
+     * @return $this
+     */
+    public function setExists($exists = true)
+    {
+        $this->exists = $exists;
+
+        return $this;
     }
 }
