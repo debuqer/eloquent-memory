@@ -76,6 +76,3 @@ it('can retrieve old state of a model which updated', function () {
     expect($model->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
 
-
-
-
