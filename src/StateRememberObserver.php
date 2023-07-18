@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StateRememberObserver
 {
-    protected static $map;
-
     /**
      * Handle the User "created" event.
      */
@@ -25,7 +23,7 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
-        $model->syncOriginal();
+        // $model->syncOriginal();
         ModelUpdated::createFromModel($model)->persist();
     }
 
