@@ -19,5 +19,5 @@ return [
             'class_name' => \Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver::class,
             'connection' => 'default',
         ],
-    ]
+    ],
 ];

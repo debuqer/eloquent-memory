@@ -1,4 +1,5 @@
 <?php
+
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState as Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\User as User;
@@ -14,7 +15,7 @@ it('can retrieve state of a model which created 1 hour ago', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // time travel
 
     $this->model->update([
-        'title' => 'Title changed'
+        'title' => 'Title changed',
     ]);
 
     $this->model->refresh();
@@ -41,20 +42,20 @@ it('can retrieve multiple model which deleted', function () {
     $this->model->delete();
 
     $models = [];
-    for ($i = 0; $i < 5; $i ++) {
+    for ($i = 0; $i < 5; $i++) {
         $models[$i] = $this->createAModelOf(Post::class);
     }
 
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
-    for ($i = 0; $i < 5; $i ++) {
+    for ($i = 0; $i < 5; $i++) {
         $models[$i]->delete();
     }
 
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
     $restoredModels = [];
-    for ($i = 0; $i < 5; $i ++) {
+    for ($i = 0; $i < 5; $i++) {
         $restoredModels[$i] = $models[$i]->getStateOf(Carbon::now()->subMinutes(20));
 
         expect($this->arraysAreTheSame($models[$i]->getAttributes(), $restoredModels[$i]->getAttributes()))->toBeTrue();
@@ -65,7 +66,7 @@ it('can retrieve old state of a model which updated', function () {
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
     $this->model->update([
-        'title' => 'New title'
+        'title' => 'New title',
     ]);
 
     /** @var \Illuminate\Database\Eloquent\Model $state */
@@ -82,7 +83,7 @@ it('can retrieve old state of related model', function () {
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
     $this->model->user->update([
-        'name' => 'New Name'
+        'name' => 'New Name',
     ]);
 
     $state = User::find(1)->getStateOf(Carbon::now()->subMinutes(2));
@@ -91,4 +92,3 @@ it('can retrieve old state of related model', function () {
     $model = User::find(1);
     expect($model->getRawOriginal('name'))->toBe($userBeforeEdit->getRawOriginal('name'));
 });
-

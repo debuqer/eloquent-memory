@@ -2,15 +2,13 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated extends BaseTransition implements TransitionInterface
 {
-    public const TypeName = "model-updated";
+    public const TypeName = 'model-updated';
 
     /**
-     * @param Model $model
      * @return static
      */
     public static function createFromModel(Model $model)
@@ -22,7 +20,6 @@ class ModelUpdated extends BaseTransition implements TransitionInterface
     }
 
     /**
-     * @param Model $current
      * @return Model
      */
     public function getModelCreatedFromState(Model $current)

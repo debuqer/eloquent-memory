@@ -1,7 +1,7 @@
 <?php
 
-use Debuqer\EloquentMemory\Timeline;
 use Carbon\Carbon;
+use Debuqer\EloquentMemory\Timeline;
 
 test('Timeline: compare works with default sort', function () {
     $t = new Timeline();
@@ -16,7 +16,6 @@ test('Timeline: compare works with default sort', function () {
     expect($t->current())->toBe(3);
 });
 
-
 test('Timeline: compare works with latest first', function () {
     $t = new Timeline();
     $t->latestFirst();
@@ -30,7 +29,6 @@ test('Timeline: compare works with latest first', function () {
     $t->next();
     expect($t->current())->toBe(3);
 });
-
 
 test('Timeline: compare works with oldest first', function () {
     $t = new Timeline();

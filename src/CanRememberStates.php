@@ -3,7 +3,6 @@
 namespace Debuqer\EloquentMemory;
 
 use Carbon\Carbon;
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
@@ -24,11 +23,10 @@ trait CanRememberStates
      */
     public function getModelAddress()
     {
-        return md5(get_class($this) . serialize($this->getKey()));
+        return md5(get_class($this).serialize($this->getKey()));
     }
 
     /**
-     * @param Carbon $givenTime
      * @return null
      */
     public function getStateOf(Carbon $givenTime)
@@ -52,7 +50,7 @@ trait CanRememberStates
     }
 
     /**
-     * @param bool $exists
+     * @param  bool  $exists
      * @return $this
      */
     public function setExists($exists = true)

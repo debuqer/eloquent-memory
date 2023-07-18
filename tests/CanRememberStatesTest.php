@@ -1,10 +1,11 @@
 <?php
+
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 
 beforeEach(function () {
     $this->batch_id = \Debuqer\EloquentMemory\Facades\EloquentMemory::batchId();
@@ -46,7 +47,6 @@ it('can record when a model deleted', function () {
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $oldAttributes));
 });
 
-
 it('it can record when model soft deleted', function () {
     $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
     $oldAttributes = $model->getRawOriginal();
@@ -65,7 +65,6 @@ it('it can record when model soft deleted', function () {
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-created');
 });
-
 
 it('can record when model restored', function () {
     $expectedStack = [];
@@ -94,16 +93,14 @@ it('can record when model restored', function () {
     }
 });
 
-
 it('can record when a model updated', function () {
     $model = $this->createAModelOf(PostWithRememberState::class);
     $expectedStack = [];
     $expectedStack[] = 'model-created';
     $expectedStack[] = 'user-created';
 
-
     $model->update([
-        'title' => 'new Title'
+        'title' => 'new Title',
     ]);
     $expectedStack[] = 'model-updated';
 
@@ -118,8 +115,7 @@ it('can record when a model updated', function () {
     expect($this->arraysAreTheSame($current->getTransition()->getAttributes(), $model->getRawOriginal()))->toBeTrue();
 });
 
-
-it('can record chain of events if soft delete support', function() {
+it('can record chain of events if soft delete support', function () {
     $expectedStack = [];
 
     $model = $this->createAModelOf(SoftDeletedPostWithRememberState::class);
@@ -127,15 +123,14 @@ it('can record chain of events if soft delete support', function() {
     $expectedStack[] = 'model-created';
 
     $model->update([
-        'title' => 'new Title'
+        'title' => 'new Title',
     ]);
     $expectedStack[] = 'model-updated';
 
     $model->update([
-        'title' => 'new new Title'
+        'title' => 'new new Title',
     ]);
     $expectedStack[] = 'model-updated';
-
 
     $model->delete();
     $expectedStack[] = 'model-updated';
@@ -144,7 +139,7 @@ it('can record chain of events if soft delete support', function() {
     $expectedStack[] = 'model-updated';
 
     $model->update([
-        'title' => 'new Title'
+        'title' => 'new Title',
     ]);
     $expectedStack[] = 'model-updated';
 
@@ -160,7 +155,7 @@ it('can record chain of events if soft delete support', function() {
     }
 });
 
-it('can exclude attributes', function() {
+it('can exclude attributes', function () {
     $model = $this->createAModelOf(PostWithExcludeAttributes::class);
     $model->update([
         'title' => 'changed',

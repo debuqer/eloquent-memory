@@ -1,12 +1,13 @@
 <?php
-use Debuqer\EloquentMemory\Timeline;
-use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
-use Debuqer\EloquentMemory\Transitions\ModelCreated;
-use Debuqer\EloquentMemory\Transitions\ModelUpdated;
-use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
+use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Transitions\ModelCreated;
+use Debuqer\EloquentMemory\Transitions\ModelDeleted;
+use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 it('can create a model from persisted ModelCreated', function () {
@@ -56,7 +57,7 @@ it('can create a model from persisted ModelUpdated', function () {
 
     $model = $this->createAModelOf(PostWithRememberState::class);
     $model->update([
-        'title' => 'new Title'
+        'title' => 'new Title',
     ]);
     /** @var Timeline $timeline */
     $timeline = app(TransitionRepository::class)->find(['batch' => $batchId]);

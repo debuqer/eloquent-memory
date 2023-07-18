@@ -2,10 +2,10 @@
 
 namespace Debuqer\EloquentMemory\Facades;
 
+use Debuqer\EloquentMemory\EloquentMemory as EM;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
-use \Debuqer\EloquentMemory\EloquentMemory as EM;
 
 /**
  * @see EM

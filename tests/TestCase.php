@@ -2,6 +2,7 @@
 
 namespace Debuqer\EloquentMemory\Tests;
 
+use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
@@ -9,7 +10,6 @@ use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -33,25 +33,25 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $migration = include __DIR__ . '/Fixtures/migrations/create-post.php';
+        $migration = include __DIR__.'/Fixtures/migrations/create-post.php';
         $migration->up();
-        $migration = include __DIR__ . '/Fixtures/migrations/create-user.php';
+        $migration = include __DIR__.'/Fixtures/migrations/create-user.php';
         $migration->up();
-        $migration = include __DIR__ . '/Fixtures/migrations/create-table-model-transitions-migrations.php';
+        $migration = include __DIR__.'/Fixtures/migrations/create-table-model-transitions-migrations.php';
         $migration->up();
     }
 
     /**
      * @some refactor here
      */
-    function getTransition(string $transitionType, $modelClass = null)
+    public function getTransition(string $transitionType, $modelClass = null)
     {
         if (in_array($transitionType, [ModelCreated::class, 'model-created'])) {
             DB::beginTransaction();
             $model = $this->createAModelOf($modelClass ?? Post::class);
             $transition = [
                 'model' => $model,
-                'handler' => ModelCreated::createFromModel($model)
+                'handler' => ModelCreated::createFromModel($model),
             ];
             DB::rollBack();
         }
@@ -61,7 +61,7 @@ class TestCase extends Orchestra
 
             $transition = [
                 'model' => $model,
-                'handler' => ModelDeleted::createFromModel($model)
+                'handler' => ModelDeleted::createFromModel($model),
             ];
             DB::rollBack();
         }
@@ -79,7 +79,7 @@ class TestCase extends Orchestra
             $transition = [
                 'model' => $model,
                 'after' => $after,
-                'handler' => ModelUpdated::createFromModel($after)
+                'handler' => ModelUpdated::createFromModel($after),
             ];
             DB::rollBack();
         }
@@ -87,26 +87,26 @@ class TestCase extends Orchestra
             $model = $this->createAModelOf($modelClass ?? Post::class);
             $transition = [
                 'model' => $model,
-                'handler' => ModelCreated::createFromModel($model)
+                'handler' => ModelCreated::createFromModel($model),
             ];
         }
 
         return $transition;
     }
 
-    function getMockedDataFor($class = Post::class)
+    public function getMockedDataFor($class = Post::class)
     {
         return Factory::factoryForModel($class)->raw();
     }
 
-    function createAModelOf($class = Post::class, $factorySource = Post::class)
+    public function createAModelOf($class = Post::class, $factorySource = Post::class)
     {
         $attributes = $this->getMockedDataFor($factorySource);
 
         return $class::create($attributes);
     }
 
-    function arraysAreTheSame($attrs1, $attrs2)
+    public function arraysAreTheSame($attrs1, $attrs2)
     {
         $allAttributes = array_merge(array_keys($attrs1, $attrs2));
 
@@ -115,12 +115,11 @@ class TestCase extends Orchestra
             $valueOfArray1 = isset($attrs1[$attr]) ? $attrs1[$attr] : null;
             $valueOfArray2 = isset($attrs2[$attr]) ? $attrs2[$attr] : null;
 
-            if ( $valueOfArray1 !== $valueOfArray2) {
+            if ($valueOfArray1 !== $valueOfArray2) {
                 $diff[] = $attr;
             }
         }
 
         return count($diff) === 0;
     }
-
 }

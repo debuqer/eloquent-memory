@@ -1,10 +1,11 @@
 <?php
+
+use Carbon\Carbon;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
+use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
-use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
-use Carbon\Carbon;
 
 it('can persist normal transition', function () {
     $batchId = EloquentMemory::batchId();
@@ -24,7 +25,7 @@ it('can persist normal transition', function () {
 
 it('can query on transitions', function () {
     $now = Carbon::now();
-    for ( $i = 0; $i <= 9; $i ++ ) {
+    for ($i = 0; $i <= 9; $i++) {
         Carbon::setTestNow((clone $now)->subMinutes($i));
         $transition = $this->getTransition('model-created', PostWithRememberState::class);
         $transition['handler']->persist();
@@ -35,8 +36,6 @@ it('can query on transitions', function () {
      * |    |    | -9 | -8 | -7 | -6 | -5 | -4 | -3 | -2 | -1 |  0 |
      *  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
      */
-
-
 
     /**
      *  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
