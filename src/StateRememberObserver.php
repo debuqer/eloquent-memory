@@ -23,18 +23,20 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
-        $model->syncChanges();
-        $model->syncOriginal();
-        ModelUpdated::createFromModel($model)->persist();
+        $newModel = $model->fresh();
+        $newModel->syncChanges();
+        $newModel->syncOriginal();
+        ModelUpdated::createFromModel($newModel)->persist();
     }
 
     public function deleted(Model $model): void
     {
-        if (! in_array(SoftDeletes::class, class_uses($model)) or $model->isForceDeleting()) {
-            ModelDeleted::createFromModel($model)->persist();
+        $newModel = $model->refresh();
+        if (! in_array(SoftDeletes::class, class_uses($newModel)) or $newModel->isForceDeleting()) {
+            ModelDeleted::createFromModel($newModel)->persist();
         } else {
-            $model->syncOriginal();
-            ModelUpdated::createFromModel($model)->persist();
+            $newModel->syncOriginal();
+            ModelUpdated::createFromModel($newModel)->persist();
         }
     }
 }
