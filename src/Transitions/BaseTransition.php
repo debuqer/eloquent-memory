@@ -16,12 +16,6 @@ abstract class BaseTransition implements TransitionInterface
     use HasSubject;
 
     /**
-     *  The unique name of transition
-     *  Will play the role of key in config.changes
-     */
-    public const TypeName = '';
-
-    /**
      * @return static
      */
     public static function createFromPersistedRecord(PersistedTransitionRecordInterface $persistedTransitionRecord)
