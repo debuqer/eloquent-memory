@@ -8,10 +8,14 @@ use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
 trait CanRememberStates
 {
+    /**
+     * @return array|mixed
+     */
     public function getMemorizableAttributes()
     {
         return $this->getRawOriginal();
     }
+
 
     public static function booted(): void
     {
@@ -27,6 +31,7 @@ trait CanRememberStates
     }
 
     /**
+     * @param Carbon $givenTime
      * @return null
      */
     public function getStateOf(Carbon $givenTime)
@@ -50,7 +55,7 @@ trait CanRememberStates
     }
 
     /**
-     * @param  bool  $exists
+     * @param bool $exists
      * @return $this
      */
     public function setExists($exists = true)
