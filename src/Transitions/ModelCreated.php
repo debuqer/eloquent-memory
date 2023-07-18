@@ -8,15 +8,6 @@ class ModelCreated extends BaseTransition implements TransitionInterface
 {
     public const TypeName = 'model-created';
 
-    public static function createFromModel(Model $model): TransitionInterface
-    {
-        /** @var BaseTransition $transition */
-        $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
-        $transition->setSubject($model);
-
-        return $transition;
-    }
-
     /**
      * @return mixed
      */

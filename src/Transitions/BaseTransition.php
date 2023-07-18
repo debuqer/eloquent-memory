@@ -37,6 +37,17 @@ abstract class BaseTransition implements TransitionInterface
         return $transition;
     }
 
+    /**
+     * @return static
+     */
+    public static function createFromModel(Model $model)
+    {
+        $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
+        $transition->setSubject($model);
+
+        return $transition;
+    }
+
     public function __construct(array $properties)
     {
         $this->setProperties($properties);
