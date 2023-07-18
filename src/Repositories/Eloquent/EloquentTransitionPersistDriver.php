@@ -23,7 +23,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
             'subject_key' => $transition->getSubjectKey(),
             'properties' => $transition->getProperties(),
             'batch' => EloquentMemory::batchId(),
-            'date_recorded' => $dateRecorded->getTimestampMs(),
+            'date_recorded' => $dateRecorded->getPreciseTimestamp(),
         ]);
     }
 

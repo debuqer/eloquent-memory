@@ -39,13 +39,13 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
     {
         $where = new Fluent($data);
         return EloquentPersistedTransitionRecord::query()->when($where->offsetExists('before'), function ($query) use ($where) {
-            $query->where('date_recorded', '<', $where->get('before')->getTimestampMs());
+            $query->where('date_recorded', '<', $where->get('before')->getPreciseTimestamp());
         })->when($where->offsetExists('until'), function ($query) use ($where) {
-            $query->where('date_recorded', '<=', $where->get('until')->getTimestampMs());
+            $query->where('date_recorded', '<=', $where->get('until')->getPreciseTimestamp());
         })->when($where->offsetExists('after'), function ($query) use ($where) {
-            $query->where('date_recorded', '>', $where->get('after')->getTimestampMs());
+            $query->where('date_recorded', '>', $where->get('after')->getPreciseTimestamp());
         })->when($where->offsetExists('from'), function ($query) use ($where) {
-            $query->where('date_recorded', '>=', $where->get('from')->getTimestampMs());
+            $query->where('date_recorded', '>=', $where->get('from')->getPreciseTimestamp());
         })->when($where->offsetExists('take'), function ($query) use ($where) {
             $query->take($where->get('take'));
         })->where($where->get('conditions', []))
