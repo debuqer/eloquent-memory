@@ -16,7 +16,6 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
      */
     public static function persist(TransitionInterface $transition, Carbon $dateRecorded): void
     {
-        echo $dateRecorded->getTimestampMs().PHP_EOL;
         EloquentPersistedTransitionRecord::create([
             'type' => $transition->getType(),
             'address' => $transition->getTransitionStorageAddress(),
