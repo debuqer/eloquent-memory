@@ -9,11 +9,11 @@ beforeEach(function () {
     $this->model = (clone $this->transition['model']);
 });
 
-it('can return model state for 1 hour ago created', function () {
+it('can retrieve state of a model which created 1 hour ago', function () {
     Carbon::setTestNow(Carbon::now()->addHour()); // time travel
 
     $this->model->update([
-        'title' => '1 time past'
+        'title' => 'Title changed'
     ]);
 
     $this->model->refresh();
@@ -22,7 +22,7 @@ it('can return model state for 1 hour ago created', function () {
     expect($oldModel->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
 });
 
-it('can return model when it deleted 10 minutes later', function () {
+it('can retrieve state of a model which deleted 10 minutes ago', function () {
     Carbon::setTestNow(Carbon::now()->addMinutes(60)); // time travel
 
     $this->model->delete();
@@ -36,7 +36,7 @@ it('can return model when it deleted 10 minutes later', function () {
     expect($oldModel->exists)->toBeTrue();
 });
 
-it('can re-generate some of destroyed models', function () {
+it('can retrieve multiple model which deleted', function () {
     $this->model->delete();
 
     $models = [];
@@ -60,7 +60,7 @@ it('can re-generate some of destroyed models', function () {
     }
 });
 
-it('can rollback to the old state of model', function () {
+it('can retrieve old state of a model which updated', function () {
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
     $this->model->update([
