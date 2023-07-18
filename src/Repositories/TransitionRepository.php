@@ -46,7 +46,7 @@ class TransitionRepository
         $this->handler->persist($transition, app('time')->now());
     }
 
-    public function find(array $where): Timeline
+    public function find(TransitionQuery $where): Timeline
     {
         return $this->handler->find($where);
     }

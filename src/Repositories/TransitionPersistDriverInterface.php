@@ -10,5 +10,5 @@ interface TransitionPersistDriverInterface
 {
     public static function persist(TransitionInterface $transition, Carbon $dateRecorded): void;
 
-    public static function find(array $where): Timeline;
+    public static function find(TransitionQuery $where): Timeline;
 }

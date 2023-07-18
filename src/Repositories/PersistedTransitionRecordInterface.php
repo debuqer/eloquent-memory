@@ -9,7 +9,7 @@ interface PersistedTransitionRecordInterface
 {
     public function getTransition(): TransitionInterface;
 
-    public static function queryOnTransitions(array $data): Collection;
+    public static function queryOnTransitions(TransitionQuery $data): Collection;
 
     public function getType(): string;
 
