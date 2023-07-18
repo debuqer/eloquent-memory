@@ -1,6 +1,7 @@
 <?php
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState as Post;
+use Debuqer\EloquentMemory\Tests\Fixtures\User as User;
 
 beforeEach(function () {
     $this->transition = $this->getTransition('travel-test', Post::class);
@@ -64,7 +65,7 @@ it('can retrieve old state of a model which updated', function () {
     Carbon::setTestNow(Carbon::now()->addMinutes(10));
 
     $this->model->update([
-        'title' => '1 time past'
+        'title' => 'New title'
     ]);
 
     /** @var \Illuminate\Database\Eloquent\Model $state */
@@ -74,5 +75,20 @@ it('can retrieve old state of a model which updated', function () {
     $model = Post::find(1);
 
     expect($model->getRawOriginal('title'))->toBe($this->transition['model']->getRawOriginal('title'));
+});
+
+it('can retrieve old state of related model', function () {
+    $userBeforeEdit = (clone $this->transition['model']->user);
+    Carbon::setTestNow(Carbon::now()->addMinutes(10));
+
+    $this->model->user->update([
+        'name' => 'New Name'
+    ]);
+
+    $state = User::find(1)->getStateOf(Carbon::now()->subMinutes(2));
+    $state->save();
+
+    $model = User::find(1);
+    expect($model->getRawOriginal('name'))->toBe($userBeforeEdit->getRawOriginal('name'));
 });
 
