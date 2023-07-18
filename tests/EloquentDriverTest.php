@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;

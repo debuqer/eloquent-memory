@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState as Post;
 use Debuqer\EloquentMemory\Tests\Fixtures\User as User;
 

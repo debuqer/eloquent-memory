@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Debuqer\EloquentMemory\Timeline;
 
 test('Timeline: compare works with default sort', function () {
