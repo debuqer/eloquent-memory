@@ -5,9 +5,10 @@ namespace Debuqer\EloquentMemory\Facades;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
+use \Debuqer\EloquentMemory\EloquentMemory as EM;
 
 /**
- * @see \Debuqer\EloquentMemory\EloquentMemory
+ * @see EM
  *
  * @method static getTransitionFromModel(string $type, Model $model)
  * @method static getTransitionFromPersistedRecord(TransitionPersistDriverInterface $record)
@@ -17,6 +18,6 @@ class EloquentMemory extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Debuqer\EloquentMemory\EloquentMemory::class;
+        return EM::class;
     }
 }
