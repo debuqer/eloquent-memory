@@ -13,6 +13,13 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
         $this->app->bind('time', function () {
             return new Carbon();
         });
+
+        $this->app->bind('transition-handler', function () {
+            $driverName = config('eloquent-memory.driver.class_name', 'eloquent');
+            $config = config('eloquent-memory.drivers.'.$driverName);
+
+            return app()->make($config['class_name']);
+        });
     }
 
     public function configurePackage(Package $package): void

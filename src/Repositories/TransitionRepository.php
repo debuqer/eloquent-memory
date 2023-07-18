@@ -16,29 +16,7 @@ class TransitionRepository
      */
     public function __construct()
     {
-        $this->setHandler(config('eloquent-memory.driver', 'eloquent'));
-    }
-
-    /**
-     * @return $this
-     */
-    public function driver($driverName): self
-    {
-        $this->setHandler($driverName);
-
-        return $this;
-    }
-
-    protected function setHandler(string $driverName): void
-    {
-        $this->handler = $this->getPersistDriverHandler($driverName);
-    }
-
-    protected function getPersistDriverHandler(string $driverName): EloquentTransitionPersistDriver
-    {
-        $config = config('eloquent-memory.drivers.'.$driverName);
-
-        return new $config['class_name']();
+        $this->handler = app()->make('transition-handler');
     }
 
     public function persist(TransitionInterface $transition)
