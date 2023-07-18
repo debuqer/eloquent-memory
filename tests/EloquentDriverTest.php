@@ -24,9 +24,9 @@ it('can persist normal transition', function () {
 });
 
 it('can query on transitions', function () {
-    $now = Carbon::now();
+    $now = app('time')->now();
     for ($i = 0; $i <= 9; $i++) {
-        Carbon::setTestNow((clone $now)->subMinutes($i));
+        app('time')->setTestNow((clone $now)->subMinutes($i));
         $transition = $this->getTransition('model-created', PostWithRememberState::class);
         $transition['handler']->persist();
     }

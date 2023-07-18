@@ -2,6 +2,7 @@
 
 namespace Debuqer\EloquentMemory;
 
+use Carbon\Carbon;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -9,7 +10,9 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
 {
     public function boot()
     {
-        //
+        $this->app->bind('time', function () {
+            return new Carbon();
+        });
     }
 
     public function configurePackage(Package $package): void

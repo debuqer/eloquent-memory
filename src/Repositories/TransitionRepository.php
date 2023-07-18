@@ -44,7 +44,7 @@ class TransitionRepository
 
     public function persist(TransitionInterface $transition)
     {
-        $this->handler->persist($transition, Carbon::now());
+        $this->handler->persist($transition, app('time')->now());
     }
 
     public function find(array $where): Timeline
