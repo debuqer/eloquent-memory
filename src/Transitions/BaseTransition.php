@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
@@ -21,7 +20,7 @@ abstract class BaseTransition implements TransitionInterface
      *  The unique name of transition
      *  Will play the role of key in config.changes
      */
-    const TypeName = '';
+    public const TypeName = '';
 
     /**
      * @param PersistedTransitionRecordInterface $persistedTransitionRecord

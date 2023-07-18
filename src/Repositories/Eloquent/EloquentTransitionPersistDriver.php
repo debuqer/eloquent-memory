@@ -1,9 +1,8 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories\Eloquent;
 
-
+use Carbon\Carbon;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
@@ -13,8 +12,9 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
 {
     /**
      * @param TransitionInterface $transition
+     * @param Carbon $dateRecorded
      */
-    public static function persist(TransitionInterface $transition): void
+    public static function persist(TransitionInterface $transition, Carbon $dateRecorded): void
     {
         EloquentPersistedTransitionRecord::create([
             'type' => $transition->getType(),
@@ -23,6 +23,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
             'subject_key' => $transition->getSubjectKey(),
             'properties' => $transition->getProperties(),
             'batch' => EloquentMemory::batchId(),
+            'date_recorded' => $dateRecorded->getPreciseTimestamp(),
         ]);
     }
 

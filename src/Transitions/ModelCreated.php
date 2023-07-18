@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
@@ -8,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ModelCreated extends BaseTransition implements TransitionInterface
 {
-    const TypeName = "model-created";
+    public const TypeName = "model-created";
 
     /**
      * @param Model $model
@@ -24,13 +23,14 @@ class ModelCreated extends BaseTransition implements TransitionInterface
     }
 
     /**
+     * @param Model $current
      * @return mixed
      */
-    public function getModelCreatedFromState()
+    public function getModelCreatedFromState(Model $current)
     {
-        $model = app($this->getSubjectType())->forceFill($this->getProperties()['attributes'])->syncOriginal();
-        $model->exists = true;
-
-        return $model;
+        return $current
+            ->setRawAttributes($this->getProperties()['attributes'])
+            ->setExists(true)
+            ->syncChanges();
     }
 }

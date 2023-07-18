@@ -1,6 +1,6 @@
 <?php
 
-namespace Debuqer\EloquentMemory\Database\Factories;
+namespace Debuqer\EloquentMemory\Tests\Fixtures\Factories;
 
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

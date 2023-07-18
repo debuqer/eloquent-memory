@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions\Concerns;
-
 
 trait HasProperties
 {

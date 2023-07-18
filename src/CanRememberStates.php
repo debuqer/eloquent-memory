@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory;
-
 
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
@@ -40,16 +38,27 @@ trait CanRememberStates
                 ['subject_type', '=', get_class($this)],
             ],
             'until' => $givenTime,
-            'limit' => 1,
+            'take' => 1,
         ]);
 
         /** @var PersistedTransitionRecordInterface $state */
         $state = $transitionRepository->current();
 
-        if ( ! $state or $state->getTransition()->getType() == 'model-deleted' ) {
+        if (! $state or $state->getTransition()->getType() == 'model-deleted') {
             return null;  // model not exists
         } else {
-            return $state->getTransition()->getModelCreatedFromState();
+            return $state->getTransition()->getModelCreatedFromState($this);
         }
+    }
+
+    /**
+     * @param bool $exists
+     * @return $this
+     */
+    public function setExists($exists = true)
+    {
+        $this->exists = $exists;
+
+        return $this;
     }
 }

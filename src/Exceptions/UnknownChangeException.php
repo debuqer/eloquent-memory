@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Exceptions;
-
 
 class UnknownChangeException extends \Exception
 {

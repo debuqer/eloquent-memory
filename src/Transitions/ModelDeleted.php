@@ -1,15 +1,13 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
-
 
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelDeleted extends BaseTransition implements TransitionInterface
 {
-    const TypeName = "model-deleted";
+    public const TypeName = "model-deleted";
 
     /**
      * @param Model $model
@@ -27,9 +25,10 @@ class ModelDeleted extends BaseTransition implements TransitionInterface
     }
 
     /**
+     * @param Model $current
      * @return null
      */
-    public function getModelCreatedFromState()
+    public function getModelCreatedFromState(Model $current)
     {
         return null;
     }

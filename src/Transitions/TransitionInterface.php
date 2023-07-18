@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Transitions;
-
 
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
@@ -21,5 +19,5 @@ interface TransitionInterface
     public function getTransitionStorageAddress(): string;
 
     public function persist();
-    public function getModelCreatedFromState();
+    public function getModelCreatedFromState(Model $current);
 }
