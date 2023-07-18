@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class StateRememberObserver
 {
     /**
-     * Handle the User "created" event.
+     * @param Model $model
      */
     public function created(Model $model): void
     {
@@ -19,13 +19,16 @@ class StateRememberObserver
     }
 
     /**
-     * Handle the Model "updated" event.
+     * @param Model $model
      */
     public function updated(Model $model): void
     {
         ModelUpdated::createFromModel((clone $model)->syncOriginal())->persist();
     }
 
+    /**
+     * @param Model $model
+     */
     public function deleted(Model $model): void
     {
         $newModel = (clone $model)->syncOriginal();
