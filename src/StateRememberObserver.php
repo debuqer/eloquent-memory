@@ -23,7 +23,8 @@ class StateRememberObserver
      */
     public function updated(Model $model): void
     {
-        // $model->syncOriginal();
+        $model->syncChanges();
+        $model->syncOriginal();
         ModelUpdated::createFromModel($model)->persist();
     }
 
