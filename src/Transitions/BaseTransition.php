@@ -71,7 +71,7 @@ abstract class BaseTransition implements TransitionInterface
      */
     public function getTransitionStorageAddress(): string
     {
-        return $this->getSubject()->getModelAddress();
+        return $this->getSubject()->getModelIdentifier();
     }
 
     /**

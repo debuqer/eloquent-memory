@@ -157,5 +157,5 @@ it('has unique address', function () {
     /** @var PersistedTransitionRecordInterface $current */
     $current = $timeline->current();
 
-    expect($current->getTransition()->getTransitionStorageAddress())->toBe($model->getModelAddress());
+    expect($current->getTransition()->getTransitionStorageAddress())->toBe($model->getModelIdentifier());
 });

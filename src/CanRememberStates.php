@@ -9,7 +9,14 @@ use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
 trait CanRememberStates
 {
+    public static function booted(): void
+    {
+        static::observe(StateRememberObserver::class);
+    }
+
     /**
+     * Will override in case user wish to exclude or include some attributes
+     *
      * @return array|mixed
      */
     public function getMemorizableAttributes()
@@ -17,21 +24,21 @@ trait CanRememberStates
         return $this->getRawOriginal();
     }
 
-
-    public static function booted(): void
-    {
-        static::observe(StateRememberObserver::class);
-    }
-
     /**
+     * Will generate a unique identifier of model which can be used for addressing a model
+     * Can be overridden
+     *
+     *
      * @return string
      */
-    public function getModelAddress()
+    public function getModelIdentifier()
     {
         return md5(get_class($this).serialize($this->getKey()));
     }
 
     /**
+     * Will query for one ModelState at a specific given time
+     *
      * @param Carbon $givenTime
      * @return null
      */
@@ -56,6 +63,8 @@ trait CanRememberStates
     }
 
     /**
+     * Can change property of exists from outside
+     *
      * @param bool $exists
      * @return $this
      */
