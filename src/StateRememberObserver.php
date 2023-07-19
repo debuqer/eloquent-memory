@@ -35,7 +35,6 @@ class StateRememberObserver
         if (! in_array(SoftDeletes::class, class_uses($newModel)) or $newModel->isForceDeleting()) {
             ModelDeleted::createFromModel($newModel)->persist();
         } else {
-            $newModel->syncOriginal();
             ModelUpdated::createFromModel($newModel)->persist();
         }
     }
