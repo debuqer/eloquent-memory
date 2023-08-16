@@ -5,15 +5,12 @@ namespace Debuqer\EloquentMemory\Repositories\Eloquent;
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
-use Debuqer\EloquentMemory\Transitions\TransitionInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionQuery;
 use Debuqer\EloquentMemory\Timeline;
+use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 class EloquentTransitionPersistDriver implements TransitionPersistDriverInterface
 {
-    /**
-     * @param TransitionInterface $transition
-     * @param Carbon $dateRecorded
-     */
     public static function persist(TransitionInterface $transition, Carbon $dateRecorded): void
     {
         EloquentPersistedTransitionRecord::create([
@@ -27,11 +24,7 @@ class EloquentTransitionPersistDriver implements TransitionPersistDriverInterfac
         ]);
     }
 
-    /**
-     * @param array $where
-     * @return Timeline
-     */
-    public static function find(array $where): Timeline
+    public static function find(TransitionQuery $where): Timeline
     {
         $timeline = new Timeline();
         EloquentPersistedTransitionRecord::queryOnTransitions($where)->each(function ($item) use (&$timeline) {

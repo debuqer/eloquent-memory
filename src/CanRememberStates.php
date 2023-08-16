@@ -3,43 +3,54 @@
 namespace Debuqer\EloquentMemory;
 
 use Carbon\Carbon;
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionQuery;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 
 trait CanRememberStates
 {
-    public function getMemorizableAttributes()
-    {
-        return $this->getRawOriginal();
-    }
-
     public static function booted(): void
     {
         static::observe(StateRememberObserver::class);
     }
 
     /**
-     * @return string
+     * Will override in case user wish to exclude or include some attributes
+     *
+     * @return array|mixed
      */
-    public function getModelAddress()
+    public function getMemorizableAttributes()
     {
-        return md5(get_class($this) . serialize($this->getKey()));
+        return $this->getRawOriginal();
     }
 
     /**
+     * Will generate a unique identifier of model which can be used for addressing a model
+     * Can be overridden
+     *
+     *
+     * @return string
+     */
+    public function getModelIdentifier()
+    {
+        return md5(get_class($this).serialize($this->getKey()));
+    }
+
+    /**
+     * Will query for one ModelState at a specific given time
+     *
      * @param Carbon $givenTime
      * @return null
      */
     public function getStateOf(Carbon $givenTime)
     {
-        $transitionRepository = app(TransitionRepository::class)->find([
-            'conditions' => [
+        $query = TransitionQuery::create()
+            ->setConditions([
                 ['subject_type', '=', get_class($this)],
-            ],
-            'until' => $givenTime,
-            'take' => 1,
-        ]);
+            ])->setUntil($givenTime)
+            ->setTake(1);
+
+        $transitionRepository = app(TransitionRepository::class)->find($query);
 
         /** @var PersistedTransitionRecordInterface $state */
         $state = $transitionRepository->current();
@@ -52,6 +63,8 @@ trait CanRememberStates
     }
 
     /**
+     * Can change property of exists from outside
+     *
      * @param bool $exists
      * @return $this
      */

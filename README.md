@@ -8,8 +8,18 @@
 Eloquent memory give you a Laravel model based time machine to perform time traveling through your models state. 
 ```php 
 $article = Article::find(5);
-  
-$article->travelTo(Carbon::now()->subMinutes(5)); // transform article model into 1 years ago version in a given time    
+
+// 5 minutes later
+
+$article->update([
+    // update fields
+]);
+
+$article->delete(); // delete the article
+
+// lets go back to the old time
+$oldArticle = Article::find(5)->getStateOf(Carbon::now()->subMinutes(5)); // How was the model looked 5 minutes ago   
+$oldArticle->save(); // Boom! This is like time-machine 
 ```
 
 ## Installation
@@ -41,12 +51,20 @@ return [
         'model-updated' => ModelUpdated::class,
         'model-created' => ModelCreated::class,
         'model-deleted' => ModelDeleted::class,
-    ]
+    ],
+    'drivers' => [
+        'default' => 'eloquent',
+
+        'eloquent' => [
+            'class_name' => \Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver::class,
+            'connection' => 'default',
+        ],
+    ],
 ];
 ```
 
 ## Usage
-In order to force models to keep track of their state, CanRememberStates trait must be use in the model class 
+In order to force models to keep track of their state, CanRememberStates trait must be used in the model class 
 
 ```php
 
@@ -59,12 +77,10 @@ class Post extends Model
 
 ```
 
-The model records their states in a database and the states can be retrieved by method travelTo
+The model records their states in a database and the states can be retrieved by method getStateOf
 
 ```php
-$article = Article::find(5);
-  
-$article->travelTo(Carbon::now()->subDays(5)); // any carbon instance is acceptable
+$oldArticle = Article::find(5)->getStateOf(Carbon::now()->subMinutes(5));
 ```
 
 ## Testing

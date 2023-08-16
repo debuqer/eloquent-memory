@@ -34,6 +34,9 @@
             "Debuqer\\EloquentMemory\\Database\\Factories\\": "database/factories/"
         }
     },
+    "conflict": {
+        "phpunit/phpunit": "<10.0.17"
+    },
     "autoload-dev": {
         "psr-4": {
             "Debuqer\\EloquentMemory\\Tests\\": "tests/"

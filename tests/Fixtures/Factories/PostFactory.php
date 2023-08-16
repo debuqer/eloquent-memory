@@ -5,7 +5,6 @@ namespace Debuqer\EloquentMemory\Tests\Fixtures\Factories;
 use Debuqer\EloquentMemory\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-
 class PostFactory extends Factory
 {
     protected $model = \Debuqer\EloquentMemory\Tests\Fixtures\Post::class;
@@ -23,8 +22,7 @@ class PostFactory extends Factory
                 'city' => $this->faker->city,
                 'country' => $this->faker->country,
             ],
-            'image' => 'default.jpg'
+            'image' => 'default.jpg',
         ];
     }
 }
-

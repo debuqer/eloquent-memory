@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Tests\Fixtures;
 
 class Post extends \Illuminate\Database\Eloquent\Model

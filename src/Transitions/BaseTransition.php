@@ -2,7 +2,6 @@
 
 namespace Debuqer\EloquentMemory\Transitions;
 
-use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
@@ -17,13 +16,6 @@ abstract class BaseTransition implements TransitionInterface
     use HasSubject;
 
     /**
-     *  The unique name of transition
-     *  Will play the role of key in config.changes
-     */
-    public const TypeName = '';
-
-    /**
-     * @param PersistedTransitionRecordInterface $persistedTransitionRecord
      * @return static
      */
     public static function createFromPersistedRecord(PersistedTransitionRecordInterface $persistedTransitionRecord)
@@ -40,31 +32,32 @@ abstract class BaseTransition implements TransitionInterface
     }
 
     /**
-     * @param array $properties
+     * @return static
      */
+    public static function createFromModel(Model $model)
+    {
+        $transition = new static(['attributes' => static::getMemorizableAttributes($model)]);
+        $transition->setSubject($model);
+
+        return $transition;
+    }
+
     public function __construct(array $properties)
     {
         $this->setProperties($properties);
     }
 
-    /**
-     *
-     */
     public function persist(): void
     {
         app(TransitionRepository::class)->persist($this);
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return static::TypeName;
     }
 
     /**
-     * @param Model $model
      * @return array|mixed
      */
     public static function getMemorizableAttributes(Model $model)
@@ -75,12 +68,10 @@ abstract class BaseTransition implements TransitionInterface
     /**
      * unique identifier for pair of (subject_type, subject_id)
      * as a database index facilitates searching
-     *
-     * @return string
      */
     public function getTransitionStorageAddress(): string
     {
-        return $this->getSubject()->getModelAddress();
+        return $this->getSubject()->getModelIdentifier();
     }
 
     /**
@@ -88,6 +79,6 @@ abstract class BaseTransition implements TransitionInterface
      */
     public function getSubjectKey()
     {
-        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? "";
+        return $this->getProperties()['attributes'][app($this->getSubjectType())->getKeyName()] ?? '';
     }
 }

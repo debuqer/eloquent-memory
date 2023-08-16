@@ -2,8 +2,7 @@
 
 namespace Debuqer\EloquentMemory;
 
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Carbon\Carbon;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -11,7 +10,13 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
 {
     public function boot()
     {
-        //
+        $this->app->bind('time', function () {
+            return $this->getTimeManager();
+        });
+
+        $this->app->bind('transition-handler', function () {
+            return $this->getTransitionHandler();
+        });
     }
 
     public function configurePackage(Package $package): void
@@ -26,5 +31,25 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->publishesServiceProvider(PublishServiceProvider::class);
+    }
+
+    /**
+     * @return Carbon
+     */
+    protected function getTimeManager()
+    {
+        return new Carbon();
+    }
+
+    /**
+     * @return mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getTransitionHandler()
+    {
+        $driverName = config('eloquent-memory.driver.class_name', 'eloquent');
+        $config = config('eloquent-memory.drivers.'.$driverName);
+
+        return app()->make($config['class_name']);
     }
 }

@@ -25,9 +25,6 @@ trait HasSubject
         return get_class($this->getSubject());
     }
 
-    /**
-     * @param Model $subject
-     */
     public function setSubject(Model $subject)
     {
         $this->subject = $subject;
