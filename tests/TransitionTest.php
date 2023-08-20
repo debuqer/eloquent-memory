@@ -2,6 +2,7 @@
 
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionQuery;
 use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
@@ -9,7 +10,6 @@ use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
-use Debuqer\EloquentMemory\Repositories\TransitionQuery;
 
 it('can create a model from persisted ModelCreated', function () {
     $batchId = EloquentMemory::batchId();

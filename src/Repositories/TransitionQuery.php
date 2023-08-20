@@ -1,27 +1,34 @@
 <?php
 
-
 namespace Debuqer\EloquentMemory\Repositories;
-
 
 class TransitionQuery
 {
     const DEFAULT_TAKE = 100;
+
     const DEFAULT_ORDER = 'desc';
+
     const DEFAULT_ORDER_KEY = 'date_recorded';
+
     const DEFAULT_CONDITIONS = [];
 
     protected $batch;
+
     protected $before;
+
     protected $after;
+
     protected $until;
+
     protected $from;
+
     protected $take = self::DEFAULT_TAKE;
+
     protected $order = self::DEFAULT_ORDER;
+
     protected $orderKey = self::DEFAULT_ORDER_KEY;
+
     protected $conditions = self::DEFAULT_CONDITIONS;
-
-
 
     /**
      * @return mixed
@@ -32,7 +39,7 @@ class TransitionQuery
     }
 
     /**
-     * @param mixed $batch
+     * @param  mixed  $batch
      * @return TransitionQuery
      */
     public function setBatch($batch)
@@ -178,7 +185,7 @@ class TransitionQuery
     }
 
     /**
-     * @param string $orderKey
+     * @param  string  $orderKey
      * @return TransitionQuery
      */
     public function setOrderKey($orderKey)
@@ -206,6 +213,4 @@ class TransitionQuery
 
         return $this;
     }
-
-
 }

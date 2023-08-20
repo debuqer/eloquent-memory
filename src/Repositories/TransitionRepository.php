@@ -2,7 +2,6 @@
 
 namespace Debuqer\EloquentMemory\Repositories;
 
-use Debuqer\EloquentMemory\Repositories\Eloquent\EloquentTransitionPersistDriver;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 

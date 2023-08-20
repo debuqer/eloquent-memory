@@ -39,7 +39,7 @@ trait CanRememberStates
     /**
      * Will query for one ModelState at a specific given time
      *
-     * @param Carbon $givenTime
+     * @param  Carbon  $givenTime
      * @return null
      */
     public function getStateOf(Carbon $givenTime)
@@ -65,7 +65,7 @@ trait CanRememberStates
     /**
      * Can change property of exists from outside
      *
-     * @param bool $exists
+     * @param  bool  $exists
      * @return $this
      */
     public function setExists($exists = true)

@@ -43,6 +43,7 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
 
     /**
      * @return mixed
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getTransitionHandler()

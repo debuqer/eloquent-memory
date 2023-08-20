@@ -7,19 +7,22 @@
 
 Eloquent memory give you a Laravel model based time machine to perform time traveling through your models state. 
 ```php 
-$article = Article::find(5);
+$article = Article::create([
+    'name' => 'Women, Life, Freedom',
+    'content' => 'Hey this content just added,',
+]);
 
 // 5 minutes later
 
+// let's change the content 
 $article->update([
-    // update fields
+    'content' => 'Hey this content just changed,'
 ]);
 
-$article->delete(); // delete the article
-
-// lets go back to the old time
-$oldArticle = Article::find(5)->getStateOf(Carbon::now()->subMinutes(5)); // How was the model looked 5 minutes ago   
-$oldArticle->save(); // Boom! This is like time-machine 
+// 
+// Oops, we have changed our content by mistake, let's go back
+$articleBeforeUpdate = $article->getStatyeOf(Carbon::now()->subMinutes(2)); 
+$articleBeforeUpdate->save(); // will rollback the content of article to the 1 minute ago
 ```
 
 ## Installation
@@ -64,7 +67,7 @@ return [
 ```
 
 ## Usage
-In order to force models to keep track of their state, CanRememberStates trait must be used in the model class 
+In order to force models to keep track of their states, *CanRememberStates* trait must be used in the model class 
 
 ```php
 
@@ -77,7 +80,7 @@ class Post extends Model
 
 ```
 
-The model records their states in a database and the states can be retrieved by method getStateOf
+The model records their states in a database and the states can be retrieved by method *getStateOf*
 
 ```php
 $oldArticle = Article::find(5)->getStateOf(Carbon::now()->subMinutes(5));

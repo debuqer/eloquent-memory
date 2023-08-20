@@ -2,8 +2,8 @@
 
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Repositories\TransitionQuery;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
 
@@ -58,7 +58,7 @@ it('can query on transitions', function () {
      *  |    |    | -9 | -8 | -7 | -6 | -5 | *  | *  | *  | *  |  * |
      *  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
      */
-    $count = app(TransitionRepository::class)->find(TransitionQuery::create()->setAfter( (clone $now)->subMinutes(5)))->count();
+    $count = app(TransitionRepository::class)->find(TransitionQuery::create()->setAfter((clone $now)->subMinutes(5)))->count();
     expect($count)->toBe(5);
 
     /**
