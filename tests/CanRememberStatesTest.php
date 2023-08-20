@@ -1,7 +1,7 @@
 <?php
 
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Repositories\TransitionQuery;
+use Debuqer\EloquentMemory\Repositories\TransitionRepository;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithRememberState;

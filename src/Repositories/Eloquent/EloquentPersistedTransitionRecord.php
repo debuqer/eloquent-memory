@@ -7,7 +7,6 @@ use Debuqer\EloquentMemory\Repositories\TransitionQuery;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Fluent;
 
 class EloquentPersistedTransitionRecord extends Model implements PersistedTransitionRecordInterface
 {

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class StateRememberObserver
 {
     /**
-     * @param Model $model
+     * @param  Model  $model
      */
     public function created(Model $model): void
     {
@@ -19,7 +19,7 @@ class StateRememberObserver
     }
 
     /**
-     * @param Model $model
+     * @param  Model  $model
      */
     public function updated(Model $model): void
     {
@@ -27,7 +27,7 @@ class StateRememberObserver
     }
 
     /**
-     * @param Model $model
+     * @param  Model  $model
      */
     public function deleted(Model $model): void
     {
