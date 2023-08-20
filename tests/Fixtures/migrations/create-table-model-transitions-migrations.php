@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('address', 32);
 
             $table->string('subject_type');
-            $table->json('subject_key');
+            $table->string('subject_key');
             $table->json('properties');
             $table->uuid('batch');
             $table->unsignedInteger('date_recorded');

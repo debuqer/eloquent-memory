@@ -86,6 +86,14 @@ The model records their states in a database and the states can be retrieved by 
 $oldArticle = Article::find(5)->getStateOf(Carbon::now()->subMinutes(5));
 ```
 
+## Road map
+
+1. Fix migration, so the subject_key should be provide as an array
+   
+2. Fix migration to be publishable via laravel
+
+3. no date_recorded field are stored
+
 ## Testing
 
 ```bash
