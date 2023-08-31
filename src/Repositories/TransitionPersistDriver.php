@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
-interface TransitionPersistDriverInterface
+interface TransitionPersistDriver
 {
     public static function persist(TransitionInterface $transition, Carbon $dateRecorded): void;
 

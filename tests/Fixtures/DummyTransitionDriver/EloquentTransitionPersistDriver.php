@@ -1,6 +1,6 @@
 <?php
 
-namespace Debuqer\EloquentMemory\Repositories\Eloquent;
+namespace Debuqer\EloquentMemory\Tests\Fixtures\DummyTransitionDriver;
 
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Facades\EloquentMemory;

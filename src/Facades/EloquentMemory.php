@@ -3,7 +3,7 @@
 namespace Debuqer\EloquentMemory\Facades;
 
 use Debuqer\EloquentMemory\EloquentMemory as EM;
-use Debuqer\EloquentMemory\Repositories\TransitionPersistDriverInterface;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @see EM
  *
  * @method static getTransitionFromModel(string $type, Model $model)
- * @method static getTransitionFromPersistedRecord(TransitionPersistDriverInterface $record)
+ * @method static getTransitionFromPersistedRecord(TransitionPersistDriver $record)
  * @method static batchId()
  */
 class EloquentMemory extends Facade

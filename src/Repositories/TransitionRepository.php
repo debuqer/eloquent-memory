@@ -7,15 +7,11 @@ use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 
 class TransitionRepository
 {
-    /** @var TransitionPersistDriverInterface */
-    protected $handler;
-
     /**
      * TransitionRepository constructor.
      */
-    public function __construct()
-    {
-        $this->handler = app()->make('transition-handler');
+    public function __construct(protected TransitionPersistDriver $handler){
+
     }
 
     public function persist(TransitionInterface $transition)

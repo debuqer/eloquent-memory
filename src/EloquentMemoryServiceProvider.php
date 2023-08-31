@@ -3,6 +3,7 @@
 namespace Debuqer\EloquentMemory;
 
 use Carbon\Carbon;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -14,7 +15,7 @@ class EloquentMemoryServiceProvider extends PackageServiceProvider
             return $this->getTimeManager();
         });
 
-        $this->app->bind('transition-handler', function () {
+        $this->app->bind(TransitionPersistDriver::class, function () {
             return $this->getTransitionHandler();
         });
     }
