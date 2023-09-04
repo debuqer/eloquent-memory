@@ -44,7 +44,7 @@ class TransitionQuery
     /**
      * @param string $name
      * @param array $arguments
-     * @return $this|null
+     * @return $this|bool|null
      */
     public function __call(string $name, array $arguments)
     {
@@ -52,6 +52,8 @@ class TransitionQuery
             return $this->setParameter(Str::substr($name, 3), $arguments[0]);
         } else if ( Str::startsWith($name, 'get') ) {
             return $this->getParameter(Str::substr($name, 3));
+        } else if ( Str::startsWith($name, 'has') ) {
+            return $this->isSeted(Str::substr($name, 3));
         } else {
             throw new \BadMethodCallException('Method '.$name.' does not exists in TransitionQuery');
         }
@@ -62,7 +64,7 @@ class TransitionQuery
      * @param $value
      * @return $this
      */
-    public function setParameter(string $name, $value)
+    protected function setParameter(string $name, $value)
     {
         if ( property_exists($this, Str::camel($name) ) ) {
             $this->{$name} = $value;
@@ -75,7 +77,7 @@ class TransitionQuery
      * @param string $name
      * @return null
      */
-    public function getParameter(string $name)
+    protected function getParameter(string $name)
     {
         if ( property_exists($this, $name) ) {
             return $this->{$name};
@@ -88,9 +90,8 @@ class TransitionQuery
      * @param string $key
      * @return bool
      */
-    public function isSeted(string $key)
+    protected function isSeted(string $key)
     {
         return isset($this->{$key});
     }
-
 }

@@ -24,15 +24,15 @@ class EloquentPersistedTransitionRecord implements PersistedTransitionRecordInte
 
     public static function queryOnTransitions(TransitionQuery $where): Collection
     {
-        return collect(EloquentTransitionPersistDriver::getData())->when($where->isSeted('before'), function ($query) use ($where) {
+        return collect(EloquentTransitionPersistDriver::getData())->when($where->hasBefore(), function ($query) use ($where) {
             $query->where('date_recorded', '<', $where->getBefore()->getPreciseTimestamp());
-        })->when($where->isSeted('until'), function ($query) use ($where) {
+        })->when($where->hasUntil(), function ($query) use ($where) {
             $query->where('date_recorded', '<=', $where->getUntil()->getPreciseTimestamp());
-        })->when($where->isSeted('after'), function ($query) use ($where) {
+        })->when($where->hasAfter(), function ($query) use ($where) {
             $query->where('date_recorded', '>', $where->getAfter()->getPreciseTimestamp());
-        })->when($where->isSeted('from'), function ($query) use ($where) {
+        })->when($where->hasFrom(), function ($query) use ($where) {
             $query->where('date_recorded', '>=', $where->getFrom()->getPreciseTimestamp());
-        })->when($where->isSeted('take'), function ($query) use ($where) {
+        })->when($where->hasTake(), function ($query) use ($where) {
             $query->take($where->getTake());
         })->when(!empty($where->getConditions()), function ($query) use($where) {
             foreach ($where->getConditions() as $condition) {
