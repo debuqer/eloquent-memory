@@ -3,7 +3,7 @@
 use Debuqer\EloquentMemory\Facades\EloquentMemory;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionQuery;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Timeline;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
@@ -16,7 +16,7 @@ it('can create a model from persisted ModelCreated', function () {
 
     $model = $this->createAModelOf(PostWithRememberState::class);
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
@@ -40,7 +40,7 @@ it('can persist ModelCreated', function () {
     $transitionCreatedFromModel->persist();
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     expect($current)->not->toBeNull();
@@ -61,7 +61,7 @@ it('can create a model from persisted ModelUpdated', function () {
         'title' => 'new Title',
     ]);
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
@@ -91,7 +91,7 @@ it('can persist ModelUpdated', function () {
     $transitionCreatedFromModel->persist();
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     expect($current)->not->toBeNull();
@@ -110,7 +110,7 @@ it('can create a model from persisted ModelDeleted', function () {
     $model = $this->createAModelOf(PostWithRememberState::class);
     $model->delete();
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     $transitionCreatedFromPersistedRecord = EloquentMemory::getTransitionFromPersistedRecord($current);
@@ -135,7 +135,7 @@ it('can persist ModelDeleted', function () {
     $transitionCreatedFromModel->persist();
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     $current = $timeline->current();
 
     expect($current)->not->toBeNull();
@@ -153,7 +153,7 @@ it('has unique address', function () {
     $model = $this->createAModelOf(PostWithRememberState::class);
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($batchId));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($batchId));
     /** @var PersistedTransitionRecordInterface $current */
     $current = $timeline->current();
 

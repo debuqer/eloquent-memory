@@ -8,28 +8,23 @@ use Debuqer\EloquentMemory\Transitions\TransitionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-class EloquentPersistedTransitionRecord extends Model implements PersistedTransitionRecordInterface
+class EloquentPersistedTransitionRecord implements PersistedTransitionRecordInterface
 {
-    protected $table = 'model_transitions';
+    public function __construct(protected array $data)
+    {
 
-    protected $guarded = ['id'];
-
-    protected $casts = [
-        'properties' => 'json',
-    ];
-
-    public $timestamps = false;
+    }
 
     public function getTransition(): TransitionInterface
     {
-        $transitionClass = config('eloquent-memory.changes.'.$this->type);
+        $transitionClass = config('eloquent-memory.changes.' . $this->data['type']);
 
         return $transitionClass::createFromPersistedRecord($this);
     }
 
     public static function queryOnTransitions(TransitionQuery $where): Collection
     {
-        return EloquentPersistedTransitionRecord::query()->when($where->isSeted('before'), function ($query) use ($where) {
+        return collect(EloquentTransitionPersistDriver::getData())->when($where->isSeted('before'), function ($query) use ($where) {
             $query->where('date_recorded', '<', $where->getBefore()->getPreciseTimestamp());
         })->when($where->isSeted('until'), function ($query) use ($where) {
             $query->where('date_recorded', '<=', $where->getUntil()->getPreciseTimestamp());
@@ -39,33 +34,35 @@ class EloquentPersistedTransitionRecord extends Model implements PersistedTransi
             $query->where('date_recorded', '>=', $where->getFrom()->getPreciseTimestamp());
         })->when($where->isSeted('take'), function ($query) use ($where) {
             $query->take($where->getTake());
-        })->where($where->getConditions())
-            ->orderBy($where->getOrderKey(), $where->getOrder())
-            ->get();
+        })->when(!empty($where->getConditions()), function ($query) use($where) {
+            foreach ($where->getConditions() as $condition) {
+                $query->where(...$condition);
+            }
+        })->sortBy($where->getOrderKey(), $where->getOrder() == 'desc' ? SORT_DESC : SORT_ASC);
     }
 
     public function getProperties(): array
     {
-        return $this->properties ?? [];
+        return $this->data['properties'] ?? [];
     }
 
     public function getSubjectType(): string
     {
-        return $this->subject_type;
+        return $this->data['subject_type'];
     }
 
     public function getSubjectKey(): string
     {
-        return $this->subject_key;
+        return $this->data['subject_key'];
     }
 
     public function getType(): string
     {
-        return $this->type;
+        return $this->data['type'];
     }
 
     public function getCreationDate(): string
     {
-        return $this->date_recorded;
+        return $this->data['date_recorded'];
     }
 }

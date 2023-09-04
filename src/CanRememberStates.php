@@ -5,7 +5,7 @@ namespace Debuqer\EloquentMemory;
 use Carbon\Carbon;
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
 use Debuqer\EloquentMemory\Repositories\TransitionQuery;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 
 trait CanRememberStates
 {
@@ -50,7 +50,7 @@ trait CanRememberStates
             ])->setUntil($givenTime)
             ->setTake(1);
 
-        $transitionRepository = app(TransitionRepository::class)->find($query);
+        $transitionRepository = app(TransitionPersistDriver::class)->find($query);
 
         /** @var PersistedTransitionRecordInterface $state */
         $state = $transitionRepository->current();

@@ -3,11 +3,13 @@
 namespace Debuqer\EloquentMemory\Tests;
 
 use Debuqer\EloquentMemory\EloquentMemoryServiceProvider;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Debuqer\EloquentMemory\Tests\Fixtures\Post;
 use Debuqer\EloquentMemory\Transitions\ModelCreated;
 use Debuqer\EloquentMemory\Transitions\ModelDeleted;
 use Debuqer\EloquentMemory\Transitions\ModelUpdated;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -20,6 +22,11 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Debuqer\\EloquentMemory\\Tests\\Fixtures\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        $repository = new Fixtures\DummyTransitionDriver\EloquentTransitionPersistDriver;
+        $repository->clearData();
+
+        App::instance(TransitionPersistDriver::class, $repository);
     }
 
     protected function getPackageProviders($app)

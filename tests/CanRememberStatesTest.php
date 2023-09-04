@@ -1,7 +1,7 @@
 <?php
 
 use Debuqer\EloquentMemory\Repositories\TransitionQuery;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithExcludeAttributes;
 use Debuqer\EloquentMemory\Tests\Fixtures\PostWithRememberState;
 use Debuqer\EloquentMemory\Tests\Fixtures\SoftDeletedPostWithRememberState;
@@ -18,7 +18,7 @@ it('can record when a model created', function () {
     $expectedStack[] = 'user-created';
     $expectedStack[] = 'model-created';
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
     $current = $timeline->current();
 
     expect($timeline->count())->toBe(count($expectedStack));
@@ -37,8 +37,9 @@ it('can record when a model deleted', function () {
 
     $model->delete();
     $expectedStack[] = 'model-deleted';
+
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
     $current = $timeline->current();
 
     expect($timeline->count())->toBe(count($expectedStack));
@@ -54,7 +55,7 @@ it('it can record when model soft deleted', function () {
     $model->delete();
     $attributes = $model->getRawOriginal();
 
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
 
     $current = $timeline->current();
     expect($current->getTransition()->getType())->toBe('model-updated');
@@ -79,7 +80,7 @@ it('can record when model restored', function () {
     $attributes = $model->getRawOriginal(); // unseted deleted_at
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
 
     $current = $timeline->current();
 
@@ -105,7 +106,7 @@ it('can record when a model updated', function () {
     $expectedStack[] = 'model-updated';
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
     $current = $timeline->current();
 
     expect($timeline->count())->toBe(count($expectedStack));
@@ -147,7 +148,7 @@ it('can record chain of events if soft delete support', function () {
     $expectedStack[] = 'model-deleted';
 
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
 
     foreach (array_reverse($expectedStack) as $expected) {
         expect($timeline->current()->getTransition()->getType())->toBe($expected);
@@ -161,7 +162,7 @@ it('can exclude attributes', function () {
         'title' => 'changed',
     ]);
     /** @var Timeline $timeline */
-    $timeline = app(TransitionRepository::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
+    $timeline = app(TransitionPersistDriver::class)->find(TransitionQuery::create()->setBatch($this->batch_id));
     $current = $timeline->current();
 
     $attributes = $current->getTransition()->getAttributes();

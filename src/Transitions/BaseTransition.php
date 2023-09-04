@@ -3,7 +3,7 @@
 namespace Debuqer\EloquentMemory\Transitions;
 
 use Debuqer\EloquentMemory\Repositories\PersistedTransitionRecordInterface;
-use Debuqer\EloquentMemory\Repositories\TransitionRepository;
+use Debuqer\EloquentMemory\Repositories\TransitionPersistDriver;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasAttributes;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasProperties;
 use Debuqer\EloquentMemory\Transitions\Concerns\HasSubject;
@@ -49,7 +49,7 @@ abstract class BaseTransition implements TransitionInterface
 
     public function persist(): void
     {
-        app(TransitionRepository::class)->persist($this);
+        app(TransitionPersistDriver::class)->persist($this, app('time')->now());
     }
 
     public function getType(): string
