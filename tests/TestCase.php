@@ -44,8 +44,6 @@ class TestCase extends Orchestra
         $migration->up();
         $migration = include __DIR__.'/Fixtures/migrations/create-user.php';
         $migration->up();
-        $migration = include __DIR__.'/Fixtures/migrations/create-table-model-transitions-migrations.php';
-        $migration->up();
     }
 
     /**
